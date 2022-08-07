@@ -1,0 +1,5 @@
+/**
+ * scan service.
+ */
+
+export default () => ({});

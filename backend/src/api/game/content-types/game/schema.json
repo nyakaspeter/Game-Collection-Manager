@@ -1,0 +1,20 @@
+{
+  "kind": "collectionType",
+  "collectionName": "games",
+  "info": {
+    "singularName": "game",
+    "pluralName": "games",
+    "displayName": "Game"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "igdbId": {
+      "type": "string",
+      "unique": true,
+      "required": true
+    }
+  }
+}
