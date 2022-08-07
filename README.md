@@ -1,0 +1,1 @@
+# Game-Collection-Manager
