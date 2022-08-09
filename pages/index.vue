@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Game Collection Manager</h1>
+    <h1 class="text-4xl">Game Collection Manager</h1>
     <div>
       <NuxtLink to="/games">Games</NuxtLink>
     </div>
