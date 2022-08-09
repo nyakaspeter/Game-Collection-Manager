@@ -1,5 +1,0 @@
-/**
- * scan service.
- */
-
-export default () => ({});
