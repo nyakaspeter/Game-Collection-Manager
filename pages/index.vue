@@ -5,6 +5,9 @@
       <NuxtLink to="/games">Games</NuxtLink>
     </div>
     <div>
+      <NuxtLink to="/directories">Directories</NuxtLink>
+    </div>
+    <div>
       <NuxtLink to="/settings">Settings</NuxtLink>
     </div>
   </div>
