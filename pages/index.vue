@@ -1,14 +1,10 @@
 <template>
   <div>
-    <h1 class="text-4xl">Game Collection Manager</h1>
-    <div>
-      <NuxtLink to="/games">Games</NuxtLink>
+    <div class="text-center text-5xl font-bold mt-20">
+      Game Collection Manager
     </div>
-    <div>
-      <NuxtLink to="/directories">Directories</NuxtLink>
-    </div>
-    <div>
-      <NuxtLink to="/settings">Settings</NuxtLink>
+    <div class="text-center mt-5">
+      <NuxtLink to="/games"> Go to games </NuxtLink>
     </div>
   </div>
 </template>
