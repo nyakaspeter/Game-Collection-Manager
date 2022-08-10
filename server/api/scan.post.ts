@@ -1,18 +1,19 @@
-import { getDirectoriesDb, getGamesDb, getScanPathsDb } from "~~/utils/db";
+import { getDirectoriesDb, getGamesDb, getSettingsDb } from "~~/utils/db";
 import { getSubDirectories } from "~~/utils/fs";
 import { getIgdbGames } from "~~/utils/igdbApi";
 import { getIgdbIds } from "~~/utils/igdbSearch";
 
 export default defineEventHandler(async (event) => {
-  const scanPaths = await getScanPathsDb();
+  const settings = await getSettingsDb();
+  const scanPaths = settings.data.scanPaths;
+
   const subDirs = (
-    await Promise.all(scanPaths.data.map((path) => getSubDirectories(path)))
+    await Promise.all(scanPaths.map((path) => getSubDirectories(path)))
   ).flat();
 
   const directories = await getDirectoriesDb();
   const prevDirs = directories.data.filter(
-    (dir) =>
-      scanPaths.data.find((path) => dir.path.startsWith(path)) && dir.exists
+    (dir) => scanPaths.find((path) => dir.path.startsWith(path)) && dir.exists
   );
 
   prevDirs.forEach((dir) => (dir.exists = false));

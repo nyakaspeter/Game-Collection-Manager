@@ -1,4 +1,4 @@
-import { getDirectoriesDb, getScanPathsDb } from "~~/utils/db";
+import { getDirectoriesDb } from "~~/utils/db";
 import { Directory } from "~~/utils/fs";
 
 export default defineEventHandler(async (event) => {

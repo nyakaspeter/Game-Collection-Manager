@@ -2,11 +2,21 @@ import { Low, JSONFile } from "lowdb";
 import { createDataDirIfNeeded, Directory } from "./fs";
 import { Game } from "./igdbApi";
 
-export const getScanPathsDb = async () => {
+export interface Settings {
+  twitchApiClientId: string;
+  twitchApiClientSecret: string;
+  scanPaths: string[];
+}
+
+export const getSettingsDb = async () => {
   await createDataDirIfNeeded();
-  const db = new Low<string[]>(new JSONFile("./data/scanPaths.json"));
+  const db = new Low<Settings>(new JSONFile("./data/settings.json"));
   await db.read();
-  db.data ||= [];
+  db.data ||= {
+    twitchApiClientId: "",
+    twitchApiClientSecret: "",
+    scanPaths: [],
+  };
   return db;
 };
 

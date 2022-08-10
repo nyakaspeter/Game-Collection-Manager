@@ -1,4 +1,4 @@
-import { getDirectoriesDb, getScanPathsDb } from "~~/utils/db";
+import { getDirectoriesDb } from "~~/utils/db";
 
 export default defineEventHandler(async (event) => {
   const directories = await getDirectoriesDb();

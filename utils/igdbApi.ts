@@ -1,3 +1,5 @@
+import { getSettingsDb } from "./db";
+
 interface TwitchAuthResponse {
   access_token: string;
   expires_in: number;
@@ -104,7 +106,8 @@ const chunkArray = (array: any[], size: number) => {
 };
 
 const getAuthHeaders = async () => {
-  const { twitchApiClientId, twitchApiClientSecret } = useRuntimeConfig();
+  const settings = await getSettingsDb();
+  const { twitchApiClientId, twitchApiClientSecret } = settings.data;
 
   const authResponse = await $fetch<TwitchAuthResponse>(
     "https://id.twitch.tv/oauth2/token",
