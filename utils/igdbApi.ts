@@ -1,48 +1,14 @@
-import { getSettingsDb } from "./db";
+import { Game } from "./json";
+
+interface TwitchApiKey {
+  twitchApiClientId: string;
+  twitchApiClientSecret: string;
+}
 
 interface TwitchAuthResponse {
   access_token: string;
   expires_in: number;
   token_type: Date;
-}
-
-export interface Game {
-  id: number;
-  name: string;
-  slug: string;
-  summary?: string;
-  rating?: number;
-  releaseDate?: string;
-  genres?: Array<{
-    name: string;
-    slug: string;
-  }>;
-  cover?: {
-    original: string;
-    small: string;
-    big: string;
-    hd: string;
-    fhd: string;
-  };
-  artworks?: Array<{
-    original: string;
-    small: string;
-    big: string;
-    hd: string;
-    fhd: string;
-  }>;
-  screenshots?: Array<{
-    original: string;
-    medium: string;
-    big: string;
-    huge: string;
-    hd: string;
-    fhd: string;
-  }>;
-  videos?: Array<{
-    name: string;
-    url: string;
-  }>;
 }
 
 const mapGameData = (game: any): Game => ({
@@ -105,10 +71,8 @@ const chunkArray = (array: any[], size: number) => {
   return chunks;
 };
 
-const getAuthHeaders = async () => {
-  const settings = await getSettingsDb();
-  const { twitchApiClientId, twitchApiClientSecret } = settings.data;
-
+const getAuthHeaders = async (twitchApiKey: TwitchApiKey) => {
+  const { twitchApiClientId, twitchApiClientSecret } = twitchApiKey;
   const authResponse = await $fetch<TwitchAuthResponse>(
     "https://id.twitch.tv/oauth2/token",
     {
@@ -127,7 +91,10 @@ const getAuthHeaders = async () => {
   };
 };
 
-export const getIgdbGames = async (igdbSlugs: string[]) => {
+export const getIgdbGames = async (
+  igdbSlugs: string[],
+  twitchApiKey: TwitchApiKey
+) => {
   const fields = [
     "name",
     "slug",
@@ -141,7 +108,7 @@ export const getIgdbGames = async (igdbSlugs: string[]) => {
     "videos.*",
   ];
   const fieldsString = fields.join(",");
-  const authHeaders = await getAuthHeaders();
+  const authHeaders = await getAuthHeaders(twitchApiKey);
 
   const games: Game[] = [];
   const chunks = chunkArray(igdbSlugs, 500);

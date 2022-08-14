@@ -1,20 +1,31 @@
-import { getDirectoriesDb, getGamesDb, getSettingsDb } from "~~/utils/db";
-import { getSubDirectories } from "~~/utils/fs";
+import fs from "fs";
+import path from "path";
 import { getIgdbGames } from "~~/utils/igdbApi";
 import { getIgdbIds } from "~~/utils/igdbSearch";
+import { Directory, useJson } from "~~/utils/json";
+
+const getSubDirectories = async (source: string): Promise<Directory[]> =>
+  (await fs.promises.readdir(source, { withFileTypes: true }))
+    .filter((dirent) => dirent.isDirectory())
+    .map((dirent) => {
+      return {
+        name: dirent.name,
+        path: path.join(source, dirent.name),
+        exists: true,
+        games: [],
+      };
+    });
 
 export default defineEventHandler(async (event) => {
-  const settings = await getSettingsDb();
-  const scanPaths = settings.data.scanPaths;
+  const settings = await useJson("settings");
+  const { scanPaths, twitchApiClientId, twitchApiClientSecret } = settings.data;
 
   const subDirs = (
     await Promise.all(scanPaths.map((path) => getSubDirectories(path)))
   ).flat();
 
-  const directories = await getDirectoriesDb();
-  const prevDirs = directories.data.filter(
-    (dir) => scanPaths.find((path) => dir.path.startsWith(path)) && dir.exists
-  );
+  const directories = await useJson("directories");
+  const prevDirs = directories.data.filter((dir) => dir.exists);
 
   prevDirs.forEach((dir) => (dir.exists = false));
 
@@ -38,13 +49,16 @@ export default defineEventHandler(async (event) => {
     addedDirs++;
   }
 
-  const games = await getGamesDb();
+  const games = await useJson("games");
   const directoriesGameSlugs = directories.data.flatMap((dir) => dir.games);
   const newGameSlugs = directoriesGameSlugs.filter(
     (slug) => !games.data.find((game) => game.slug === slug)
   );
 
-  const igdbGames = await getIgdbGames(newGameSlugs);
+  const igdbGames = await getIgdbGames(newGameSlugs, {
+    twitchApiClientId,
+    twitchApiClientSecret,
+  });
   igdbGames.forEach((game) => games.data.push(game));
 
   await directories.write();

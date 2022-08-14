@@ -1,3 +1,8 @@
+interface IgdbIds {
+  id?: number;
+  slug?: string;
+}
+
 interface IgdbSearchResults {
   game_suggest: Array<{
     id: number;
@@ -6,11 +11,6 @@ interface IgdbSearchResults {
     value: string;
     url: string;
   }>;
-}
-
-interface IgdbIds {
-  id?: number;
-  slug?: string;
 }
 
 export const getIgdbIds = async (dirName: string): Promise<IgdbIds> => {

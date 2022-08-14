@@ -1,6 +1,6 @@
-import { getSettingsDb } from "~~/utils/db";
+import { useJson } from "~~/utils/json";
 
 export default defineEventHandler(async (event) => {
-  const settings = await getSettingsDb();
+  const settings = await useJson("settings");
   return settings.data;
 });

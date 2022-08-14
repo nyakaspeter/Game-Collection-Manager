@@ -1,10 +1,27 @@
 <script setup lang="ts">
-const { data: settings } = await useFetch("/api/settings");
+const { data: settings, refresh: refreshSettings } = await useFetch(
+  "/api/settings",
+  { key: "settings" }
+);
 
-const scan = async () => await useLazyFetch("/api/scan", { method: "POST" });
+const { refresh: refreshGames } = await useLazyFetch("/api/games", {
+  key: "games",
+});
 
-const save = async () =>
-  await useLazyFetch("/api/settings", { method: "POST", body: settings.value });
+const { refresh: refreshDirectories } = await useLazyFetch("/api/directories", {
+  key: "directories",
+});
+
+const scan = async () => {
+  await $fetch("/api/scan", { method: "POST" });
+  await refreshGames();
+  await refreshDirectories();
+  await refreshSettings();
+};
+
+const save = async () => {
+  await $fetch("/api/settings", { method: "POST", body: settings.value });
+};
 </script>
 
 <template>
@@ -37,7 +54,6 @@ const save = async () =>
             <ChipInput
               placeholder="Enter root path for scanning..."
               :value="settings.scanPaths"
-              @input="settings.scanPaths = $event"
             />
           </td>
         </tr>

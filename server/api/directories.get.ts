@@ -1,6 +1,6 @@
-import { getDirectoriesDb } from "~~/utils/db";
+import { useJson } from "~~/utils/json";
 
 export default defineEventHandler(async (event) => {
-  const directories = await getDirectoriesDb();
+  const directories = await useJson("directories");
   return directories.data.filter((dir) => dir.exists);
 });

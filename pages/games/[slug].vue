@@ -2,7 +2,7 @@
 const route = useRoute();
 const { slug } = route.params;
 const { data: game } = await useFetch(`/api/games/${slug}`, {
-  key: slug as string,
+  key: `games/${slug}`,
 });
 </script>
 
