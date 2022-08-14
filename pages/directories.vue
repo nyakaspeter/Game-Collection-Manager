@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { cloneDeep } from "lodash";
-import { useToast } from "tailvue";
 import { Directory } from "~~/utils/json";
 
 const { data: directories, refresh: refreshDirectories } = await useFetch(

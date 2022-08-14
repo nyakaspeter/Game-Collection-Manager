@@ -17,16 +17,17 @@ const getSubDirectories = async (source: string): Promise<Directory[]> =>
     });
 
 export default defineEventHandler(async (event) => {
+  const games = await useJson("games");
+  const directories = await useJson("directories");
   const settings = await useJson("settings");
+
   const { scanPaths, twitchApiClientId, twitchApiClientSecret } = settings.data;
 
   const subDirs = (
     await Promise.all(scanPaths.map((path) => getSubDirectories(path)))
   ).flat();
 
-  const directories = await useJson("directories");
   const prevDirs = directories.data.filter((dir) => dir.exists);
-
   prevDirs.forEach((dir) => (dir.exists = false));
 
   let addedDirs = 0;
@@ -49,7 +50,6 @@ export default defineEventHandler(async (event) => {
     addedDirs++;
   }
 
-  const games = await useJson("games");
   const directoriesGameSlugs = directories.data.flatMap((dir) => dir.games);
   const newGameSlugs = directoriesGameSlugs.filter(
     (slug) => !games.data.find((game) => game.slug === slug)
