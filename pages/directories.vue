@@ -2,11 +2,7 @@
 import { cloneDeep } from "lodash";
 import { Directory } from "~~/utils/json";
 
-const { data: directories, refresh: refreshDirectories } = await useFetch(
-  "/api/directories",
-  { key: "directories" }
-);
-
+const directories = ref(await $fetch("/api/directories"));
 const editedDirectory = ref<Directory | null>(null);
 
 const handleClose = () => {
@@ -15,8 +11,11 @@ const handleClose = () => {
 
 const handleSave = async (edited: Directory) => {
   handleClose();
-  await $fetch("/api/directories", { method: "POST", body: edited });
-  await refreshDirectories();
+  directories.value = await $fetch("/api/directories", {
+    method: "POST",
+    body: edited,
+  });
+  await $fetch("/api/scan", { method: "POST" });
 };
 </script>
 

@@ -1,9 +1,7 @@
 <script setup lang="ts">
 const route = useRoute();
 const { slug } = route.params;
-const { data: game } = await useFetch(`/api/games/${slug}`, {
-  key: `games/${slug}`,
-});
+const game = ref(await $fetch(`/api/games/${slug}`));
 </script>
 
 <template>

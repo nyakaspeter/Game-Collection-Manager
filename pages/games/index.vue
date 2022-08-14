@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { data: games } = await useFetch("/api/games", { key: "games" });
+const games = ref(await $fetch("/api/games"));
 </script>
 
 <template>

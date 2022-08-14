@@ -1,26 +1,12 @@
 <script setup lang="ts">
-const { data: settings, refresh: refreshSettings } = await useFetch(
-  "/api/settings",
-  { key: "settings" }
-);
-
-const { refresh: refreshGames } = await useLazyFetch("/api/games", {
-  key: "games",
-});
-
-const { refresh: refreshDirectories } = await useLazyFetch("/api/directories", {
-  key: "directories",
-});
-
-const scan = async () => {
-  await $fetch("/api/scan", { method: "POST" });
-  await refreshGames();
-  await refreshDirectories();
-  await refreshSettings();
-};
+const settings = ref(await $fetch("/api/settings"));
 
 const save = async () => {
-  await $fetch("/api/settings", { method: "POST", body: settings.value });
+  settings.value = await $fetch("/api/settings", {
+    method: "POST",
+    body: settings.value,
+  });
+  await $fetch("/api/scan", { method: "POST" });
 };
 </script>
 
@@ -65,10 +51,9 @@ const save = async () => {
         </tr>
       </tbody>
     </table>
-    <div class="self-end flex gap-4 p-4">
-      <button class="btn hover:scale-105" @click="scan">Scan games</button>
-      <button class="btn hover:scale-105" @click="save">Save settings</button>
-    </div>
+    <button class="btn self-end m-4 hover:scale-105" @click="save">
+      Save settings
+    </button>
   </div>
 </template>
 

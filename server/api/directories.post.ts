@@ -6,5 +6,5 @@ export default defineEventHandler(async (event) => {
   const edited = directories.data.find((dir) => dir.path === body.path);
   edited.games = body.games;
   await directories.write();
-  return edited;
+  return directories.data;
 });

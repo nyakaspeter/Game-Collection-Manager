@@ -1,8 +1,6 @@
 <script setup lang="ts">
 const colorMode = useColorMode();
 
-console.log(colorMode.preference);
-
 const themes = [
   "system",
   "light",

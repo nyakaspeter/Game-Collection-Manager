@@ -4,6 +4,13 @@ import { getIgdbGames } from "~~/utils/igdbApi";
 import { getIgdbIds } from "~~/utils/igdbSearch";
 import { Directory, useJson } from "~~/utils/json";
 
+interface ScanResults {
+  addedDirs: number;
+  identifiedDirs: number;
+  removedDirs: number;
+  fetchedGames: number;
+}
+
 const getSubDirectories = async (source: string): Promise<Directory[]> =>
   (await fs.promises.readdir(source, { withFileTypes: true }))
     .filter((dirent) => dirent.isDirectory())
@@ -16,7 +23,7 @@ const getSubDirectories = async (source: string): Promise<Directory[]> =>
       };
     });
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event): Promise<ScanResults> => {
   const games = await useJson("games");
   const directories = await useJson("directories");
   const settings = await useJson("settings");
