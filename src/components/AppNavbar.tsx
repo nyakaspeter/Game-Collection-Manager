@@ -6,18 +6,12 @@ import {
   UnstyledButton,
 } from "@mantine/core";
 import {
-  IconCalendarStats,
-  IconDeviceDesktopAnalytics,
-  IconFingerprint,
-  IconGauge,
-  IconHome2,
-  IconLogout,
+  IconDeviceGamepad2,
+  IconHome,
   IconSettings,
-  IconSwitchHorizontal,
-  IconUser,
   TablerIcon,
 } from "@tabler/icons";
-import { useState } from "react";
+import { Link } from "@tanstack/react-location";
 
 const useStyles = createStyles((theme) => ({
   link: {
@@ -55,46 +49,27 @@ const useStyles = createStyles((theme) => ({
 interface NavbarLinkProps {
   icon: TablerIcon;
   label: string;
-  active?: boolean;
-  onClick?(): void;
+  to?: string;
 }
 
-function NavbarLink({ icon: Icon, label, active, onClick }: NavbarLinkProps) {
+function NavbarLink({ icon: Icon, label, to }: NavbarLinkProps) {
   const { classes, cx } = useStyles();
   return (
-    <Tooltip label={label} position="right">
-      <UnstyledButton
-        onClick={onClick}
-        className={cx(classes.link, { [classes.active]: active })}
-      >
-        <Icon stroke={1.5} />
-      </UnstyledButton>
-    </Tooltip>
+    <Link to={to}>
+      {({ isActive }) => (
+        <Tooltip label={label} position="right">
+          <UnstyledButton
+            className={cx(classes.link, { [classes.active]: isActive })}
+          >
+            <Icon stroke={1.5} />
+          </UnstyledButton>
+        </Tooltip>
+      )}
+    </Link>
   );
 }
 
-const mockdata = [
-  { icon: IconHome2, label: "Home" },
-  { icon: IconGauge, label: "Dashboard" },
-  { icon: IconDeviceDesktopAnalytics, label: "Analytics" },
-  { icon: IconCalendarStats, label: "Releases" },
-  { icon: IconUser, label: "Account" },
-  { icon: IconFingerprint, label: "Security" },
-  { icon: IconSettings, label: "Settings" },
-];
-
 const AppNavbar = () => {
-  const [active, setActive] = useState(2);
-
-  const links = mockdata.map((link, index) => (
-    <NavbarLink
-      {...link}
-      key={link.label}
-      active={index === active}
-      onClick={() => setActive(index)}
-    />
-  ));
-
   return (
     <Navbar
       width={{ base: 80 }}
@@ -110,13 +85,13 @@ const AppNavbar = () => {
       {/* LOGO HERE */}
       <Navbar.Section grow>
         <Stack justify="center" spacing={0}>
-          {links}
+          <NavbarLink icon={IconHome} label="Home" to="/" />
+          <NavbarLink icon={IconDeviceGamepad2} label="Games" to="/games" />
         </Stack>
       </Navbar.Section>
       <Navbar.Section>
         <Stack justify="center" spacing={0}>
-          <NavbarLink icon={IconSwitchHorizontal} label="Change account" />
-          <NavbarLink icon={IconLogout} label="Logout" />
+          <NavbarLink icon={IconSettings} label="Settings" to="/settings" />
         </Stack>
       </Navbar.Section>
     </Navbar>
