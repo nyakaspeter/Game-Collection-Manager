@@ -34,17 +34,16 @@ export default defineEventHandler(async (event): Promise<ScanResults> => {
     await Promise.all(scanPaths.map((path) => getSubDirectories(path)))
   ).flat();
 
-  const prevDirs = directories.data.filter((dir) => dir.exists);
-  prevDirs.forEach((dir) => (dir.exists = false));
-
   let addedDirs = 0;
   let identifiedDirs = 0;
-  let removedDirs = prevDirs.length;
+  let removedDirs = directories.data.filter((dir) => dir.exists).length;
+
+  directories.data.forEach((dir) => (dir.exists = false));
 
   for await (const subDir of subDirs) {
-    const prevDir = prevDirs.find((dir) => dir.path === subDir.path);
-    if (prevDir) {
-      prevDir.exists = true;
+    const existing = directories.data.find((dir) => dir.path === subDir.path);
+    if (existing) {
+      existing.exists = true;
       removedDirs--;
       continue;
     }
