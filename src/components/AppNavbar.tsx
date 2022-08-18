@@ -7,6 +7,7 @@ import {
 } from "@mantine/core";
 import {
   IconDeviceGamepad2,
+  IconFolder,
   IconHome,
   IconSettings,
   TablerIcon,
@@ -52,7 +53,7 @@ interface NavbarLinkProps {
   to?: string;
 }
 
-function NavbarLink({ icon: Icon, label, to }: NavbarLinkProps) {
+const NavbarLink = ({ icon: Icon, label, to }: NavbarLinkProps) => {
   const { classes, cx } = useStyles();
   return (
     <Link to={to}>
@@ -67,7 +68,7 @@ function NavbarLink({ icon: Icon, label, to }: NavbarLinkProps) {
       )}
     </Link>
   );
-}
+};
 
 const AppNavbar = () => {
   return (
@@ -87,6 +88,7 @@ const AppNavbar = () => {
         <Stack justify="center" spacing={0}>
           <NavbarLink icon={IconHome} label="Home" to="/" />
           <NavbarLink icon={IconDeviceGamepad2} label="Games" to="/games" />
+          <NavbarLink icon={IconFolder} label="Paths" to="/paths" />
         </Stack>
       </Navbar.Section>
       <Navbar.Section>
