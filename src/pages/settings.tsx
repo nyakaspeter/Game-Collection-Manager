@@ -2,7 +2,7 @@ import { Button, Group, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useSettings, useUpdateSettings } from "../stores/settings";
 
-const Settings = () => {
+const SettingsPage = () => {
   const settings = useSettings();
   const updateSettings = useUpdateSettings();
 
@@ -33,4 +33,4 @@ const Settings = () => {
   );
 };
 
-export default Settings;
+export default SettingsPage;

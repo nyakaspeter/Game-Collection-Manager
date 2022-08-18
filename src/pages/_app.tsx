@@ -1,10 +1,10 @@
 import { AppShell, MantineProvider } from "@mantine/core";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { ReactNode } from "react";
+import { PropsWithChildren } from "react";
 import AppNavbar from "../components/AppNavbar";
 import { queryClient } from "../utils/query";
 
-const App = ({ children }: { children: ReactNode }) => {
+const App = ({ children }: PropsWithChildren) => {
   return (
     <MantineProvider withGlobalStyles withNormalizeCSS>
       <QueryClientProvider client={queryClient}>
