@@ -10,10 +10,12 @@ import {
   IconDeviceGamepad2,
   IconFolder,
   IconHome,
+  IconSearch,
   IconSettings,
   TablerIcon,
 } from "@tabler/icons";
 import { Link } from "@tanstack/react-location";
+import { MouseEventHandler } from "react";
 
 const useStyles = createStyles((theme) => ({
   link: {
@@ -71,6 +73,23 @@ const NavbarLink = ({ icon: Icon, label, to }: NavbarLinkProps) => {
   );
 };
 
+interface NavbarButtonProps {
+  icon: TablerIcon;
+  label: string;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
+}
+
+const NavbarButton = ({ icon: Icon, label, onClick }: NavbarButtonProps) => {
+  const { classes } = useStyles();
+  return (
+    <Tooltip label={label} position="right">
+      <UnstyledButton className={classes.link} onClick={onClick}>
+        <Icon stroke={1.5} />
+      </UnstyledButton>
+    </Tooltip>
+  );
+};
+
 const AppNavbar = () => {
   return (
     <Navbar
@@ -90,6 +109,7 @@ const AppNavbar = () => {
           <NavbarLink icon={IconHome} label="Home" to="/" />
           <NavbarLink icon={IconDeviceGamepad2} label="Games" to="/games" />
           <NavbarLink icon={IconFolder} label="Paths" to="/paths" />
+          <NavbarButton icon={IconSearch} label="Search" />
         </Stack>
       </Navbar.Section>
       <Navbar.Section>

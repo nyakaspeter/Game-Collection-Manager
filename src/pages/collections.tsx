@@ -40,8 +40,8 @@ const CollectionsPage = () => {
     <form onSubmit={handleSave}>
       <Stack>
         {form.values.collections?.map((collection, index) => (
-          <Paper withBorder p="xs">
-            <Group key={collection.id}>
+          <Paper key={collection.id} withBorder p="xs">
+            <Group>
               <TextInput
                 label="Collection name"
                 required

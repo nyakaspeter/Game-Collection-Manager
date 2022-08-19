@@ -17,11 +17,11 @@ const DEFAULT: Settings = {
 
 const store = await loadStore(FILE, KEY, DEFAULT);
 
-const getSettings = async () => {
+export const getSettings = async () => {
   return (await store.get<Settings>(KEY)) || DEFAULT;
 };
 
-const setSettings = async (settings: Settings) => {
+export const setSettings = async (settings: Settings) => {
   await store.set(KEY, settings);
   await store.save();
 };

@@ -18,11 +18,11 @@ const DEFAULT: Collection[] = [];
 
 const store = await loadStore(FILE, KEY, DEFAULT);
 
-const getCollections = async () => {
-  return (await store.get<Collection[]>(KEY)) || DEFAULT;
+export const getCollections = async () => {
+  return (await store.get<Collection[]>(KEY)) as Collection[];
 };
 
-const setCollections = async (collections: Collection[]) => {
+export const setCollections = async (collections: Collection[]) => {
   await store.set(KEY, collections);
   await store.save();
 };
