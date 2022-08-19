@@ -6,6 +6,7 @@ import {
   UnstyledButton,
 } from "@mantine/core";
 import {
+  IconCategory,
   IconDeviceGamepad2,
   IconFolder,
   IconHome,
@@ -93,6 +94,11 @@ const AppNavbar = () => {
       </Navbar.Section>
       <Navbar.Section>
         <Stack justify="center" spacing={0}>
+          <NavbarLink
+            icon={IconCategory}
+            label="Collections"
+            to="/collections"
+          />
           <NavbarLink icon={IconSettings} label="Settings" to="/settings" />
         </Stack>
       </Navbar.Section>

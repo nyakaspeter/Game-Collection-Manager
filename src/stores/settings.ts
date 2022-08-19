@@ -1,19 +1,11 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { queryClient } from "../utils/query";
 import { loadStore } from "../utils/store";
+import { showSuccessToast } from "../utils/toast";
 
 export interface Settings {
   twitchApiClientId: string;
   twitchApiClientSecret: string;
-  collections: Collection[];
-}
-
-interface Collection {
-  name: string;
-  roots: string[];
-  scanDirectories: boolean;
-  scanFiles: boolean;
-  fileTypes: string[];
 }
 
 const FILE = "settings.json";
@@ -21,20 +13,26 @@ const KEY = "settings";
 const DEFAULT: Settings = {
   twitchApiClientId: "",
   twitchApiClientSecret: "",
-  collections: [],
 };
 
 const store = await loadStore(FILE, KEY, DEFAULT);
 
-const getSettings = async () => (await store.get<Settings>(KEY)) || DEFAULT;
+const getSettings = async () => {
+  return (await store.get<Settings>(KEY)) || DEFAULT;
+};
 
 const setSettings = async (settings: Settings) => {
   await store.set(KEY, settings);
   await store.save();
 };
 
-export const useSettings = () => useQuery([KEY], getSettings);
+export const useSettings = () =>
+  useQuery([KEY], getSettings, { suspense: true });
+
 export const useUpdateSettings = () =>
   useMutation(setSettings, {
-    onSuccess: () => queryClient.invalidateQueries([KEY]),
+    onSuccess: () => {
+      queryClient.invalidateQueries([KEY]);
+      showSuccessToast("Settings saved");
+    },
   });
