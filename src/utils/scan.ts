@@ -1,10 +1,7 @@
-import { useMutation } from "@tanstack/react-query";
 import { uniq } from "rambda";
 import { getCollections } from "../stores/collections";
-import { getPaths, setPaths } from "../stores/paths";
+import { getPaths, savePaths, setPaths } from "../stores/paths";
 import { getSubPaths } from "./fs";
-import { queryClient } from "./query";
-import { showSuccessToast } from "./toast";
 
 const scanCollectionPaths = async () => {
   let paths: string[] = [];
@@ -52,6 +49,7 @@ export const scanPaths = async () => {
   }
 
   setPaths(paths);
+  savePaths();
 
   return {
     added,
@@ -59,12 +57,3 @@ export const scanPaths = async () => {
     removed,
   };
 };
-
-export const useScanPaths = () =>
-  useMutation(scanPaths, {
-    onSuccess: (data) => {
-      console.log(data);
-      queryClient.invalidateQueries(["paths"]);
-      showSuccessToast("Paths scanned");
-    },
-  });

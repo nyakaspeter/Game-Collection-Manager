@@ -1,5 +1,3 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { queryClient } from "../utils/query";
 import { loadStore } from "../utils/store";
 
 export interface Path {
@@ -8,26 +6,20 @@ export interface Path {
   gameIds: string[];
 }
 
-const FILE = "paths.json";
-const KEY = "paths";
-const DEFAULT: Path[] = [];
+const defaultPaths: Path[] = [];
 
-const store = await loadStore(FILE, KEY, DEFAULT);
+export const pathsKey = "paths";
+
+export const pathsStore = await loadStore(pathsKey, defaultPaths);
 
 export const getPaths = async () => {
-  return (await store.get<Path[]>(KEY)) as Path[];
+  return (await pathsStore.get<Path[]>(pathsKey))!!;
 };
 
-export const setPaths = async (paths: Path[]) => {
-  await store.set(KEY, paths);
-  await store.save();
+export const setPaths = async (value: Path[]) => {
+  await pathsStore.set(pathsKey, value);
 };
 
-export const usePaths = () => useQuery([KEY], getPaths, { suspense: true });
-
-export const useUpdatePaths = () =>
-  useMutation(setPaths, {
-    onSuccess: () => {
-      queryClient.invalidateQueries([KEY]);
-    },
-  });
+export const savePaths = async () => {
+  await pathsStore.save();
+};

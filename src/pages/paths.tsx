@@ -1,10 +1,10 @@
 import { Box } from "@mantine/core";
-import { useElementSize, useViewportSize } from "@mantine/hooks";
-import { dirname, sep } from "@tauri-apps/api/path";
+import { useViewportSize } from "@mantine/hooks";
+import { sep } from "@tauri-apps/api/path";
 import { booleanFilterFn, DataGrid, stringFilterFn } from "mantine-data-grid";
 import { useMemo } from "react";
-import { useCollections } from "../stores/collections";
-import { Path, usePaths } from "../stores/paths";
+import { Path } from "../stores/paths";
+import { useCollections, usePaths } from "../utils/query";
 
 const PathsPage = () => {
   const paths = usePaths();

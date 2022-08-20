@@ -1,7 +1,6 @@
 import { Box, Button, Group, Stack, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { useSettings, useUpdateSettings } from "../stores/settings";
-import { useScanPaths } from "../utils/scan";
+import { useScanPaths, useSettings, useUpdateSettings } from "../utils/query";
 
 const SettingsPage = () => {
   const settings = useSettings();
@@ -15,6 +14,8 @@ const SettingsPage = () => {
   const handleSave = form.onSubmit((values) => {
     updateSettings.mutate(values);
   });
+
+  const handleScanPaths = () => scanPaths.mutate();
 
   return (
     <form onSubmit={handleSave}>
@@ -32,7 +33,7 @@ const SettingsPage = () => {
         </Box>
 
         <Group position="right">
-          <Button onClick={() => scanPaths.mutate()}>Rescan paths</Button>
+          <Button onClick={handleScanPaths}>Rescan paths</Button>
           <Button type="submit">Save settings</Button>
         </Group>
       </Stack>

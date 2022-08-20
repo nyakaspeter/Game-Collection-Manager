@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { queryClient } from "../utils/query";
 import { loadStore } from "../utils/store";
-import { showSuccessToast } from "../utils/toast";
+import { showToast } from "../utils/toast";
 
 export interface Collection {
   id: string;
@@ -12,28 +12,23 @@ export interface Collection {
   fileTypes: string[];
 }
 
-const FILE = "collections.json";
-const KEY = "collections";
-const DEFAULT: Collection[] = [];
+const defaultCollections: Collection[] = [];
 
-const store = await loadStore(FILE, KEY, DEFAULT);
+export const collectionsKey = "collections";
+
+export const collectionsStore = await loadStore(
+  collectionsKey,
+  defaultCollections
+);
 
 export const getCollections = async () => {
-  return (await store.get<Collection[]>(KEY)) as Collection[];
+  return (await collectionsStore.get<Collection[]>(collectionsKey))!!;
 };
 
-export const setCollections = async (collections: Collection[]) => {
-  await store.set(KEY, collections);
-  await store.save();
+export const setCollections = async (value: Collection[]) => {
+  await collectionsStore.set(collectionsKey, value);
 };
 
-export const useCollections = () =>
-  useQuery([KEY], getCollections, { suspense: true });
-
-export const useUpdateCollections = () =>
-  useMutation(setCollections, {
-    onSuccess: () => {
-      queryClient.invalidateQueries([KEY]);
-      showSuccessToast("Collections saved");
-    },
-  });
+export const saveCollections = async () => {
+  await collectionsStore.save();
+};

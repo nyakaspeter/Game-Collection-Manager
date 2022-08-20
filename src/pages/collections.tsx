@@ -11,7 +11,7 @@ import {
 import { useForm } from "@mantine/form";
 import { IconTrash } from "@tabler/icons";
 import { nanoid } from "nanoid";
-import { useCollections, useUpdateCollections } from "../stores/collections";
+import { useCollections, useUpdateCollections } from "../utils/query";
 
 const CollectionsPage = () => {
   const collections = useCollections();
@@ -25,14 +25,15 @@ const CollectionsPage = () => {
     updateCollections.mutate(values.collections);
   });
 
-  const createCollection = () => ({
-    id: nanoid(),
-    name: "",
-    roots: [],
-    scanDirectories: true,
-    scanFiles: false,
-    fileTypes: [],
-  });
+  const handleAddCollection = () =>
+    form.insertListItem("collections", {
+      id: nanoid(),
+      name: "",
+      roots: [],
+      scanDirectories: true,
+      scanFiles: false,
+      fileTypes: [],
+    });
 
   return (
     <form onSubmit={handleSave}>
@@ -98,13 +99,7 @@ const CollectionsPage = () => {
         ))}
 
         <Group position="right">
-          <Button
-            onClick={() =>
-              form.insertListItem("collections", createCollection())
-            }
-          >
-            Add collection
-          </Button>
+          <Button onClick={handleAddCollection}>Add collection</Button>
           <Button type="submit">Save collections</Button>
         </Group>
       </Stack>
