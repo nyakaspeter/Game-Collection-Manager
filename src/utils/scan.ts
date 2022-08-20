@@ -1,17 +1,70 @@
 import { useMutation } from "@tanstack/react-query";
+import { uniq } from "rambda";
 import { getCollections } from "../stores/collections";
+import { getPaths, setPaths } from "../stores/paths";
+import { getSubPaths } from "./fs";
+import { queryClient } from "./query";
 import { showSuccessToast } from "./toast";
 
-export const scanPaths = async () => {
+const scanCollectionPaths = async () => {
+  let paths: string[] = [];
   const collections = await getCollections();
-  const rootDirectories = collections.flatMap((c) => c.roots);
 
-  console.log(rootDirectories);
+  for await (const collection of collections) {
+    for await (const root of collection.roots) {
+      const subPaths = await getSubPaths(
+        root,
+        collection.scanDirectories,
+        collection.scanFiles ? collection.fileTypes : []
+      );
+
+      paths = paths.concat(subPaths);
+    }
+  }
+
+  return uniq(paths);
+};
+
+export const scanPaths = async () => {
+  let added = 0;
+  let identified = 0;
+  let removed = 0;
+
+  const paths = await getPaths();
+  const scannedPaths = await scanCollectionPaths();
+  const newPaths = scannedPaths.filter(
+    (path) => !paths.find((p) => p.path === path)
+  );
+
+  for (const path of paths) {
+    if (path.exists && !scannedPaths.includes(path.path)) {
+      path.exists = false;
+      removed++;
+    } else if (!path.exists && scannedPaths.includes(path.path)) {
+      path.exists = true;
+      added++;
+    }
+  }
+
+  for await (const path of newPaths) {
+    paths.push({ path, exists: true, gameIds: [] });
+    added++;
+  }
+
+  setPaths(paths);
+
+  return {
+    added,
+    identified,
+    removed,
+  };
 };
 
 export const useScanPaths = () =>
   useMutation(scanPaths, {
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log(data);
+      queryClient.invalidateQueries(["paths"]);
       showSuccessToast("Paths scanned");
     },
   });

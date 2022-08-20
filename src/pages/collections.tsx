@@ -1,8 +1,6 @@
 import {
   ActionIcon,
-  Box,
   Button,
-  Divider,
   Group,
   MultiSelect,
   Paper,
@@ -12,7 +10,7 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconTrash } from "@tabler/icons";
-import { v4 as uuidv4 } from "uuid";
+import { nanoid } from "nanoid";
 import { useCollections, useUpdateCollections } from "../stores/collections";
 
 const CollectionsPage = () => {
@@ -28,7 +26,7 @@ const CollectionsPage = () => {
   });
 
   const createCollection = () => ({
-    id: uuidv4(),
+    id: nanoid(),
     name: "",
     roots: [],
     scanDirectories: true,

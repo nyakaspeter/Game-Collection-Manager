@@ -17,7 +17,8 @@ const App = ({ children }: PropsWithChildren) => {
     <QueryClientProvider client={queryClient}>
       <MantineProvider
         theme={{
-          primaryColor: "dark",
+          colorScheme: "dark",
+          primaryColor: "gray",
           primaryShade: 9,
         }}
         withGlobalStyles

@@ -14,11 +14,11 @@ const DEFAULT: Path[] = [];
 
 const store = await loadStore(FILE, KEY, DEFAULT);
 
-const getPaths = async () => {
+export const getPaths = async () => {
   return (await store.get<Path[]>(KEY)) as Path[];
 };
 
-const setPaths = async (paths: Path[]) => {
+export const setPaths = async (paths: Path[]) => {
   await store.set(KEY, paths);
   await store.save();
 };
