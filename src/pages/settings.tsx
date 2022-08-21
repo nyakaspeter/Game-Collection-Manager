@@ -17,7 +17,6 @@ import {
   IconTrash,
 } from "@tabler/icons";
 import { nanoid } from "nanoid";
-import { useEffect } from "react";
 import {
   useCollections,
   useScanPaths,

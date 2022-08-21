@@ -72,7 +72,7 @@ export const useScanPaths = () =>
   useMutation(scanPaths, {
     onSuccess: (data) => {
       const { added, identified, removed } = data;
-      queryClient.invalidateQueries([pathsKey]);
+      queryClient.removeQueries([pathsKey]);
       showToast(
         "success",
         "Paths scanned",
