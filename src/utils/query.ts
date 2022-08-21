@@ -18,39 +18,52 @@ import { scanPaths } from "./scan";
 import { showToast } from "./toast";
 
 export const queryClient = new QueryClient({
-  defaultOptions: { queries: { suspense: true } },
+  defaultOptions: { queries: { suspense: true, refetchOnWindowFocus: false } },
 });
 
-export const usePaths = () => useQuery([pathsKey], getPaths);
+export const usePaths = () =>
+  useQuery([pathsKey], async () => {
+    const paths = await getPaths();
+    const collections = await getCollections();
+
+    return paths
+      .filter((p) => p.exists)
+      .map((p) => ({
+        ...p,
+        collections: collections
+          .filter((c) => c.roots.find((r) => p.path.startsWith(r)))
+          .map((c) => c.name),
+      }));
+  });
 
 export const useCollections = () => useQuery([collectionsKey], getCollections);
 
 export const useSettings = () => useQuery([settingsKey], getSettings);
 
-export const useUpdateCollections = () =>
+export const useUpdateSettingsAndCollections = () =>
   useMutation(
-    async (value: Collection[]) => {
-      await setCollections(value);
+    async ({
+      settings,
+      collections,
+    }: {
+      settings: Settings;
+      collections: Collection[];
+    }) => {
+      await setSettings(settings);
+      await setCollections(collections);
+      await saveSettings();
       await saveCollections();
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries([collectionsKey]);
-        showToast("success", "Collections saved");
-      },
-    }
-  );
-
-export const useUpdateSettings = () =>
-  useMutation(
-    async (value: Settings) => {
-      setSettings(value);
-      saveSettings();
-    },
-    {
-      onSuccess: () => {
         queryClient.invalidateQueries([settingsKey]);
-        showToast("success", "Settings saved");
+        queryClient.invalidateQueries([collectionsKey]);
+        queryClient.invalidateQueries([pathsKey]);
+        showToast(
+          "success",
+          "Settings saved",
+          "Settings and collections have been saved"
+        );
       },
     }
   );

@@ -11,12 +11,14 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { PropsWithChildren, Suspense } from "react";
 import AppNavbar from "../components/AppNavbar";
 import { queryClient } from "../utils/query";
+import "virtual:fonts.css";
 
 const App = ({ children }: PropsWithChildren) => {
   return (
     <QueryClientProvider client={queryClient}>
       <MantineProvider
         theme={{
+          fontFamily: "Kanit, sans-serif",
           colorScheme: "dark",
           primaryColor: "gray",
           primaryShade: 9,

@@ -8,7 +8,6 @@ import {
 import {
   IconCategory,
   IconDeviceGamepad2,
-  IconFolder,
   IconHome,
   IconSearch,
   IconSettings,
@@ -105,20 +104,15 @@ const AppNavbar = () => {
     >
       {/* LOGO HERE */}
       <Navbar.Section grow>
-        <Stack justify="center" spacing={0}>
+        <Stack justify="center" spacing={4}>
           <NavbarLink icon={IconHome} label="Home" to="/" />
           <NavbarLink icon={IconDeviceGamepad2} label="Games" to="/games" />
-          <NavbarLink icon={IconFolder} label="Paths" to="/paths" />
           <NavbarButton icon={IconSearch} label="Search" />
         </Stack>
       </Navbar.Section>
       <Navbar.Section>
-        <Stack justify="center" spacing={0}>
-          <NavbarLink
-            icon={IconCategory}
-            label="Collections"
-            to="/collections"
-          />
+        <Stack justify="center" spacing={4}>
+          <NavbarLink icon={IconCategory} label="Paths" to="/paths" />
           <NavbarLink icon={IconSettings} label="Settings" to="/settings" />
         </Stack>
       </Navbar.Section>

@@ -1,40 +1,166 @@
-import { Box, Button, Group, Stack, TextInput } from "@mantine/core";
+import {
+  ActionIcon,
+  Button,
+  Checkbox,
+  Group,
+  MultiSelect,
+  Paper,
+  Stack,
+  TextInput,
+  Tooltip,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { useScanPaths, useSettings, useUpdateSettings } from "../utils/query";
+import {
+  IconDeviceFloppy,
+  IconPlus,
+  IconRefresh,
+  IconTrash,
+} from "@tabler/icons";
+import { nanoid } from "nanoid";
+import { useEffect } from "react";
+import {
+  useCollections,
+  useScanPaths,
+  useSettings,
+  useUpdateSettingsAndCollections,
+} from "../utils/query";
 
 const SettingsPage = () => {
-  const settings = useSettings();
-  const updateSettings = useUpdateSettings();
-  const scanPaths = useScanPaths();
+  const { data: settings } = useSettings();
+  const { data: collections } = useCollections();
+
+  const { mutate: updateSettingsAndCollections } =
+    useUpdateSettingsAndCollections();
+
+  const { mutate: scanPaths } = useScanPaths();
 
   const form = useForm({
-    initialValues: settings.data,
+    initialValues: { settings: settings!!, collections: collections!! },
   });
 
   const handleSave = form.onSubmit((values) => {
-    updateSettings.mutate(values);
+    updateSettingsAndCollections(values);
   });
 
-  const handleScanPaths = () => scanPaths.mutate();
+  const handleAddCollection = () =>
+    form.insertListItem("collections", {
+      id: nanoid(),
+      name: "",
+      roots: [],
+      scanDirectories: true,
+      scanFiles: false,
+      fileTypes: [],
+    });
+
+  const handleRemoveCollection = (index: number) =>
+    form.removeListItem("collections", index);
+
+  const handleScanPaths = () => scanPaths();
 
   return (
     <form onSubmit={handleSave}>
       <Stack>
-        <Box>
+        <Paper withBorder p="xs">
           <TextInput
             label="Twitch API Client ID"
-            {...form.getInputProps("twitchApiClientId")}
+            {...form.getInputProps("settings.twitchApiClientId")}
           />
 
           <TextInput
             label="Twitch API Client Secret"
-            {...form.getInputProps("twitchApiClientSecret")}
+            {...form.getInputProps("settings.twitchApiClientSecret")}
           />
-        </Box>
+        </Paper>
 
-        <Group position="right">
-          <Button onClick={handleScanPaths}>Rescan paths</Button>
-          <Button type="submit">Save settings</Button>
+        {form.values.collections?.map((collection, index) => (
+          <Paper key={collection.id} withBorder p="xs">
+            <Group>
+              <TextInput
+                label="Collection name"
+                required
+                sx={{ flex: 1 }}
+                {...form.getInputProps(`collections.${index}.name`)}
+              />
+
+              <Group mt={24}>
+                <Checkbox
+                  label="Scan directories"
+                  {...form.getInputProps(
+                    `collections.${index}.scanDirectories`,
+                    {
+                      type: "checkbox",
+                    }
+                  )}
+                />
+
+                <Checkbox
+                  label="Scan files"
+                  {...form.getInputProps(`collections.${index}.scanFiles`, {
+                    type: "checkbox",
+                  })}
+                />
+
+                <Tooltip label="Remove collection">
+                  <ActionIcon
+                    color="red"
+                    onClick={() => handleRemoveCollection(index)}
+                  >
+                    <IconTrash size={16} />
+                  </ActionIcon>
+                </Tooltip>
+              </Group>
+            </Group>
+
+            <MultiSelect
+              label="Scan roots"
+              getCreateLabel={(query) => `+ ${query}`}
+              searchable
+              creatable
+              clearable
+              data={collection.roots}
+              defaultValue={collection.roots}
+              onChange={(value) =>
+                form.setFieldValue(`collections.${index}.roots`, value)
+              }
+            />
+
+            {collection.scanFiles && (
+              <MultiSelect
+                label="File types"
+                getCreateLabel={(query) => `+ ${query}`}
+                searchable
+                creatable
+                clearable
+                data={collection.fileTypes}
+                defaultValue={collection.fileTypes}
+                onChange={(value) =>
+                  form.setFieldValue(`collections.${index}.fileTypes`, value)
+                }
+              />
+            )}
+          </Paper>
+        ))}
+
+        <Group position="apart">
+          <Button
+            leftIcon={<IconPlus size={14} />}
+            onClick={handleAddCollection}
+          >
+            Add collection
+          </Button>
+
+          <Group>
+            <Button
+              leftIcon={<IconRefresh size={14} />}
+              onClick={handleScanPaths}
+            >
+              Rescan paths
+            </Button>
+
+            <Button leftIcon={<IconDeviceFloppy size={14} />} type="submit">
+              Save settings
+            </Button>
+          </Group>
         </Group>
       </Stack>
     </form>

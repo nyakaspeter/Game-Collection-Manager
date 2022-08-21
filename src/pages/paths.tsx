@@ -1,68 +1,69 @@
-import { Box } from "@mantine/core";
+import { Badge, Box, Button, Group } from "@mantine/core";
 import { useViewportSize } from "@mantine/hooks";
 import { sep } from "@tauri-apps/api/path";
-import { booleanFilterFn, DataGrid, stringFilterFn } from "mantine-data-grid";
-import { useMemo } from "react";
+import { DataGrid, stringFilterFn } from "mantine-data-grid";
 import { Path } from "../stores/paths";
-import { useCollections, usePaths } from "../utils/query";
+import { usePaths } from "../utils/query";
 
 const PathsPage = () => {
-  const paths = usePaths();
-  const collections = useCollections();
+  const { data: paths } = usePaths();
   const { height } = useViewportSize();
-
-  const pathsWithCollections = useMemo(() => {
-    return paths.data!!.map((p) => ({
-      ...p,
-      collections: collections
-        .data!!.filter((c) => c.roots.find((r) => p.path.startsWith(r)))
-        .map((c) => c.name),
-    }));
-  }, [paths.data, collections.data]);
 
   return (
     <Box>
       <DataGrid
         sx={{
-          ["th"]: {
+          table: {
+            tableLayout: "fixed",
+            width: "calc(100% - 32px) !important",
+          },
+          ["tr>:nth-child(4)"]: { width: "100px !important" },
+          ["td,th"]: {
             width: "unset !important",
           },
         }}
-        data={pathsWithCollections}
+        data={paths!!}
         withGlobalFilter
         withColumnFilters
+        withSorting
         withFixedHeader
-        withColumnResizing
         highlightOnHover
+        noFelxLayout
         height={height - 80}
         columns={[
           {
-            accessorFn: (path: Path) => path.path.split(sep).pop(),
             header: "Name",
+
             filterFn: stringFilterFn,
-            size: 500,
+            accessorFn: (path: Path) => path.path.split(sep).pop(),
           },
           {
-            accessorKey: "path",
-            header: "Path",
+            header: "Location",
+
             filterFn: stringFilterFn,
-            size: 400,
+            accessorFn: (path: Path) =>
+              path.path.split(sep).slice(0, -1).join(sep),
           },
           {
-            accessorKey: "collections",
             header: "Collections",
-            size: 200,
+
+            enableSorting: false,
+            accessorKey: "collections",
+            cell: (cell) => (
+              <Group spacing={4}>
+                {(cell.getValue() as string[]).map((collection, index) => (
+                  <Badge key={index}>{collection}</Badge>
+                ))}
+              </Group>
+            ),
           },
           {
-            accessorKey: "exists",
-            header: "Exists",
-            filterFn: booleanFilterFn,
-            size: 80,
+            id: "button",
+            header: "",
+            enableResizing: false,
+            cell: () => <Button>asdasd</Button>,
           },
         ]}
-        initialState={{
-          columnFilters: [{ id: "exists", value: { op: "eq", value: true } }],
-        }}
       />
     </Box>
   );

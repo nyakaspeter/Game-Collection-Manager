@@ -1,7 +1,5 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { queryClient } from "../utils/query";
+import { nanoid } from "nanoid";
 import { loadStore } from "../utils/store";
-import { showToast } from "../utils/toast";
 
 export interface Collection {
   id: string;
@@ -12,7 +10,16 @@ export interface Collection {
   fileTypes: string[];
 }
 
-const defaultCollections: Collection[] = [];
+const defaultCollections: Collection[] = [
+  {
+    id: nanoid(),
+    name: "My Games",
+    roots: ["D:\\Games"],
+    scanDirectories: true,
+    scanFiles: false,
+    fileTypes: ["iso", "cso"],
+  },
+];
 
 export const collectionsKey = "collections";
 
