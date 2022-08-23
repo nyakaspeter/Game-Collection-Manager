@@ -17,6 +17,11 @@
         "scope": [
           "**"
         ]
+      },
+      "http": {
+        "scope": [
+          "https://**"
+        ]
       }
     },
     "bundle": {

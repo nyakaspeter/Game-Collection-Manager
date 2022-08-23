@@ -17,28 +17,20 @@ import {
   IconTrash,
 } from "@tabler/icons";
 import { nanoid } from "nanoid";
-import {
-  useCollections,
-  useScanPaths,
-  useSettings,
-  useUpdateSettingsAndCollections,
-} from "../utils/query";
+import { useCollections } from "../hooks/useCollections";
+import { useSettings } from "../hooks/useSettings";
+import { saveCollections, setCollections } from "../stores/collections";
+import { saveSettings, setSettings } from "../stores/settings";
+import { queryClient } from "../utils/query";
+import { scanPaths } from "../utils/scan";
+import { showToast } from "../utils/toast";
 
 const SettingsPage = () => {
   const { data: settings } = useSettings();
   const { data: collections } = useCollections();
 
-  const { mutate: updateSettingsAndCollections } =
-    useUpdateSettingsAndCollections();
-
-  const { mutate: scanPaths } = useScanPaths();
-
   const form = useForm({
     initialValues: { settings: settings!!, collections: collections!! },
-  });
-
-  const handleSave = form.onSubmit((values) => {
-    updateSettingsAndCollections(values);
   });
 
   const handleAddCollection = () =>
@@ -54,7 +46,35 @@ const SettingsPage = () => {
   const handleRemoveCollection = (index: number) =>
     form.removeListItem("collections", index);
 
-  const handleScanPaths = () => scanPaths();
+  const handleSave = form.onSubmit(async (values) => {
+    await setSettings(values.settings);
+    await setCollections(values.collections);
+    await saveSettings();
+    await saveCollections();
+
+    queryClient.refetchQueries(["authHeaders"]);
+    queryClient.invalidateQueries(["settings"]);
+    queryClient.invalidateQueries(["collections"]);
+    queryClient.invalidateQueries(["paths"]);
+
+    showToast(
+      "success",
+      "Settings saved",
+      "Settings and collections have been saved"
+    );
+  });
+
+  const handleScanPaths = async () => {
+    const { added, identified, removed } = await scanPaths();
+
+    queryClient.removeQueries(["paths"]);
+
+    showToast(
+      "success",
+      "Paths scanned",
+      `Found ${added} new items, removed ${removed} old items`
+    );
+  };
 
   return (
     <form onSubmit={handleSave}>
@@ -82,6 +102,13 @@ const SettingsPage = () => {
               />
 
               <Group mt={24}>
+                <Checkbox
+                  label="Ready to play"
+                  {...form.getInputProps(`collections.${index}.readyToPlay`, {
+                    type: "checkbox",
+                  })}
+                />
+
                 <Checkbox
                   label="Scan directories"
                   {...form.getInputProps(

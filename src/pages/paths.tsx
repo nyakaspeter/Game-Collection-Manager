@@ -2,8 +2,8 @@ import { Badge, Box, Button, Group, Tooltip } from "@mantine/core";
 import { useViewportSize } from "@mantine/hooks";
 import { sep } from "@tauri-apps/api/path";
 import { DataGrid, stringFilterFn } from "mantine-data-grid";
+import { usePaths } from "../hooks/usePaths";
 import { Path } from "../stores/paths";
-import { usePaths } from "../utils/query";
 
 const PathsPage = () => {
   const { data: paths } = usePaths();

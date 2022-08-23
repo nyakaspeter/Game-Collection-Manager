@@ -5,6 +5,7 @@ export interface Collection {
   id: string;
   name: string;
   roots: string[];
+  readyToPlay: boolean;
   scanDirectories: boolean;
   scanFiles: boolean;
   fileTypes: string[];
@@ -15,6 +16,7 @@ const defaultCollections: Collection[] = [
     id: nanoid(),
     name: "My Games",
     roots: ["D:\\Games"],
+    readyToPlay: true,
     scanDirectories: true,
     scanFiles: false,
     fileTypes: ["iso", "cso"],
