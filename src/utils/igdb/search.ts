@@ -1,11 +1,13 @@
 import { fetch } from "@tauri-apps/api/http";
 
-interface IgdbIds {
-  id?: number;
-  slug?: string;
+export interface IgdbSearchResult {
+  id: number;
+  slug: string;
+  name: string;
+  displayName: string;
 }
 
-interface IgdbSearchResults {
+interface IgdbSearchResponse {
   game_suggest: Array<{
     id: number;
     score: number;
@@ -15,21 +17,24 @@ interface IgdbSearchResults {
   }>;
 }
 
-export const getIgdbIds = async (dirName: string): Promise<IgdbIds> => {
-  const sanitizedDirName = dirName
-    .replace(/[^0-9a-z]/gi, " ")
-    .replace(/  +/g, " ");
+export const searchIgdb = async (
+  query: string
+): Promise<IgdbSearchResult[]> => {
+  const sanitizedQuery = query.replace(/[^0-9a-z]/gi, " ").replace(/  +/g, " ");
+  if (!sanitizedQuery) return [];
 
-  const searchResults = await fetch<IgdbSearchResults>(
-    `https://www.igdb.com/search_autocomplete_all?q=${sanitizedDirName}`
+  console.log(sanitizedQuery);
+
+  const response = await fetch<IgdbSearchResponse>(
+    `https://www.igdb.com/search_autocomplete_all?q=${sanitizedQuery}`
   );
 
-  const firstResult = searchResults?.data.game_suggest?.length
-    ? searchResults.data.game_suggest[0]
-    : undefined;
-
-  return {
-    id: firstResult?.id,
-    slug: firstResult?.url?.split("/").pop(),
-  };
+  return (
+    response.data?.game_suggest?.map((g) => ({
+      id: g.id,
+      slug: g.url.split("/").pop()!!,
+      name: g.name,
+      displayName: g.value,
+    })) || []
+  );
 };

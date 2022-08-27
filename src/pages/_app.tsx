@@ -4,54 +4,61 @@ import {
   Center,
   Loader,
   MantineProvider,
+  MantineThemeOverride,
   ScrollArea,
+  Sx,
 } from "@mantine/core";
+import { ModalsProvider } from "@mantine/modals";
 import { NotificationsProvider } from "@mantine/notifications";
 import { PropsWithChildren, Suspense } from "react";
 import AppNavbar from "../components/AppNavbar";
 import { useAuthHeaders } from "../hooks/useAuthHeaders";
-import { showToast } from "../utils/toast";
 
 import "virtual:fonts.css";
+
+const theme: MantineThemeOverride = {
+  fontFamily: "Kanit, sans-serif",
+  colorScheme: "dark",
+  primaryColor: "gray",
+  primaryShade: 9,
+};
+
+const appShellStyles: Sx = {
+  main: {
+    padding: 0,
+    paddingLeft: "var(--mantine-navbar-width)",
+    height: "100vh",
+  },
+};
+
+const scrollAreaStyles: Sx = { width: "100%", height: "100%" };
+
+const pageStyles: Sx = { padding: 16 };
+
+const loadingStyles: Sx = { width: "100%", height: "100%" };
+
+const Loading = () => (
+  <Center sx={loadingStyles}>
+    <Loader />
+  </Center>
+);
 
 const App = ({ children }: PropsWithChildren) => {
   useAuthHeaders();
 
   return (
-    <MantineProvider
-      theme={{
-        fontFamily: "Kanit, sans-serif",
-        colorScheme: "dark",
-        primaryColor: "gray",
-        primaryShade: 9,
-      }}
-      withGlobalStyles
-      withNormalizeCSS
-    >
-      <NotificationsProvider>
-        <AppShell
-          navbar={<AppNavbar />}
-          sx={{
-            main: {
-              padding: 0,
-              paddingLeft: "var(--mantine-navbar-width)",
-              height: "100vh",
-            },
-          }}
-        >
-          <Suspense
-            fallback={
-              <Center sx={{ width: "100%", height: "100%" }}>
-                <Loader />
-              </Center>
-            }
-          >
-            <ScrollArea sx={{ width: "100%", height: "100%" }}>
-              <Box sx={{ padding: 16 }}>{children}</Box>
-            </ScrollArea>
-          </Suspense>
-        </AppShell>
-      </NotificationsProvider>
+    <MantineProvider theme={theme} withGlobalStyles withNormalizeCSS>
+      <ModalsProvider>
+        <NotificationsProvider>
+          <AppShell navbar={<AppNavbar />} sx={appShellStyles}>
+            <Suspense fallback={<Loading />}>
+              <ScrollArea sx={scrollAreaStyles}>
+                <Box sx={pageStyles}>{children}</Box>
+              </ScrollArea>
+            </Suspense>
+          </AppShell>
+        </NotificationsProvider>
+      </ModalsProvider>
     </MantineProvider>
   );
 };

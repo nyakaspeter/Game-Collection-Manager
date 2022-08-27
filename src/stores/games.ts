@@ -1,7 +1,7 @@
 import { loadStore } from "../utils/store";
 
 export interface Game {
-  id: number;
+  id: string;
   name: string;
   slug: string;
   summary?: string;

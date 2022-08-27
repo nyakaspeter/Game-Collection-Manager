@@ -2,10 +2,8 @@ import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { getIgdbAuthHeaders, IgdbAuthHeaders } from "../utils/igdb/auth";
 import { showToast } from "../utils/toast";
 
-export const useAuthHeaders = (
-  options?: Omit<UseQueryOptions<IgdbAuthHeaders>, "queryKey">
-) =>
-  useQuery<IgdbAuthHeaders>(["authHeaders"], getIgdbAuthHeaders, {
+export const useAuthHeaders = () =>
+  useQuery(["authHeaders"], getIgdbAuthHeaders, {
     suspense: false,
     retry: false,
     staleTime: Infinity,
@@ -17,5 +15,4 @@ export const useAuthHeaders = (
         "Please check credentials in settings"
       );
     },
-    ...options,
   });

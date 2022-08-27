@@ -22,7 +22,7 @@ interface IgdbGameResponse {
 }
 
 const mapGameData = (game: IgdbGameResponse): Game => ({
-  id: game.id,
+  id: game.id.toString(),
   name: game.name,
   slug: game.slug,
   summary: game.summary,
@@ -46,7 +46,7 @@ const mapGameData = (game: IgdbGameResponse): Game => ({
     })) || undefined,
 });
 
-export const getIgdbGames = async (igdbSlugs: string[]) => {
+export const getIgdbGames = async (ids: string[]) => {
   const fields = [
     "name",
     "slug",
@@ -65,20 +65,18 @@ export const getIgdbGames = async (igdbSlugs: string[]) => {
   ]);
 
   const games: Game[] = [];
-  const chunks = splitEvery(500, igdbSlugs);
+  const chunks = splitEvery(100, ids);
 
-  for (const slugs of chunks) {
+  for (const ids of chunks) {
     try {
-      const slugsString = (slugs as string[])
-        .map((slug) => `"${slug}"`)
-        .join(",");
+      const idsString = ids.join(",");
 
       const { data: igdbGames } = await fetch<IgdbGameResponse[]>(
         "https://api.igdb.com/v4/games",
         {
           method: "POST",
           body: Body.text(
-            `fields ${fieldsString}; where slug = (${slugsString}); limit 500;`
+            `fields ${fieldsString}; where id = (${idsString}); limit 500;`
           ),
           headers: authHeaders,
         }

@@ -1,7 +1,11 @@
+import { sep } from "@tauri-apps/api/path";
 import { uniq } from "rambda";
 import { getCollections } from "../stores/collections";
+import { getGames, saveGames, setGames } from "../stores/games";
 import { getPaths, savePaths, setPaths } from "../stores/paths";
 import { getSubPaths } from "./fs";
+import { getIgdbGames } from "./igdb/api";
+import { searchIgdb } from "./igdb/search";
 
 const scanCollectionPaths = async () => {
   let paths: string[] = [];
@@ -26,6 +30,7 @@ export const scanPaths = async () => {
   let added = 0;
   let identified = 0;
   let removed = 0;
+  let fetched = 0;
 
   const paths = await getPaths();
   const scannedPaths = await scanCollectionPaths();
@@ -43,17 +48,49 @@ export const scanPaths = async () => {
     }
   }
 
-  for await (const path of newPaths) {
-    paths.push({ path, exists: true, gameIds: [] });
-    added++;
-  }
+  await Promise.all(
+    newPaths.map(async (path) => {
+      let gameIds: string[] = [];
+      const name = path.split(sep).pop();
+      const sameName = paths.find((p) => p.path.endsWith(name!!));
 
-  setPaths(paths);
-  savePaths();
+      if (sameName) {
+        gameIds = sameName.gameIds;
+      } else {
+        const searchResults = await searchIgdb(name!!);
+        if (searchResults.length) gameIds = [searchResults[0].id.toString()];
+      }
+
+      paths.push({ path, gameIds, exists: true });
+      added++;
+    })
+  );
+
+  await setPaths(paths);
+  await savePaths();
+
+  const games = await getGames();
+  const newGameIds = paths.reduce(
+    (prev, current) => [
+      ...prev,
+      ...current.gameIds.filter((id) => !games.find((game) => game.id === id)),
+    ],
+    [] as string[]
+  );
+
+  const newGames = await getIgdbGames(newGameIds);
+  newGames.forEach((game) => {
+    games.push(game);
+    fetched++;
+  });
+
+  await setGames(games);
+  await saveGames();
 
   return {
     added,
     identified,
     removed,
+    fetched,
   };
 };

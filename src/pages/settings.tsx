@@ -56,6 +56,7 @@ const SettingsPage = () => {
     queryClient.invalidateQueries(["settings"]);
     queryClient.invalidateQueries(["collections"]);
     queryClient.invalidateQueries(["paths"]);
+    queryClient.invalidateQueries(["games"]);
 
     showToast(
       "success",
@@ -65,14 +66,14 @@ const SettingsPage = () => {
   });
 
   const handleScanPaths = async () => {
-    const { added, identified, removed } = await scanPaths();
+    const { added, removed, fetched } = await scanPaths();
 
     queryClient.removeQueries(["paths"]);
 
     showToast(
       "success",
       "Paths scanned",
-      `Found ${added} new items, removed ${removed} old items`
+      `Found ${added} new paths, removed ${removed} old entries, and fetched data for ${fetched} games`
     );
   };
 
