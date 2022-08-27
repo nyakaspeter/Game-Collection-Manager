@@ -11,11 +11,7 @@ import { fetchIgdbGames } from "../utils/igdb/api";
 import { searchIgdb } from "../utils/igdb/search";
 import { toast } from "../utils/toast";
 
-interface Props {
-  path?: Path;
-}
-
-export const PathEditor = ({ path }: Props) => {
+export const PathEditor = ({ path }: { path?: Path }) => {
   const [query, setQuery] = useDebouncedState("", 500);
 
   const { data: searchResults } = useQuery(

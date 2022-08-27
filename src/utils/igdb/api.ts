@@ -9,9 +9,48 @@ interface IgdbGameResponse {
   name: string;
   slug: string;
   summary?: string;
+  storyline?: string;
   total_rating?: number;
   first_release_date?: number;
+  platforms?: {
+    name: string;
+    slug: string;
+    abbreviation: string;
+  }[];
   genres?: {
+    name: string;
+    slug: string;
+  }[];
+  franchises?: {
+    name: string;
+    slug: string;
+  }[];
+  themes?: {
+    name: string;
+    slug: string;
+  }[];
+  game_modes?: {
+    name: string;
+    slug: string;
+  }[];
+  multiplayer_modes?: {
+    campaigncoop?: boolean;
+    dropin?: boolean;
+    lancoop?: boolean;
+    offlinecoop?: boolean;
+    offlinecoopmax?: number;
+    offlinemax?: number;
+    onlinecoop?: number;
+    onlinecoopmax?: number;
+    onlinemax?: number;
+    splitscreen?: boolean;
+    splitscreenonline?: boolean;
+  }[];
+  player_perspectives?: {
+    name: string;
+    slug: string;
+  }[];
+  game_engines?: {
     name: string;
     slug: string;
   }[];
@@ -19,6 +58,10 @@ interface IgdbGameResponse {
   artworks?: { image_id: string }[];
   screenshots?: { image_id: string }[];
   videos?: { name: string; video_id: string }[];
+  websites?: {
+    category: number;
+    url: string;
+  }[];
 }
 
 const mapGameData = (game: IgdbGameResponse): Game => ({
@@ -26,14 +69,60 @@ const mapGameData = (game: IgdbGameResponse): Game => ({
   name: game.name,
   slug: game.slug,
   summary: game.summary,
+  storyline: game.storyline,
   rating: game.total_rating,
   releaseDate: game.first_release_date
     ? new Date(game.first_release_date * 1000).toISOString()
     : undefined,
+  platforms:
+    game.platforms?.map((platform) => ({
+      name: platform.name,
+      slug: platform.slug,
+      abbreviation: platform.abbreviation,
+    })) || undefined,
   genres:
     game.genres?.map((genre) => ({
       name: genre.name,
       slug: genre.slug,
+    })) || undefined,
+  franchises:
+    game.franchises?.map((franchise) => ({
+      name: franchise.name,
+      slug: franchise.slug,
+    })) || undefined,
+  themes:
+    game.themes?.map((theme) => ({
+      name: theme.name,
+      slug: theme.slug,
+    })) || undefined,
+  gameModes:
+    game.game_modes?.map((gameMode) => ({
+      name: gameMode.name,
+      slug: gameMode.slug,
+    })) || undefined,
+  multiplayerModes:
+    game.multiplayer_modes?.map((mode) => ({
+      campaigncoop: mode.campaigncoop,
+      dropin: mode.dropin,
+      lancoop: mode.lancoop,
+      offlinecoop: mode.offlinecoop,
+      offlinecoopmax: mode.offlinecoopmax,
+      offlinemax: mode.offlinemax,
+      onlinecoop: mode.onlinecoop,
+      onlinecoopmax: mode.onlinecoopmax,
+      onlinemax: mode.onlinemax,
+      splitscreen: mode.splitscreen,
+      splitscreenonline: mode.splitscreenonline,
+    })) || undefined,
+  perspectives:
+    game.player_perspectives?.map((perspective) => ({
+      name: perspective.name,
+      slug: perspective.slug,
+    })) || undefined,
+  gameEngines:
+    game.game_engines?.map((engine) => ({
+      name: engine.name,
+      slug: engine.slug,
     })) || undefined,
   cover: game.cover?.image_id || undefined,
   artworks: game.artworks?.map((artwork) => artwork.image_id) || undefined,
@@ -43,6 +132,11 @@ const mapGameData = (game: IgdbGameResponse): Game => ({
     game.videos?.map((video) => ({
       name: video.name,
       id: video.video_id,
+    })) || undefined,
+  websites:
+    game.websites?.map((website) => ({
+      category: website.category,
+      url: website.url,
     })) || undefined,
 });
 
@@ -56,13 +150,22 @@ export const fetchIgdbGames = async (ids: string[]) => {
     "name",
     "slug",
     "summary",
+    "storyline",
     "total_rating",
     "first_release_date",
+    "platforms.*",
     "genres.*",
+    "themes.*",
+    "franchises.*",
+    "game_engines.*",
+    "game_modes.*",
+    "multiplayer_modes.*",
+    "player_perspectives.*",
     "cover.*",
     "artworks.*",
     "screenshots.*",
     "videos.*",
+    "websites.*",
   ];
   const fieldsString = fields.join(",");
 
