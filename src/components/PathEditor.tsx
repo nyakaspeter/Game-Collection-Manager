@@ -7,8 +7,9 @@ import { store } from "../store";
 import { Game, saveGames } from "../store/games";
 import { Path, savePaths } from "../store/paths";
 import { getGameLabel } from "../utils/game";
-import { getIgdbGames } from "../utils/igdb/api";
+import { fetchIgdbGames } from "../utils/igdb/api";
 import { searchIgdb } from "../utils/igdb/search";
+import { toast } from "../utils/toast";
 
 interface Props {
   path?: Path;
@@ -36,29 +37,39 @@ export const PathEditor = ({ path }: Props) => {
 
       return {
         value: id,
-        label: game && getGameLabel(game as Game),
+        label: (game && getGameLabel(game as Game)) || id,
       };
     }) || []
   );
 
   const value = useMemo(() => items.map((item) => item.value), [items]);
 
-  const { mutate: editPath, isLoading: isSaving } = useMutation(async () => {
-    const igdbGames = await getIgdbGames(value);
+  const { mutate: save, isLoading: isSaving } = useMutation(
+    async () => {
+      const igdbGames = await fetchIgdbGames(value);
 
-    igdbGames.forEach((igdbGame) => {
-      if (!store.games.find((game) => game.id === igdbGame.id))
-        store.games.push(igdbGame);
-    });
+      igdbGames.forEach((igdbGame) => {
+        if (!store.games.find((game) => game.id === igdbGame.id))
+          store.games.push(igdbGame);
+      });
 
-    const edited = store.paths.find((p) => p.path === path?.path);
-    if (edited) edited.gameIds = value;
+      const edited = store.paths.find((p) => p.path === path?.path);
+      if (edited) edited.gameIds = value;
 
-    await saveGames();
-    await savePaths();
+      await saveGames();
+      await savePaths();
 
-    handleClose();
-  });
+      handleClose();
+    },
+    {
+      onError: () => {
+        toast.error(
+          "Data fetching failed",
+          "Failed to fetch game data from IGDB"
+        );
+      },
+    }
+  );
 
   const handleSearch = (searchQuery: string) => setQuery(searchQuery);
 
@@ -79,7 +90,7 @@ export const PathEditor = ({ path }: Props) => {
 
   const handleClose = () => closeAllModals();
 
-  const handleSave = () => editPath();
+  const handleSave = () => save();
 
   return (
     <Stack>

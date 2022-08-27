@@ -1,4 +1,6 @@
 import { fetch } from "@tauri-apps/api/http";
+import { store } from "../../store";
+import { queryClient } from "../query";
 
 export interface IgdbAuthHeaders {
   "Client-ID": string;
@@ -11,14 +13,19 @@ interface TwitchAuthResponse {
   token_type: Date;
 }
 
-export const getIgdbAuthHeaders = async (
-  twitchApiClientId: string,
-  twitchApiClientSecret: string
-): Promise<IgdbAuthHeaders> => {
+export const igdbAuthHeadersKey = ["igdbAuthHeaders"];
+
+export const refreshIgdbAuthHeaders = async () => {
+  await queryClient.refetchQueries(igdbAuthHeadersKey);
+};
+
+export const fetchIgdbAuthHeaders = async (): Promise<IgdbAuthHeaders> => {
+  const { twitchApiClientId, twitchApiClientSecret } = store.settings;
+
   if (!twitchApiClientId || !twitchApiClientSecret)
     throw new Error("Twitch credentials missing");
 
-  const authResponse = await fetch<TwitchAuthResponse>(
+  const response = await fetch<TwitchAuthResponse>(
     "https://id.twitch.tv/oauth2/token?" +
       new URLSearchParams({
         client_id: twitchApiClientId,
@@ -28,10 +35,10 @@ export const getIgdbAuthHeaders = async (
     { method: "POST" }
   );
 
-  if (!authResponse.ok) throw new Error("Twitch auth failed");
+  if (!response.ok) throw new Error("Twitch auth failed");
 
   return {
     "Client-ID": twitchApiClientId,
-    Authorization: `Bearer ${authResponse.data.access_token}`,
+    Authorization: `Bearer ${response.data.access_token}`,
   };
 };

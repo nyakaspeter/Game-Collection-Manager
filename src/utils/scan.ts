@@ -4,7 +4,7 @@ import { uniq } from "rambda";
 import { store } from "../store";
 import { saveGames } from "../store/games";
 import { savePaths } from "../store/paths";
-import { getIgdbGames } from "./igdb/api";
+import { fetchIgdbGames } from "./igdb/api";
 import { searchIgdb } from "./igdb/search";
 
 const getFileExtension = async (path: string) => {
@@ -90,8 +90,12 @@ export const scanPaths = async () => {
       if (sameName) {
         gameIds = sameName.gameIds;
       } else {
-        const searchResults = await searchIgdb(name!!);
-        if (searchResults.length) gameIds = [searchResults[0].id.toString()];
+        try {
+          const searchResults = await searchIgdb(name!!);
+          if (searchResults.length) gameIds = [searchResults[0].id.toString()];
+        } catch (error) {
+          console.error(error);
+        }
       }
 
       store.paths.push({ path, gameIds, exists: true });
@@ -111,7 +115,7 @@ export const scanPaths = async () => {
     [] as string[]
   );
 
-  const newGames = await getIgdbGames(newGameIds);
+  const newGames = await fetchIgdbGames(newGameIds);
   newGames.forEach((game) => {
     store.games.push(game);
     fetched++;

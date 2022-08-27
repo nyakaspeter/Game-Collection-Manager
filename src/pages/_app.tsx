@@ -1,3 +1,5 @@
+import "virtual:fonts.css";
+
 import {
   AppShell,
   Box,
@@ -10,10 +12,11 @@ import {
 } from "@mantine/core";
 import { ModalsProvider } from "@mantine/modals";
 import { NotificationsProvider } from "@mantine/notifications";
+import { useQuery } from "@tanstack/react-query";
 import { PropsWithChildren, Suspense } from "react";
 import { AppNavbar } from "../components/AppNavbar";
-
-import "virtual:fonts.css";
+import { fetchIgdbAuthHeaders, igdbAuthHeadersKey } from "../utils/igdb/auth";
+import { toast } from "../utils/toast";
 
 const theme: MantineThemeOverride = {
   fontFamily: "Kanit, sans-serif",
@@ -43,6 +46,17 @@ const Loading = () => (
 );
 
 const App = ({ children }: PropsWithChildren) => {
+  useQuery(igdbAuthHeadersKey, fetchIgdbAuthHeaders, {
+    onError: () => {
+      toast.error(
+        "Twitch auth failed",
+        "Please check your credentials in settings"
+      );
+    },
+    staleTime: Infinity,
+    retry: false,
+  });
+
   return (
     <MantineProvider theme={theme} withGlobalStyles withNormalizeCSS>
       <ModalsProvider>

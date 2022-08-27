@@ -1,8 +1,8 @@
 import { Body, fetch } from "@tauri-apps/api/http";
 import { splitEvery } from "rambda";
-import { store } from "../../store";
 import { Game } from "../../store/games";
-import { getIgdbAuthHeaders } from "./auth";
+import { queryClient } from "../query";
+import { IgdbAuthHeaders, igdbAuthHeadersKey } from "./auth";
 
 interface IgdbGameResponse {
   id: number;
@@ -46,7 +46,12 @@ const mapGameData = (game: IgdbGameResponse): Game => ({
     })) || undefined,
 });
 
-export const getIgdbGames = async (ids: string[]) => {
+export const fetchIgdbGames = async (ids: string[]) => {
+  const igdbAuthHeaders =
+    queryClient.getQueryData<IgdbAuthHeaders>(igdbAuthHeadersKey);
+
+  if (!igdbAuthHeaders) throw new Error("Twitch credentials missing");
+
   const fields = [
     "name",
     "slug",
@@ -60,31 +65,27 @@ export const getIgdbGames = async (ids: string[]) => {
     "videos.*",
   ];
   const fieldsString = fields.join(",");
-  const authHeaders = await getIgdbAuthHeaders(
-    store.settings.twitchApiClientId,
-    store.settings.twitchApiClientSecret
-  );
 
   const games: Game[] = [];
   const chunks = splitEvery(100, ids);
 
   for (const ids of chunks) {
-    try {
-      const idsString = ids.join(",");
+    const idsString = ids.join(",");
 
-      const { data: igdbGames } = await fetch<IgdbGameResponse[]>(
-        "https://api.igdb.com/v4/games",
-        {
-          method: "POST",
-          body: Body.text(
-            `fields ${fieldsString}; where id = (${idsString}); limit 500;`
-          ),
-          headers: authHeaders,
-        }
-      );
+    const response = await fetch<IgdbGameResponse[]>(
+      "https://api.igdb.com/v4/games",
+      {
+        method: "POST",
+        body: Body.text(
+          `fields ${fieldsString}; where id = (${idsString}); limit 500;`
+        ),
+        headers: igdbAuthHeaders,
+      }
+    );
 
-      igdbGames.forEach((game) => games.push(mapGameData(game)));
-    } catch {}
+    if (!response.ok) throw new Error("Downloading game data failed");
+
+    response.data?.forEach((game) => games.push(mapGameData(game)));
   }
 
   return games;

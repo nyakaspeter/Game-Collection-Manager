@@ -27,6 +27,8 @@ export const searchIgdb = async (
     `https://www.igdb.com/search_autocomplete_all?q=${sanitizedQuery}`
   );
 
+  if (!response.ok) throw new Error("Search failed");
+
   return (
     response.data?.game_suggest?.map((g) => ({
       id: g.id,

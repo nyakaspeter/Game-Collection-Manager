@@ -16,10 +16,12 @@ import {
   IconRefresh,
   IconTrash,
 } from "@tabler/icons";
+import { useMutation } from "@tanstack/react-query";
 import { nanoid } from "nanoid";
 import { store } from "../store";
 import { saveCollections } from "../store/collections";
 import { saveSettings } from "../store/settings";
+import { refreshIgdbAuthHeaders } from "../utils/igdb/auth";
 import { scanPaths } from "../utils/scan";
 import { toast } from "../utils/toast";
 
@@ -48,17 +50,24 @@ const SettingsPage = () => {
     await saveSettings();
     await saveCollections();
 
+    refreshIgdbAuthHeaders();
+
     toast.success("Settings saved", "Settings and collections have been saved");
   });
 
-  const handleScanPaths = async () => {
-    const { added, removed, fetched } = await scanPaths();
+  const { mutate: scan, isLoading: isScanning } = useMutation(scanPaths, {
+    onSuccess: ({ added, removed, fetched }) => {
+      toast.success(
+        "Paths scanned",
+        `Found ${added} new paths, removed ${removed} old entries, and fetched data for ${fetched} games`
+      );
+    },
+    onError: () => {
+      toast.error("Scan failed", "Failed to fetch game data from IGDB");
+    },
+  });
 
-    toast.success(
-      "Paths scanned",
-      `Found ${added} new paths, removed ${removed} old entries, and fetched data for ${fetched} games`
-    );
-  };
+  const handleScanPaths = () => scan();
 
   return (
     <form onSubmit={handleSave}>
@@ -115,7 +124,7 @@ const SettingsPage = () => {
                     color="red"
                     onClick={() => handleRemoveCollection(index)}
                   >
-                    <IconTrash size={16} />
+                    <IconTrash size={18} />
                   </ActionIcon>
                 </Tooltip>
               </Group>
@@ -153,7 +162,7 @@ const SettingsPage = () => {
 
         <Group position="apart">
           <Button
-            leftIcon={<IconPlus size={14} />}
+            leftIcon={<IconPlus size={18} />}
             onClick={handleAddCollection}
           >
             Add collection
@@ -161,13 +170,14 @@ const SettingsPage = () => {
 
           <Group>
             <Button
-              leftIcon={<IconRefresh size={14} />}
+              leftIcon={<IconRefresh size={18} />}
+              loading={isScanning}
               onClick={handleScanPaths}
             >
               Rescan paths
             </Button>
 
-            <Button leftIcon={<IconDeviceFloppy size={14} />} type="submit">
+            <Button leftIcon={<IconDeviceFloppy size={18} />} type="submit">
               Save settings
             </Button>
           </Group>
