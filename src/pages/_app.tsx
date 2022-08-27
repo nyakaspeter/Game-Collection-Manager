@@ -11,8 +11,7 @@ import {
 import { ModalsProvider } from "@mantine/modals";
 import { NotificationsProvider } from "@mantine/notifications";
 import { PropsWithChildren, Suspense } from "react";
-import AppNavbar from "../components/AppNavbar";
-import { useAuthHeaders } from "../hooks/useAuthHeaders";
+import { AppNavbar } from "../components/AppNavbar";
 
 import "virtual:fonts.css";
 
@@ -44,8 +43,6 @@ const Loading = () => (
 );
 
 const App = ({ children }: PropsWithChildren) => {
-  useAuthHeaders();
-
   return (
     <MantineProvider theme={theme} withGlobalStyles withNormalizeCSS>
       <ModalsProvider>

@@ -1,17 +1,31 @@
-import { Badge, Box, Button, Group, Tooltip } from "@mantine/core";
+import { Badge, Button, Group } from "@mantine/core";
 import { useViewportSize } from "@mantine/hooks";
 import { openModal } from "@mantine/modals";
 import { sep } from "@tauri-apps/api/path";
 import { DataGrid, stringFilterFn } from "mantine-data-grid";
-import PathEditModal from "../components/PathEditModal";
-import { usePaths } from "../hooks/usePaths";
-import { Game } from "../stores/games";
-import { Path } from "../stores/paths";
+import { useMemo } from "react";
+import { useSnapshot } from "valtio";
+import { PathEditor } from "../components/PathEditor";
+import { store } from "../store";
+import { Game } from "../store/games";
+import { Path } from "../store/paths";
 import { getGameLabel } from "../utils/game";
 
 const PathsPage = () => {
-  const { data: paths } = usePaths();
+  const { paths, collections, games } = useSnapshot(store);
   const { height } = useViewportSize();
+
+  const data = useMemo(() => {
+    return paths
+      .filter((p) => p.exists)
+      .map((p) => ({
+        ...p,
+        collections: collections
+          .filter((c) => c.roots.find((r) => p.path.startsWith(r)))
+          .map((c) => c.name),
+        games: games.filter((g) => p.gameIds.includes(g.id)),
+      }));
+  }, [paths, collections, games]);
 
   const handleEdit = (path: Path) => {
     const name = path.path.split(sep).pop();
@@ -20,7 +34,7 @@ const PathsPage = () => {
       title: name,
       centered: true,
       size: "lg",
-      children: <PathEditModal path={path} />,
+      children: <PathEditor path={path} />,
     });
   };
 
@@ -40,7 +54,7 @@ const PathsPage = () => {
         },
         ".mantine-ScrollArea-scrollbar": { zIndex: 2 },
       }}
-      data={paths!!}
+      data={data}
       height={height - 80}
       noFelxLayout
       highlightOnHover

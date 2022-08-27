@@ -1,17 +1,51 @@
-import { sep } from "@tauri-apps/api/path";
+import { readDir } from "@tauri-apps/api/fs";
+import { extname, sep } from "@tauri-apps/api/path";
 import { uniq } from "rambda";
-import { getCollections } from "../stores/collections";
-import { getGames, saveGames, setGames } from "../stores/games";
-import { getPaths, savePaths, setPaths } from "../stores/paths";
-import { getSubPaths } from "./fs";
+import { store } from "../store";
+import { saveGames } from "../store/games";
+import { savePaths } from "../store/paths";
 import { getIgdbGames } from "./igdb/api";
 import { searchIgdb } from "./igdb/search";
 
+const getFileExtension = async (path: string) => {
+  try {
+    return await extname(path);
+  } catch (error) {
+    console.error(error);
+    return "";
+  }
+};
+
+const getSubPaths = async (
+  rootPath: string,
+  scanDirectories: boolean = true,
+  fileTypes: string[] = []
+) => {
+  try {
+    const subPaths: string[] = [];
+    const fileEntries = await readDir(rootPath);
+
+    for await (const entry of fileEntries) {
+      if (
+        (scanDirectories && entry.children) ||
+        (fileTypes.length &&
+          fileTypes.includes(await getFileExtension(entry.path)))
+      ) {
+        subPaths.push(entry.path);
+      }
+    }
+
+    return subPaths;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+};
+
 const scanCollectionPaths = async () => {
   let paths: string[] = [];
-  const collections = await getCollections();
 
-  for await (const collection of collections) {
+  for await (const collection of store.collections) {
     for await (const root of collection.roots) {
       const subPaths = await getSubPaths(
         root,
@@ -32,13 +66,12 @@ export const scanPaths = async () => {
   let removed = 0;
   let fetched = 0;
 
-  const paths = await getPaths();
   const scannedPaths = await scanCollectionPaths();
   const newPaths = scannedPaths.filter(
-    (path) => !paths.find((p) => p.path === path)
+    (path) => !store.paths.find((p) => p.path === path)
   );
 
-  for (const path of paths) {
+  for (const path of store.paths) {
     if (path.exists && !scannedPaths.includes(path.path)) {
       path.exists = false;
       removed++;
@@ -52,7 +85,7 @@ export const scanPaths = async () => {
     newPaths.map(async (path) => {
       let gameIds: string[] = [];
       const name = path.split(sep).pop();
-      const sameName = paths.find((p) => p.path.endsWith(name!!));
+      const sameName = store.paths.find((p) => p.path.endsWith(name!!));
 
       if (sameName) {
         gameIds = sameName.gameIds;
@@ -61,30 +94,29 @@ export const scanPaths = async () => {
         if (searchResults.length) gameIds = [searchResults[0].id.toString()];
       }
 
-      paths.push({ path, gameIds, exists: true });
+      store.paths.push({ path, gameIds, exists: true });
       added++;
     })
   );
 
-  await setPaths(paths);
   await savePaths();
 
-  const games = await getGames();
-  const newGameIds = paths.reduce(
+  const newGameIds = store.paths.reduce(
     (prev, current) => [
       ...prev,
-      ...current.gameIds.filter((id) => !games.find((game) => game.id === id)),
+      ...current.gameIds.filter(
+        (id) => !store.games.find((game) => game.id === id)
+      ),
     ],
     [] as string[]
   );
 
   const newGames = await getIgdbGames(newGameIds);
   newGames.forEach((game) => {
-    games.push(game);
+    store.games.push(game);
     fetched++;
   });
 
-  await setGames(games);
   await saveGames();
 
   return {

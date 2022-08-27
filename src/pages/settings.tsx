@@ -17,20 +17,15 @@ import {
   IconTrash,
 } from "@tabler/icons";
 import { nanoid } from "nanoid";
-import { useCollections } from "../hooks/useCollections";
-import { useSettings } from "../hooks/useSettings";
-import { saveCollections, setCollections } from "../stores/collections";
-import { saveSettings, setSettings } from "../stores/settings";
-import { queryClient } from "../utils/query";
+import { store } from "../store";
+import { saveCollections } from "../store/collections";
+import { saveSettings } from "../store/settings";
 import { scanPaths } from "../utils/scan";
-import { showToast } from "../utils/toast";
+import { toast } from "../utils/toast";
 
 const SettingsPage = () => {
-  const { data: settings } = useSettings();
-  const { data: collections } = useCollections();
-
   const form = useForm({
-    initialValues: { settings: settings!!, collections: collections!! },
+    initialValues: { settings: store.settings, collections: store.collections },
   });
 
   const handleAddCollection = () =>
@@ -47,31 +42,19 @@ const SettingsPage = () => {
     form.removeListItem("collections", index);
 
   const handleSave = form.onSubmit(async (values) => {
-    await setSettings(values.settings);
-    await setCollections(values.collections);
+    store.settings = values.settings;
+    store.collections = values.collections;
+
     await saveSettings();
     await saveCollections();
 
-    queryClient.refetchQueries(["authHeaders"]);
-    queryClient.invalidateQueries(["settings"]);
-    queryClient.invalidateQueries(["collections"]);
-    queryClient.invalidateQueries(["paths"]);
-    queryClient.invalidateQueries(["games"]);
-
-    showToast(
-      "success",
-      "Settings saved",
-      "Settings and collections have been saved"
-    );
+    toast.success("Settings saved", "Settings and collections have been saved");
   });
 
   const handleScanPaths = async () => {
     const { added, removed, fetched } = await scanPaths();
 
-    queryClient.removeQueries(["paths"]);
-
-    showToast(
-      "success",
+    toast.success(
       "Paths scanned",
       `Found ${added} new paths, removed ${removed} old entries, and fetched data for ${fetched} games`
     );

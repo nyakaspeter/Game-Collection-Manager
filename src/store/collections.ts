@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import { loadStore } from "../utils/store";
+import { Store } from "tauri-plugin-store-api";
 
 export interface Collection {
   id: string;
@@ -11,7 +11,10 @@ export interface Collection {
   fileTypes: string[];
 }
 
-const defaultCollections: Collection[] = [
+const key = "collections";
+const store = new Store(`${key}.json`);
+
+export const defaultCollections: Collection[] = [
   {
     id: nanoid(),
     name: "My Games",
@@ -23,21 +26,19 @@ const defaultCollections: Collection[] = [
   },
 ];
 
-export const collectionsKey = "collections";
-
-export const collectionsStore = await loadStore(
-  collectionsKey,
-  defaultCollections
-);
-
-export const getCollections = async () => {
-  return (await collectionsStore.get<Collection[]>(collectionsKey))!!;
+export const loadCollections = async () => {
+  const value = await store.get<Collection[]>(key);
+  return value || defaultCollections;
 };
 
+let settingPromise = Promise.resolve();
+
 export const setCollections = async (value: Collection[]) => {
-  await collectionsStore.set(collectionsKey, value);
+  settingPromise = store.set(key, value);
+  await settingPromise;
 };
 
 export const saveCollections = async () => {
-  await collectionsStore.save();
+  await settingPromise;
+  await store.save();
 };

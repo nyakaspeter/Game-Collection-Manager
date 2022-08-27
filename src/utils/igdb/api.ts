@@ -1,8 +1,8 @@
 import { Body, fetch } from "@tauri-apps/api/http";
 import { splitEvery } from "rambda";
-import { Game } from "../../stores/games";
-import { queryClient } from "../query";
-import { IgdbAuthHeaders } from "./auth";
+import { store } from "../../store";
+import { Game } from "../../store/games";
+import { getIgdbAuthHeaders } from "./auth";
 
 interface IgdbGameResponse {
   id: number;
@@ -60,9 +60,10 @@ export const getIgdbGames = async (ids: string[]) => {
     "videos.*",
   ];
   const fieldsString = fields.join(",");
-  const authHeaders = queryClient.getQueryData<IgdbAuthHeaders>([
-    "authHeaders",
-  ]);
+  const authHeaders = await getIgdbAuthHeaders(
+    store.settings.twitchApiClientId,
+    store.settings.twitchApiClientSecret
+  );
 
   const games: Game[] = [];
   const chunks = splitEvery(100, ids);

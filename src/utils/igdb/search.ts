@@ -23,8 +23,6 @@ export const searchIgdb = async (
   const sanitizedQuery = query.replace(/[^0-9a-z]/gi, " ").replace(/  +/g, " ");
   if (!sanitizedQuery) return [];
 
-  console.log(sanitizedQuery);
-
   const response = await fetch<IgdbSearchResponse>(
     `https://www.igdb.com/search_autocomplete_all?q=${sanitizedQuery}`
   );

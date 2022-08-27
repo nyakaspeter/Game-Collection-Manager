@@ -1,5 +1,4 @@
 import { fetch } from "@tauri-apps/api/http";
-import { getSettings } from "../../stores/settings";
 
 export interface IgdbAuthHeaders {
   "Client-ID": string;
@@ -12,9 +11,10 @@ interface TwitchAuthResponse {
   token_type: Date;
 }
 
-export const getIgdbAuthHeaders = async (): Promise<IgdbAuthHeaders> => {
-  const { twitchApiClientId, twitchApiClientSecret } = await getSettings();
-
+export const getIgdbAuthHeaders = async (
+  twitchApiClientId: string,
+  twitchApiClientSecret: string
+): Promise<IgdbAuthHeaders> => {
   if (!twitchApiClientId || !twitchApiClientSecret)
     throw new Error("Twitch credentials missing");
 

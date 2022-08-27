@@ -1,4 +1,4 @@
-import { Game } from "../stores/games";
+import { Game } from "../store/games";
 
 export const getGameLabel = (game: Game) => {
   let label = game.name;

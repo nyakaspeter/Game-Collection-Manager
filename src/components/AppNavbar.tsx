@@ -9,8 +9,6 @@ import {
   IconCategory,
   IconDeviceGamepad2,
   IconHome,
-  IconRefresh,
-  IconSearch,
   IconSettings,
   TablerIcon,
 } from "@tabler/icons";
@@ -90,7 +88,7 @@ const NavbarButton = ({ icon: Icon, label, onClick }: NavbarButtonProps) => {
   );
 };
 
-const AppNavbar = () => {
+export const AppNavbar = () => {
   return (
     <Navbar
       width={{ base: 80 }}
@@ -119,5 +117,3 @@ const AppNavbar = () => {
     </Navbar>
   );
 };
-
-export default AppNavbar;

@@ -12,6 +12,9 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    target: "esnext",
+  },
   esbuild: {
     logOverride: { "this-is-undefined-in-esm": "silent" },
   },
