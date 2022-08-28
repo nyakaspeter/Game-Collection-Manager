@@ -1,33 +1,18 @@
 import { Button, Group, MultiSelect, SelectItem, Stack } from "@mantine/core";
 import { useDebouncedState } from "@mantine/hooks";
 import { closeAllModals } from "@mantine/modals";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
+import { useEditPath } from "../hooks/useEditPath";
+import { useIgdbSearch } from "../hooks/useIgdbSearch";
 import { store } from "../store";
-import { Game, saveGames } from "../store/games";
-import { Path, savePaths } from "../store/paths";
+import { Game } from "../store/games";
+import { Path } from "../store/paths";
 import { getGameLabel } from "../utils/game";
-import { fetchIgdbGames } from "../utils/igdb/api";
-import { searchIgdb } from "../utils/igdb/search";
-import { toast } from "../utils/toast";
 
 export const PathEditor = ({ path }: { path?: Path }) => {
   const [query, setQuery] = useDebouncedState("", 500);
 
-  const { data: searchResults } = useQuery(
-    ["igdbSearch", query],
-    async () => await searchIgdb(query),
-    {
-      retry: false,
-      select: (results) =>
-        results.map((result) => ({
-          value: result.id.toString(),
-          label: result.displayName,
-        })),
-    }
-  );
-
-  const [items, setItems] = useState<SelectItem[]>(
+  const [selectItems, setSelectItems] = useState<SelectItem[]>(
     path?.gameIds.map((id) => {
       const game = store.games.find((game) => game.id === id);
 
@@ -38,41 +23,24 @@ export const PathEditor = ({ path }: { path?: Path }) => {
     }) || []
   );
 
-  const value = useMemo(() => items.map((item) => item.value), [items]);
-
-  const { mutate: save, isLoading: isSaving } = useMutation(
-    async () => {
-      const igdbGames = await fetchIgdbGames(value);
-
-      igdbGames.forEach((igdbGame) => {
-        if (!store.games.find((game) => game.id === igdbGame.id))
-          store.games.push(igdbGame);
-      });
-
-      const edited = store.paths.find((p) => p.path === path?.path);
-      if (edited) edited.gameIds = value;
-
-      await saveGames(store.games);
-      await savePaths(store.paths);
-
-      handleClose();
-    },
-    {
-      onError: () => {
-        toast.error(
-          "Data fetching failed",
-          "Failed to fetch game data from IGDB"
-        );
-      },
-    }
+  const selectValues = useMemo(
+    () => selectItems.map((item) => item.value),
+    [selectItems]
   );
+
+  const { data: searchResults, remove: clearSearchResults } =
+    useIgdbSearch(query);
+
+  const { mutate: save, isLoading: isSaving } = useEditPath(path, {
+    onSuccess: () => handleClose(),
+  });
 
   const handleSearch = (searchQuery: string) => setQuery(searchQuery);
 
   const handleChange = (values: string[]) => {
-    setItems(
+    setSelectItems(
       values.map((value) => {
-        const item = items.find((item) => item.value === value);
+        const item = selectItems.find((item) => item.value === value);
         return (
           item || {
             value,
@@ -82,21 +50,22 @@ export const PathEditor = ({ path }: { path?: Path }) => {
         );
       })
     );
+    clearSearchResults();
   };
 
   const handleClose = () => closeAllModals();
 
-  const handleSave = () => save();
+  const handleSave = () => save(selectValues);
 
   return (
     <Stack>
       <MultiSelect
         searchable
-        data={[...items, ...(searchResults || [])]}
+        data={[...selectItems, ...(searchResults || [])]}
         filter={(_value, selected, _item) => !selected}
         onSearchChange={handleSearch}
         onChange={handleChange}
-        value={value}
+        value={selectValues}
       />
       <Group position="right">
         <Button onClick={handleClose}>Cancel</Button>

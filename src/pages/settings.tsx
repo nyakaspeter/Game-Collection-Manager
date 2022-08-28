@@ -16,16 +16,15 @@ import {
   IconRefresh,
   IconTrash,
 } from "@tabler/icons";
-import { useMutation } from "@tanstack/react-query";
 import { nanoid } from "nanoid";
+import { useEditSettings } from "../hooks/useEditSettings";
+import { useScanPaths } from "../hooks/useScanPaths";
 import { store } from "../store";
-import { saveCollections } from "../store/collections";
-import { saveSettings } from "../store/settings";
-import { refreshIgdbAuthHeaders } from "../utils/igdb/auth";
-import { scanPaths } from "../utils/scan";
-import { toast } from "../utils/toast";
 
 const SettingsPage = () => {
+  const { mutate: save } = useEditSettings();
+  const { mutate: scan, isLoading: isScanning } = useScanPaths();
+
   const form = useForm({
     initialValues: { settings: store.settings, collections: store.collections },
   });
@@ -43,29 +42,7 @@ const SettingsPage = () => {
   const handleRemoveCollection = (index: number) =>
     form.removeListItem("collections", index);
 
-  const handleSave = form.onSubmit(async (values) => {
-    store.settings = values.settings;
-    store.collections = values.collections;
-
-    await saveSettings(store.settings);
-    await saveCollections(store.collections);
-
-    refreshIgdbAuthHeaders();
-
-    toast.success("Settings saved", "Settings and collections have been saved");
-  });
-
-  const { mutate: scan, isLoading: isScanning } = useMutation(scanPaths, {
-    onSuccess: ({ added, removed, fetched }) => {
-      toast.success(
-        "Paths scanned",
-        `Found ${added} new paths, removed ${removed} old entries, and fetched data for ${fetched} games`
-      );
-    },
-    onError: () => {
-      toast.error("Scan failed", "Failed to fetch game data from IGDB");
-    },
-  });
+  const handleSave = form.onSubmit((values) => save(values));
 
   const handleScanPaths = () => scan();
 

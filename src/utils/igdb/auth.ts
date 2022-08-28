@@ -1,6 +1,5 @@
 import { fetch } from "@tauri-apps/api/http";
 import { store } from "../../store";
-import { queryClient } from "../query";
 
 export interface IgdbAuthHeaders {
   "Client-ID": string;
@@ -12,12 +11,6 @@ interface TwitchAuthResponse {
   expires_in: number;
   token_type: Date;
 }
-
-export const igdbAuthHeadersKey = ["igdbAuthHeaders"];
-
-export const refreshIgdbAuthHeaders = async () => {
-  await queryClient.refetchQueries(igdbAuthHeadersKey);
-};
 
 export const fetchIgdbAuthHeaders = async (): Promise<IgdbAuthHeaders> => {
   const { twitchApiClientId, twitchApiClientSecret } = store.settings;
