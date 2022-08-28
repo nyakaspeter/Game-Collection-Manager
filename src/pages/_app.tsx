@@ -12,9 +12,10 @@ import {
 } from "@mantine/core";
 import { ModalsProvider } from "@mantine/modals";
 import { NotificationsProvider } from "@mantine/notifications";
-import { PropsWithChildren, Suspense } from "react";
+import { PropsWithChildren, Suspense, useEffect } from "react";
 import { AppNavbar } from "../components/AppNavbar";
 import { useIgdbAuthHeaders } from "../hooks/useIgdbAuthHeaders";
+import { invoke } from "@tauri-apps/api";
 
 const theme: MantineThemeOverride = {
   fontFamily: "Kanit, sans-serif",
@@ -45,6 +46,10 @@ const Loading = () => (
 
 const App = ({ children }: PropsWithChildren) => {
   useIgdbAuthHeaders();
+
+  useEffect(() => {
+    invoke("show_main_window");
+  }, []);
 
   return (
     <MantineProvider theme={theme} withGlobalStyles withNormalizeCSS>

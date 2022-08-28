@@ -1,3 +1,4 @@
+import { resolve, resourceDir } from "@tauri-apps/api/path";
 import { Store } from "tauri-plugin-store-api";
 
 export interface Settings {
@@ -6,16 +7,16 @@ export interface Settings {
 }
 
 const key = "settings";
-const store = new Store(`${key}.json`);
-
-export const defaultSettings: Settings = {
+const path = await resolve(await resourceDir(), `${key}.json`);
+const store = new Store(path);
+const defaultValue: Settings = {
   twitchApiClientId: "",
   twitchApiClientSecret: "",
 };
 
 export const loadSettings = async () => {
   const value = await store.get<Settings>(key);
-  return value || defaultSettings;
+  return value || defaultValue;
 };
 
 export const saveSettings = async (value: Settings) => {

@@ -1,3 +1,4 @@
+import { resolve, resourceDir } from "@tauri-apps/api/path";
 import { Store } from "tauri-plugin-store-api";
 
 export interface Game {
@@ -64,13 +65,13 @@ export interface Game {
 }
 
 const key = "games";
-const store = new Store(`${key}.json`);
-
-export const defaultGames: Game[] = [];
+const path = await resolve(await resourceDir(), `${key}.json`);
+const store = new Store(path);
+const defaultValue: Game[] = [];
 
 export const loadGames = async () => {
   const value = await store.get<Game[]>(key);
-  return value || defaultGames;
+  return value || defaultValue;
 };
 
 export const saveGames = async (value: Game[]) => {

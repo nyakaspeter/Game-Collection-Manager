@@ -65,11 +65,12 @@
     },
     "windows": [
       {
+        "visible": false,
         "fullscreen": false,
-        "height": 600,
         "resizable": true,
-        "title": "Game Collection Manager",
-        "width": 800
+        "width": 800,
+        "height": 600,
+        "title": "Game Collection Manager"
       }
     ]
   }
