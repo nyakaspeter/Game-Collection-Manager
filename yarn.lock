@@ -1210,10 +1210,10 @@ magic-string@^0.26.2:
   dependencies:
     sourcemap-codec "^1.4.8"
 
-mantine-data-grid@^0.0.14:
-  version "0.0.14"
-  resolved "https://registry.yarnpkg.com/mantine-data-grid/-/mantine-data-grid-0.0.14.tgz#38b06ef66162d9e93f260f1f9085e07a87e0d69f"
-  integrity sha512-9LiKhvQrkHKGUrtUtNDmxozVJqjMocOmn1VohC0coQc+7aVzwSm5nKt1boJwSEgePzEPLQ2Bx8E6P7xZKF2RhA==
+mantine-data-grid@^0.0.16:
+  version "0.0.16"
+  resolved "https://registry.yarnpkg.com/mantine-data-grid/-/mantine-data-grid-0.0.16.tgz#5ad85d181ac76d380fe955de101ffb0b1f6b90bb"
+  integrity sha512-WK/gLNTWb9UqGVZ6ZubJsmgjjH71Q2kZbV+ELuAlS7BzF1oWEwS3jyxHWQXLkNb+Qpv2hqAyTMOKUK+r4EIqKg==
   dependencies:
     "@emotion/react" "^11.9.3"
     "@mantine/core" "^5.0.0"

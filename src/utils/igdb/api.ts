@@ -63,6 +63,11 @@ interface IgdbGameResponse {
   }[];
 }
 
+interface IgdbIdWithParent {
+  id: number;
+  version_parent?: number;
+}
+
 const mapGameData = (game: IgdbGameResponse): Game => ({
   id: game.id.toString(),
   name: game.name,
@@ -188,4 +193,32 @@ export const fetchIgdbGames = async (ids: string[]) => {
   }
 
   return games;
+};
+
+export const fetchIgdbVersionParents = async (ids: string[]) => {
+  if (!store.authHeaders) throw new Error("Twitch credentials missing");
+
+  const idsWithParents: IgdbIdWithParent[] = [];
+  const chunks = splitEvery(100, ids);
+
+  for (const ids of chunks) {
+    const idsString = ids.join(",");
+
+    const response = await fetch<IgdbIdWithParent[]>(
+      "https://api.igdb.com/v4/games",
+      {
+        method: "POST",
+        body: Body.text(
+          `fields version_parent; where id = (${idsString}); limit 500;`
+        ),
+        headers: store.authHeaders,
+      }
+    );
+
+    if (!response.ok) throw new Error("Downloading game data failed");
+
+    idsWithParents.push(...response.data);
+  }
+
+  return idsWithParents;
 };

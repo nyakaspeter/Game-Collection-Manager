@@ -1,13 +1,25 @@
-import { ActionIcon, Badge, Button, Group, Tooltip } from "@mantine/core";
-import { useViewportSize } from "@mantine/hooks";
+import {
+  ActionIcon,
+  Badge,
+  Group,
+  RingProgress,
+  Text,
+  Tooltip,
+} from "@mantine/core";
 import { IconArrowRight } from "@tabler/icons";
-import { DataGrid, dateFilterFn, stringFilterFn } from "mantine-data-grid";
+import {
+  DataGrid,
+  dateFilterFn,
+  numberFilterFn,
+  stringFilterFn,
+} from "mantine-data-grid";
 import { useMemo } from "react";
 import { useSnapshot } from "valtio";
 import { store } from "../store";
 import { Collection } from "../store/collections";
 import { Game } from "../store/games";
 import { Path } from "../store/paths";
+import { createTableStyles } from "../utils/table";
 
 interface GameItem extends Game {
   paths: Path[];
@@ -16,7 +28,6 @@ interface GameItem extends Game {
 
 const GamesPage = () => {
   const { paths, collections, games } = useSnapshot(store);
-  const { height } = useViewportSize();
 
   const data = useMemo(() => {
     const existingGameIds = paths
@@ -46,28 +57,23 @@ const GamesPage = () => {
 
   return (
     <DataGrid
-      sx={{
-        table: {
-          tableLayout: "fixed",
-          width: "100% !important",
-          thead: { zIndex: 1 },
-          "td>:nth-of-type(1),th>:nth-of-type(1)": { width: "100% !important" },
-          "tr>:nth-of-type(1)": { width: "100% !important" },
-          "tr>:nth-of-type(2)": { width: "100% !important" },
-          "tr>:nth-of-type(3)": { width: "100% !important" },
-          "tr>:nth-of-type(4)": { width: "60px !important" },
-          "tr:hover button": { visibility: "visible" },
-        },
-        ".mantine-ScrollArea-scrollbar": { zIndex: 2 },
-      }}
       data={data}
-      height={height - 80}
-      noFelxLayout
+      height="calc(100vh - 32px)"
+      noFlexLayout
       highlightOnHover
       withFixedHeader
       withGlobalFilter
       withColumnFilters
       withSorting
+      sx={createTableStyles([
+        "100%",
+        "100px",
+        "120px",
+        "200px",
+        "200px",
+        "50px",
+        "60px",
+      ])}
       columns={[
         {
           id: "name",
@@ -85,24 +91,93 @@ const GamesPage = () => {
             new Date(cell.getValue() as string).getFullYear(),
         },
         {
+          id: "genre",
+          header: "Genre",
+          enableSorting: false,
+          filterFn: stringFilterFn,
+          accessorKey: "genres",
+          cell: (cell) => (
+            <Group spacing={4}>
+              {(
+                cell.getValue() as {
+                  name: string;
+                  slug: string;
+                }[]
+              )
+                ?.slice(0, 1)
+                .map((genre, index) => (
+                  <Badge key={index}>{genre.slug.split("-").pop()}</Badge>
+                ))}
+            </Group>
+          ),
+        },
+        {
+          id: "modes",
+          header: "Modes",
+          enableSorting: false,
+          filterFn: stringFilterFn,
+          accessorFn: (game: GameItem) => "",
+          cell: (cell) => (
+            <Group spacing={4}>
+              <Badge>Single</Badge>
+              <Badge>Multi</Badge>
+              <Badge>Coop</Badge>
+            </Group>
+          ),
+        },
+        {
           id: "collections",
           header: "Collections",
           enableSorting: false,
+          filterFn: stringFilterFn,
           accessorKey: "collections",
           cell: (cell) => (
             <Group spacing={4}>
               {(cell.getValue() as Collection[]).map((collection, index) => (
-                <Badge key={index}>{collection.name}</Badge>
+                <Badge
+                  color={collection.readyToPlay ? "green" : undefined}
+                  key={index}
+                >
+                  {collection.name}
+                </Badge>
               ))}
             </Group>
           ),
         },
         {
+          id: "rating",
+          header: "",
+          filterFn: numberFilterFn,
+          accessorFn: (game: GameItem) =>
+            game.rating && Math.round(game.rating),
+          cell: (cell) => {
+            const rating = cell.getValue() as number;
+            const color =
+              rating >= 80 ? "green" : rating >= 60 ? "yellow" : "red";
+
+            return (
+              rating && (
+                <RingProgress
+                  ml={5}
+                  size={28}
+                  thickness={3}
+                  sections={[{ value: rating, color }]}
+                  label={
+                    <Text align="center" size={10} color={color}>
+                      {cell.getValue() as number}
+                    </Text>
+                  }
+                />
+              )
+            );
+          },
+        },
+        {
           id: "button",
           header: "",
           enableSorting: false,
-          accessorFn: (path: Path) => path,
-          cell: (cell) => (
+          accessorFn: (game: GameItem) => game,
+          cell: () => (
             <Tooltip label="View game" position="left">
               <ActionIcon
                 className="button"

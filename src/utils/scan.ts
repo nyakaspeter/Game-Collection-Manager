@@ -4,7 +4,7 @@ import { uniq } from "rambda";
 import { store } from "../store";
 import { saveGames } from "../store/games";
 import { savePaths } from "../store/paths";
-import { fetchIgdbGames } from "./igdb/api";
+import { fetchIgdbGames, fetchIgdbVersionParents } from "./igdb/api";
 import { searchIgdb } from "./igdb/search";
 
 const getFileExtension = async (path: string) => {
@@ -81,7 +81,7 @@ export const scanPaths = async () => {
     }
   }
 
-  await Promise.all(
+  const newPathsResolved = await Promise.all(
     newPaths.map(async (path) => {
       let gameIds: string[] = [];
       const name = path.split(sep).pop();
@@ -98,10 +98,26 @@ export const scanPaths = async () => {
         }
       }
 
-      store.paths.push({ path, gameIds, exists: true });
-      added++;
+      return { path, gameIds, exists: true };
     })
   );
+
+  const idsWithParents = await fetchIgdbVersionParents(
+    newPathsResolved.flatMap((path) => path.gameIds)
+  );
+
+  newPathsResolved.forEach((path) => {
+    const parent = idsWithParents.find(
+      (idWithParent) =>
+        path.gameIds[0] === idWithParent.id.toString() &&
+        !!idWithParent.version_parent
+    )?.version_parent;
+
+    if (parent) path.gameIds = [parent.toString()];
+
+    store.paths.push(path);
+    added++;
+  });
 
   await savePaths(store.paths);
 

@@ -1,5 +1,4 @@
 import { ActionIcon, Badge, Group, Tooltip } from "@mantine/core";
-import { useViewportSize } from "@mantine/hooks";
 import { openModal } from "@mantine/modals";
 import { IconPencil } from "@tabler/icons";
 import { sep } from "@tauri-apps/api/path";
@@ -12,6 +11,7 @@ import { Collection } from "../store/collections";
 import { Game } from "../store/games";
 import { Path } from "../store/paths";
 import { getGameLabel } from "../utils/game";
+import { createTableStyles } from "../utils/table";
 
 interface PathItem extends Path {
   collections: Collection[];
@@ -20,7 +20,6 @@ interface PathItem extends Path {
 
 const PathsPage = () => {
   const { paths, collections, games } = useSnapshot(store);
-  const { height } = useViewportSize();
 
   const data = useMemo(() => {
     return paths
@@ -50,29 +49,15 @@ const PathsPage = () => {
 
   return (
     <DataGrid
-      sx={{
-        table: {
-          tableLayout: "fixed",
-          width: "100% !important",
-          thead: { zIndex: 1 },
-          "td>:nth-of-type(1),th>:nth-of-type(1)": { width: "100% !important" },
-          "tr>:nth-of-type(1)": { width: "100% !important" },
-          "tr>:nth-of-type(2)": { width: "100% !important" },
-          "tr>:nth-of-type(3)": { width: "100% !important" },
-          "tr>:nth-of-type(4)": { width: "100% !important" },
-          "tr>:nth-of-type(5)": { width: "60px !important" },
-          "tr:hover button": { visibility: "visible" },
-        },
-        ".mantine-ScrollArea-scrollbar": { zIndex: 2 },
-      }}
       data={data}
-      height={height - 80}
-      noFelxLayout
+      height="calc(100vh - 32px)"
+      noFlexLayout
       highlightOnHover
       withFixedHeader
       withGlobalFilter
       withColumnFilters
       withSorting
+      sx={createTableStyles(["100%", "200px", "200px", "300px", "60px"])}
       columns={[
         {
           id: "name",
@@ -88,6 +73,20 @@ const PathsPage = () => {
             path.path.split(sep).slice(0, -1).join(sep),
         },
         {
+          id: "collections",
+          header: "Collections",
+          enableSorting: false,
+          filterFn: stringFilterFn,
+          accessorKey: "collections",
+          cell: (cell) => (
+            <Group spacing={4}>
+              {(cell.getValue() as Collection[]).map((collection, index) => (
+                <Badge key={index}>{collection.name}</Badge>
+              ))}
+            </Group>
+          ),
+        },
+        {
           id: "games",
           header: "Games",
           enableSorting: false,
@@ -101,25 +100,12 @@ const PathsPage = () => {
           ),
         },
         {
-          id: "collections",
-          header: "Collections",
-          enableSorting: false,
-          accessorKey: "collections",
-          cell: (cell) => (
-            <Group spacing={4}>
-              {(cell.getValue() as Collection[]).map((collection, index) => (
-                <Badge key={index}>{collection.name}</Badge>
-              ))}
-            </Group>
-          ),
-        },
-        {
           id: "button",
           header: "",
           enableSorting: false,
           accessorFn: (path: Path) => path,
           cell: (cell) => (
-            <Tooltip label="Edit path" position="left">
+            <Tooltip label="Edit games" position="left">
               <ActionIcon
                 className="button"
                 variant="filled"
