@@ -1,4 +1,4 @@
-import { ActionIcon, Badge, Button, Group } from "@mantine/core";
+import { ActionIcon, Badge, Button, Group, Tooltip } from "@mantine/core";
 import { useViewportSize } from "@mantine/hooks";
 import { IconArrowRight } from "@tabler/icons";
 import { DataGrid, dateFilterFn, stringFilterFn } from "mantine-data-grid";
@@ -103,13 +103,15 @@ const GamesPage = () => {
           enableSorting: false,
           accessorFn: (path: Path) => path,
           cell: (cell) => (
-            <ActionIcon
-              className="button"
-              variant="filled"
-              sx={{ visibility: "hidden" }}
-            >
-              <IconArrowRight size={18} />
-            </ActionIcon>
+            <Tooltip label="View game" position="left">
+              <ActionIcon
+                className="button"
+                variant="filled"
+                sx={{ visibility: "hidden" }}
+              >
+                <IconArrowRight size={18} />
+              </ActionIcon>
+            </Tooltip>
           ),
         },
       ]}

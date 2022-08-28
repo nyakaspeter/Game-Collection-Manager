@@ -73,14 +73,7 @@ export const loadGames = async () => {
   return value || defaultGames;
 };
 
-let settingPromise = Promise.resolve();
-
-export const setGames = async (value: Game[]) => {
-  settingPromise = store.set(key, value);
-  await settingPromise;
-};
-
-export const saveGames = async () => {
-  await settingPromise;
+export const saveGames = async (value: Game[]) => {
+  await store.set(key, value);
   await store.save();
 };

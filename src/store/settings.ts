@@ -18,14 +18,7 @@ export const loadSettings = async () => {
   return value || defaultSettings;
 };
 
-let settingPromise = Promise.resolve();
-
-export const setSettings = async (value: Settings) => {
-  settingPromise = store.set(key, value);
-  await settingPromise;
-};
-
-export const saveSettings = async () => {
-  await settingPromise;
+export const saveSettings = async (value: Settings) => {
+  await store.set(key, value);
   await store.save();
 };

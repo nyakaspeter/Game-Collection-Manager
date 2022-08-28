@@ -47,8 +47,8 @@ const SettingsPage = () => {
     store.settings = values.settings;
     store.collections = values.collections;
 
-    await saveSettings();
-    await saveCollections();
+    await saveSettings(store.settings);
+    await saveCollections(store.collections);
 
     refreshIgdbAuthHeaders();
 
@@ -169,6 +169,10 @@ const SettingsPage = () => {
           </Button>
 
           <Group>
+            <Button leftIcon={<IconRefresh size={18} />} loading={isScanning}>
+              Refetch all game data
+            </Button>
+
             <Button
               leftIcon={<IconRefresh size={18} />}
               loading={isScanning}

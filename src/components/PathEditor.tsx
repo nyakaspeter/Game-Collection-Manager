@@ -52,8 +52,8 @@ export const PathEditor = ({ path }: { path?: Path }) => {
       const edited = store.paths.find((p) => p.path === path?.path);
       if (edited) edited.gameIds = value;
 
-      await saveGames();
-      await savePaths();
+      await saveGames(store.games);
+      await savePaths(store.paths);
 
       handleClose();
     },

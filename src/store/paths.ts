@@ -16,14 +16,7 @@ export const loadPaths = async () => {
   return value || defaultPaths;
 };
 
-let settingPromise = Promise.resolve();
-
-export const setPaths = async (value: Path[]) => {
-  settingPromise = store.set(key, value);
-  await settingPromise;
-};
-
-export const savePaths = async () => {
-  await settingPromise;
+export const savePaths = async (value: Path[]) => {
+  await store.set(key, value);
   await store.save();
 };

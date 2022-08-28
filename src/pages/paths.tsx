@@ -1,4 +1,4 @@
-import { ActionIcon, Badge, Group } from "@mantine/core";
+import { ActionIcon, Badge, Group, Tooltip } from "@mantine/core";
 import { useViewportSize } from "@mantine/hooks";
 import { openModal } from "@mantine/modals";
 import { IconPencil } from "@tabler/icons";
@@ -119,14 +119,16 @@ const PathsPage = () => {
           enableSorting: false,
           accessorFn: (path: Path) => path,
           cell: (cell) => (
-            <ActionIcon
-              className="button"
-              variant="filled"
-              sx={{ visibility: "hidden" }}
-              onClick={() => handleEdit(cell.getValue() as PathItem)}
-            >
-              <IconPencil size={18} />
-            </ActionIcon>
+            <Tooltip label="Edit path" position="left">
+              <ActionIcon
+                className="button"
+                variant="filled"
+                sx={{ visibility: "hidden" }}
+                onClick={() => handleEdit(cell.getValue() as PathItem)}
+              >
+                <IconPencil size={18} />
+              </ActionIcon>
+            </Tooltip>
           ),
         },
       ]}

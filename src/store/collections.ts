@@ -31,14 +31,7 @@ export const loadCollections = async () => {
   return value || defaultCollections;
 };
 
-let settingPromise = Promise.resolve();
-
-export const setCollections = async (value: Collection[]) => {
-  settingPromise = store.set(key, value);
-  await settingPromise;
-};
-
-export const saveCollections = async () => {
-  await settingPromise;
+export const saveCollections = async (value: Collection[]) => {
+  await store.set(key, value);
   await store.save();
 };

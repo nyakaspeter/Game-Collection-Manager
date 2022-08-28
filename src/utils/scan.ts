@@ -103,7 +103,7 @@ export const scanPaths = async () => {
     })
   );
 
-  await savePaths();
+  await savePaths(store.paths);
 
   const newGameIds = store.paths.reduce(
     (prev, current) => [
@@ -121,7 +121,7 @@ export const scanPaths = async () => {
     fetched++;
   });
 
-  await saveGames();
+  await saveGames(store.games);
 
   return {
     added,
