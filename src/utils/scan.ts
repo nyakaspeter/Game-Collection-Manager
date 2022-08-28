@@ -130,3 +130,22 @@ export const scanPaths = async () => {
     fetched,
   };
 };
+
+export const refreshGames = async () => {
+  let refreshed = 0;
+
+  const igdbIds = store.games.map((game) => game.id);
+  const igdbGames = await fetchIgdbGames(igdbIds);
+
+  igdbGames.forEach((refreshedGame) => {
+    const index = store.games.findIndex((game) => game.id === refreshedGame.id);
+    if (index) {
+      store.games[index] = refreshedGame;
+      refreshed++;
+    }
+  });
+
+  await saveGames(store.games);
+
+  return { refreshed };
+};

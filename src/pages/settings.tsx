@@ -14,16 +14,22 @@ import {
   IconDeviceFloppy,
   IconPlus,
   IconRefresh,
+  IconSearch,
   IconTrash,
 } from "@tabler/icons";
 import { nanoid } from "nanoid";
 import { useEditSettings } from "../hooks/useEditSettings";
+import { useRefreshGames } from "../hooks/useRefreshGames";
 import { useScanPaths } from "../hooks/useScanPaths";
 import { store } from "../store";
 
 const SettingsPage = () => {
-  const { mutate: save } = useEditSettings();
   const { mutate: scan, isLoading: isScanning } = useScanPaths();
+  const { mutate: refresh, isLoading: isRefreshing } = useRefreshGames();
+
+  const { mutate: save } = useEditSettings({
+    onSuccess: () => setTimeout(scan, 1000),
+  });
 
   const form = useForm({
     initialValues: { settings: store.settings, collections: store.collections },
@@ -43,6 +49,8 @@ const SettingsPage = () => {
     form.removeListItem("collections", index);
 
   const handleSave = form.onSubmit((values) => save(values));
+
+  const handleRefresh = () => refresh();
 
   const handleScanPaths = () => scan();
 
@@ -146,12 +154,16 @@ const SettingsPage = () => {
           </Button>
 
           <Group>
-            <Button leftIcon={<IconRefresh size={18} />} loading={isScanning}>
-              Refetch all game data
+            <Button
+              leftIcon={<IconRefresh size={18} />}
+              loading={isRefreshing}
+              onClick={handleRefresh}
+            >
+              Refresh all game data
             </Button>
 
             <Button
-              leftIcon={<IconRefresh size={18} />}
+              leftIcon={<IconSearch size={18} />}
               loading={isScanning}
               onClick={handleScanPaths}
             >
