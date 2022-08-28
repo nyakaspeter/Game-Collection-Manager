@@ -14,8 +14,9 @@ import { ModalsProvider } from "@mantine/modals";
 import { NotificationsProvider } from "@mantine/notifications";
 import { PropsWithChildren, Suspense, useEffect } from "react";
 import { AppNavbar } from "../components/AppNavbar";
-import { useIgdbAuthHeaders } from "../hooks/useIgdbAuthHeaders";
+import { useRefreshAuthHeaders } from "../hooks/useRefreshAuthHeaders";
 import { invoke } from "@tauri-apps/api";
+import { useScanPaths } from "../hooks/useScanPaths";
 
 const theme: MantineThemeOverride = {
   fontFamily: "Kanit, sans-serif",
@@ -45,10 +46,14 @@ const Loading = () => (
 );
 
 const App = ({ children }: PropsWithChildren) => {
-  useIgdbAuthHeaders();
+  const { mutate: scanPaths } = useScanPaths();
+  const { mutate: refreshAuthHeaders } = useRefreshAuthHeaders({
+    onSuccess: () => setTimeout(scanPaths, 1000),
+  });
 
   useEffect(() => {
     invoke("show_main_window");
+    refreshAuthHeaders();
   }, []);
 
   return (

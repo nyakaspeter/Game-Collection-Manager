@@ -1,6 +1,6 @@
 import { Body, fetch } from "@tauri-apps/api/http";
 import { splitEvery } from "rambda";
-import { getIgdbAuthHeaders } from "../../hooks/useIgdbAuthHeaders";
+import { store } from "../../store";
 import { Game } from "../../store/games";
 
 interface IgdbGameResponse {
@@ -140,8 +140,7 @@ const mapGameData = (game: IgdbGameResponse): Game => ({
 });
 
 export const fetchIgdbGames = async (ids: string[]) => {
-  const igdbAuthHeaders = getIgdbAuthHeaders();
-  if (!igdbAuthHeaders) throw new Error("Twitch credentials missing");
+  if (!store.authHeaders) throw new Error("Twitch credentials missing");
 
   const fields = [
     "name",
@@ -179,7 +178,7 @@ export const fetchIgdbGames = async (ids: string[]) => {
         body: Body.text(
           `fields ${fieldsString}; where id = (${idsString}); limit 500;`
         ),
-        headers: igdbAuthHeaders,
+        headers: store.authHeaders,
       }
     );
 

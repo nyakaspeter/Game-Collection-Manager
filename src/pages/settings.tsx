@@ -19,16 +19,27 @@ import {
 } from "@tabler/icons";
 import { nanoid } from "nanoid";
 import { useEditSettings } from "../hooks/useEditSettings";
+import { useRefreshAuthHeaders } from "../hooks/useRefreshAuthHeaders";
 import { useRefreshGames } from "../hooks/useRefreshGames";
 import { useScanPaths } from "../hooks/useScanPaths";
 import { store } from "../store";
 
 const SettingsPage = () => {
-  const { mutate: scan, isLoading: isScanning } = useScanPaths();
-  const { mutate: refresh, isLoading: isRefreshing } = useRefreshGames();
+  const { mutate: scanPaths, isLoading: isScanning } = useScanPaths();
+  const { mutate: refreshGames, isLoading: isRefreshing } = useRefreshGames();
+  const { mutateAsync: refreshAuthHeaders } = useRefreshAuthHeaders();
 
   const { mutate: save } = useEditSettings({
-    onSuccess: () => setTimeout(scan, 1000),
+    onSuccess: () => {
+      setTimeout(async () => {
+        try {
+          await refreshAuthHeaders();
+          scanPaths();
+        } catch (error) {
+          console.error(error);
+        }
+      }, 1000);
+    },
   });
 
   const form = useForm({
@@ -50,9 +61,9 @@ const SettingsPage = () => {
 
   const handleSave = form.onSubmit((values) => save(values));
 
-  const handleRefresh = () => refresh();
+  const handleRefreshGames = () => refreshGames();
 
-  const handleScanPaths = () => scan();
+  const handleScanPaths = () => scanPaths();
 
   return (
     <form onSubmit={handleSave}>
@@ -157,7 +168,7 @@ const SettingsPage = () => {
             <Button
               leftIcon={<IconRefresh size={18} />}
               loading={isRefreshing}
-              onClick={handleRefresh}
+              onClick={handleRefreshGames}
             >
               Refresh all game data
             </Button>

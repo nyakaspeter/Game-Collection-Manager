@@ -3,7 +3,6 @@ import { store } from "../store";
 import { Collection, saveCollections } from "../store/collections";
 import { saveSettings, Settings } from "../store/settings";
 import { toast } from "../utils/toast";
-import { refreshIgdbAuthHeaders } from "./useIgdbAuthHeaders";
 
 export const useEditSettings = (
   options?: MutationOptions<
@@ -29,8 +28,6 @@ export const useEditSettings = (
 
       await saveSettings(store.settings);
       await saveCollections(store.collections);
-
-      refreshIgdbAuthHeaders();
     },
     {
       ...options,

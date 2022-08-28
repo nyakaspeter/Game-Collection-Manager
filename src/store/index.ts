@@ -1,4 +1,5 @@
 import { proxy } from "valtio";
+import { IgdbAuthHeaders } from "../utils/igdb/auth";
 import { loadCollections } from "./collections";
 import { loadGames } from "./games";
 import { loadPaths } from "./paths";
@@ -9,4 +10,5 @@ export const store = proxy({
   collections: await loadCollections(),
   paths: await loadPaths(),
   games: await loadGames(),
+  authHeaders: null as IgdbAuthHeaders | null,
 });
