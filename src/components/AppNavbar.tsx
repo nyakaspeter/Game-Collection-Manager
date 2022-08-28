@@ -101,7 +101,6 @@ export const AppNavbar = () => {
         }).background,
       })}
     >
-      {/* LOGO HERE */}
       <Navbar.Section grow>
         <Stack justify="center" spacing={4}>
           <NavbarLink icon={IconHome} label="Home" to="/" />
