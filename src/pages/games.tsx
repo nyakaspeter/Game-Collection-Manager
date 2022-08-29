@@ -7,18 +7,19 @@ import {
   Tooltip,
 } from "@mantine/core";
 import { IconArrowRight } from "@tabler/icons";
-import {
-  DataGrid,
-  dateFilterFn,
-  numberFilterFn,
-  stringFilterFn,
-} from "mantine-data-grid";
+import { DataGrid, numberFilterFn, stringFilterFn } from "mantine-data-grid";
 import { useMemo } from "react";
 import { useSnapshot } from "valtio";
 import { store } from "../store";
 import { Collection } from "../store/collections";
 import { Game } from "../store/games";
 import { Path } from "../store/paths";
+import {
+  getGameGenres,
+  getGameModes,
+  getGameRating,
+  getGameYear,
+} from "../utils/game";
 import { createTableStyles } from "../utils/table";
 
 interface GameItem extends Game {
@@ -68,7 +69,7 @@ const GamesPage = () => {
       sx={createTableStyles([
         "100%",
         "100px",
-        "120px",
+        "220px",
         "200px",
         "200px",
         "50px",
@@ -84,30 +85,21 @@ const GamesPage = () => {
         {
           id: "year",
           header: "Year",
-          filterFn: dateFilterFn,
-          accessorKey: "releaseDate",
-          cell: (cell) =>
-            cell.getValue() &&
-            new Date(cell.getValue() as string).getFullYear(),
+          filterFn: numberFilterFn,
+          sortingFn: "alphanumeric",
+          accessorFn: (game: GameItem) => getGameYear(game),
         },
         {
           id: "genre",
-          header: "Genre",
+          header: "Genres",
           enableSorting: false,
           filterFn: stringFilterFn,
-          accessorKey: "genres",
+          accessorFn: (game: GameItem) => getGameGenres(game),
           cell: (cell) => (
             <Group spacing={4}>
-              {(
-                cell.getValue() as {
-                  name: string;
-                  slug: string;
-                }[]
-              )
-                ?.slice(0, 1)
-                .map((genre, index) => (
-                  <Badge key={index}>{genre.slug.split("-").pop()}</Badge>
-                ))}
+              {(cell.getValue() as string[]).slice(0, 2).map((genre) => (
+                <Badge key={genre}>{genre}</Badge>
+              ))}
             </Group>
           ),
         },
@@ -116,12 +108,12 @@ const GamesPage = () => {
           header: "Modes",
           enableSorting: false,
           filterFn: stringFilterFn,
-          accessorFn: (game: GameItem) => "",
+          accessorFn: (game: GameItem) => getGameModes(game),
           cell: (cell) => (
             <Group spacing={4}>
-              <Badge>Single</Badge>
-              <Badge>Multi</Badge>
-              <Badge>Coop</Badge>
+              {(cell.getValue() as string[]).map((mode) => (
+                <Badge key={mode}>{mode}</Badge>
+              ))}
             </Group>
           ),
         },
@@ -133,10 +125,10 @@ const GamesPage = () => {
           accessorKey: "collections",
           cell: (cell) => (
             <Group spacing={4}>
-              {(cell.getValue() as Collection[]).map((collection, index) => (
+              {(cell.getValue() as Collection[]).map((collection) => (
                 <Badge
+                  key={collection.id}
                   color={collection.readyToPlay ? "green" : undefined}
-                  key={index}
                 >
                   {collection.name}
                 </Badge>
@@ -146,10 +138,10 @@ const GamesPage = () => {
         },
         {
           id: "rating",
-          header: "",
+          header: "Score",
           filterFn: numberFilterFn,
-          accessorFn: (game: GameItem) =>
-            game.rating && Math.round(game.rating),
+          sortingFn: "alphanumeric",
+          accessorFn: (game: GameItem) => getGameRating(game),
           cell: (cell) => {
             const rating = cell.getValue() as number;
             const color =
@@ -160,10 +152,10 @@ const GamesPage = () => {
                 <RingProgress
                   ml={5}
                   size={28}
-                  thickness={3}
+                  thickness={2}
                   sections={[{ value: rating, color }]}
                   label={
-                    <Text align="center" size={10} color={color}>
+                    <Text align="center" size={12} color={color}>
                       {cell.getValue() as number}
                     </Text>
                   }

@@ -57,34 +57,14 @@ const PathsPage = () => {
       withGlobalFilter
       withColumnFilters
       withSorting
-      sx={createTableStyles(["100%", "200px", "200px", "300px", "60px"])}
+      sx={createTableStyles(["100%", "400px", "200px", "60px"])}
       columns={[
         {
-          id: "name",
-          header: "Name",
+          id: "path",
+          header: "Path",
           filterFn: stringFilterFn,
-          accessorFn: (path: PathItem) => path.path.split(sep).pop(),
-        },
-        {
-          id: "location",
-          header: "Location",
-          filterFn: stringFilterFn,
-          accessorFn: (path: Path) =>
-            path.path.split(sep).slice(0, -1).join(sep),
-        },
-        {
-          id: "collections",
-          header: "Collections",
-          enableSorting: false,
-          filterFn: stringFilterFn,
-          accessorKey: "collections",
-          cell: (cell) => (
-            <Group spacing={4}>
-              {(cell.getValue() as Collection[]).map((collection, index) => (
-                <Badge key={index}>{collection.name}</Badge>
-              ))}
-            </Group>
-          ),
+          accessorKey: "path",
+          cell: (cell) => (cell.getValue() as string).split(sep).pop(),
         },
         {
           id: "games",
@@ -100,10 +80,29 @@ const PathsPage = () => {
           ),
         },
         {
+          id: "collections",
+          header: "Collections",
+          enableSorting: false,
+          filterFn: stringFilterFn,
+          accessorKey: "collections",
+          cell: (cell) => (
+            <Group spacing={4}>
+              {(cell.getValue() as Collection[]).map((collection) => (
+                <Badge
+                  key={collection.id}
+                  color={collection.readyToPlay ? "green" : undefined}
+                >
+                  {collection.name}
+                </Badge>
+              ))}
+            </Group>
+          ),
+        },
+        {
           id: "button",
           header: "",
           enableSorting: false,
-          accessorFn: (path: Path) => path,
+          accessorFn: (path: PathItem) => path,
           cell: (cell) => (
             <Tooltip label="Edit games" position="left">
               <ActionIcon
@@ -119,7 +118,7 @@ const PathsPage = () => {
         },
       ]}
       initialState={{
-        sorting: [{ id: "name", desc: false }],
+        sorting: [{ id: "path", desc: false }],
       }}
     />
   );

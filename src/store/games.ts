@@ -9,48 +9,22 @@ export interface Game {
   storyline?: string;
   rating?: number;
   releaseDate?: string;
-  platforms?: {
-    name: string;
-    slug: string;
-    abbreviation: string;
-  }[];
-  genres?: {
-    name: string;
-    slug: string;
-  }[];
-  franchises?: {
-    name: string;
-    slug: string;
-  }[];
-  themes?: {
-    name: string;
-    slug: string;
-  }[];
-  gameModes?: {
-    name: string;
-    slug: string;
-  }[];
-  multiplayerModes?: {
-    campaigncoop?: boolean;
-    dropin?: boolean;
-    lancoop?: boolean;
-    offlinecoop?: boolean;
-    offlinecoopmax?: number;
-    offlinemax?: number;
-    onlinecoop?: number;
-    onlinecoopmax?: number;
-    onlinemax?: number;
+  platforms?: number[];
+  genres?: number[];
+  themes?: number[];
+  perspectives?: number[];
+  gameModes?: number[];
+  multiplayer?: {
+    lan?: boolean;
+    coopCampaign?: boolean;
+    offlineCoop?: boolean;
+    onlineCoop?: boolean;
     splitscreen?: boolean;
-    splitscreenonline?: boolean;
-  }[];
-  perspectives?: {
-    name: string;
-    slug: string;
-  }[];
-  gameEngines?: {
-    name: string;
-    slug: string;
-  }[];
+    offlineMultiMaxPlayers?: number;
+    onlineMultiMaxPlayers?: number;
+    offlineCoopMaxPlayers?: number;
+    onlineCoopMaxPlayers?: number;
+  };
   cover?: string;
   artworks?: string[];
   screenshots?: string[];
