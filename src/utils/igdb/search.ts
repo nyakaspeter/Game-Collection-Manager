@@ -1,4 +1,7 @@
 import { fetch } from "@tauri-apps/api/http";
+import { uniq } from "rambda";
+import { Game } from "../../store/games";
+import { fetchIgdbGames, fetchIgdbGamesBySlug } from "./api";
 
 export interface IgdbSearchResult {
   id: number;
@@ -17,9 +20,7 @@ interface IgdbSearchResponse {
   }>;
 }
 
-export const searchIgdb = async (
-  query: string
-): Promise<IgdbSearchResult[]> => {
+export const searchIgdb = async (query: string): Promise<Game[]> => {
   const sanitizedQuery = query.replace(/[^0-9a-z]/gi, " ").replace(/  +/g, " ");
   if (!sanitizedQuery) return [];
 
@@ -27,14 +28,17 @@ export const searchIgdb = async (
     `https://www.igdb.com/search_autocomplete_all?q=${sanitizedQuery}`
   );
 
-  if (!response.ok) throw new Error("Search failed");
+  if (!response.ok) return [];
 
-  return (
-    response.data?.game_suggest?.map((g) => ({
-      id: g.id,
-      slug: g.url.split("/").pop()!!,
-      name: g.name,
-      displayName: g.value,
-    })) || []
-  );
+  const igdbIds = response.data?.game_suggest.map((g) => g.id.toString()) || [];
+
+  try {
+    return uniq([
+      ...(await fetchIgdbGamesBySlug([query])),
+      ...(await fetchIgdbGames(igdbIds)),
+    ]);
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
 };

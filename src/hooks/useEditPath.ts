@@ -1,25 +1,23 @@
 import { MutationOptions, useMutation } from "@tanstack/react-query";
 import { store } from "../store";
-import { saveGames } from "../store/games";
+import { Game, saveGames } from "../store/games";
 import { Path, savePaths } from "../store/paths";
 import { fetchIgdbGames } from "../utils/igdb/api";
 import { toast } from "../utils/toast";
 
 export const useEditPath = (
   path?: Path,
-  options?: MutationOptions<void, unknown, string[], unknown>
+  options?: MutationOptions<void, unknown, Game[], unknown>
 ) =>
   useMutation(
-    async (igdbIds: string[]) => {
-      const igdbGames = await fetchIgdbGames(igdbIds);
-
-      igdbGames.forEach((igdbGame) => {
+    async (games: Game[]) => {
+      games.forEach((igdbGame) => {
         if (!store.games.find((game) => game.id === igdbGame.id))
           store.games.push(igdbGame);
       });
 
       const edited = store.paths.find((p) => p.path === path?.path);
-      if (edited) edited.gameIds = igdbIds;
+      if (edited) edited.gameIds = games.map((g) => g.id);
 
       await saveGames(store.games);
       await savePaths(store.paths);

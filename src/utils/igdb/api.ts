@@ -44,6 +44,26 @@ interface IgdbIdWithParent {
   version_parent?: number;
 }
 
+const fields = [
+  "name",
+  "slug",
+  "summary",
+  "storyline",
+  "total_rating",
+  "first_release_date",
+  "platforms",
+  "genres",
+  "themes",
+  "game_modes",
+  "multiplayer_modes.*",
+  "player_perspectives",
+  "cover.*",
+  "artworks.*",
+  "screenshots.*",
+  "videos.*",
+  "websites.*",
+];
+
 const mapGameData = (game: IgdbGameResponse): Game => ({
   id: game.id.toString(),
   name: game.name,
@@ -93,25 +113,6 @@ const mapGameData = (game: IgdbGameResponse): Game => ({
 export const fetchIgdbGames = async (ids: string[]) => {
   if (!store.authHeaders) throw new Error("Twitch credentials missing");
 
-  const fields = [
-    "name",
-    "slug",
-    "summary",
-    "storyline",
-    "total_rating",
-    "first_release_date",
-    "platforms",
-    "genres",
-    "themes",
-    "game_modes",
-    "multiplayer_modes.*",
-    "player_perspectives",
-    "cover.*",
-    "artworks.*",
-    "screenshots.*",
-    "videos.*",
-    "websites.*",
-  ];
   const fieldsString = fields.join(",");
 
   const games: Game[] = [];
@@ -126,6 +127,36 @@ export const fetchIgdbGames = async (ids: string[]) => {
         method: "POST",
         body: Body.text(
           `fields ${fieldsString}; where id = (${idsString}); limit 500;`
+        ),
+        headers: store.authHeaders,
+      }
+    );
+
+    if (!response.ok) throw new Error("Downloading game data failed");
+
+    response.data?.forEach((game) => games.push(mapGameData(game)));
+  }
+
+  return games;
+};
+
+export const fetchIgdbGamesBySlug = async (slugs: string[]) => {
+  if (!store.authHeaders) throw new Error("Twitch credentials missing");
+
+  const fieldsString = fields.join(",");
+
+  const games: Game[] = [];
+  const chunks = splitEvery(100, slugs);
+
+  for (const slugs of chunks) {
+    const slugsString = slugs.map((slug) => `"${slug}"`).join(",");
+
+    const response = await fetch<IgdbGameResponse[]>(
+      "https://api.igdb.com/v4/games",
+      {
+        method: "POST",
+        body: Body.text(
+          `fields ${fieldsString}; where slug = (${slugsString}); limit 500;`
         ),
         headers: store.authHeaders,
       }

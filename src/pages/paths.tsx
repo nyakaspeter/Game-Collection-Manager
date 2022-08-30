@@ -14,7 +14,7 @@ import { getGameLabel } from "../utils/game";
 import { collectionFilter } from "../utils/table/collectionFilter";
 import { createTableStyles } from "../utils/table/styles";
 
-interface PathItem extends Path {
+export interface PathItem extends Path {
   collections: Collection[];
   games: Game[];
 }

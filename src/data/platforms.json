@@ -9,7 +9,8 @@
     },
     {
         "id": 8,
-        "name": "PlayStation 2"
+        "name": "PlayStation 2",
+        "short": "PS2"
     },
     {
         "id": 39,
@@ -50,7 +51,8 @@
     },
     {
         "id": 165,
-        "name": "PlayStation VR"
+        "name": "PlayStation VR",
+        "short": "PSVR"
     },
     {
         "id": 129,
@@ -130,7 +132,8 @@
     },
     {
         "id": 50,
-        "name": "3DO Interactive Multiplayer"
+        "name": "3DO Interactive Multiplayer",
+        "short": "3DO"
     },
     {
         "id": 89,
@@ -206,7 +209,8 @@
     },
     {
         "id": 130,
-        "name": "Nintendo Switch"
+        "name": "Nintendo Switch",
+        "short": "Switch"
     },
     {
         "id": 132,
@@ -342,7 +346,8 @@
     },
     {
         "id": 37,
-        "name": "Nintendo 3DS"
+        "name": "Nintendo 3DS",
+        "short": "3DS"
     },
     {
         "id": 29,
@@ -362,7 +367,8 @@
     },
     {
         "id": 38,
-        "name": "PlayStation Portable"
+        "name": "PlayStation Portable",
+        "short": "PSP"
     },
     {
         "id": 86,
@@ -378,7 +384,8 @@
     },
     {
         "id": 9,
-        "name": "PlayStation 3"
+        "name": "PlayStation 3",
+        "short": "PS3"
     },
     {
         "id": 14,
@@ -438,7 +445,8 @@
     },
     {
         "id": 20,
-        "name": "Nintendo DS"
+        "name": "Nintendo DS",
+        "short": "NDS"
     },
     {
         "id": 63,
@@ -446,11 +454,13 @@
     },
     {
         "id": 46,
-        "name": "PlayStation Vita"
+        "name": "PlayStation Vita",
+        "short": "PS Vita"
     },
     {
         "id": 48,
-        "name": "PlayStation 4"
+        "name": "PlayStation 4",
+        "short": "PS4"
     },
     {
         "id": 61,
@@ -462,7 +472,8 @@
     },
     {
         "id": 21,
-        "name": "Nintendo GameCube"
+        "name": "Nintendo GameCube",
+        "short": "GameCube"
     },
     {
         "id": 42,
@@ -470,7 +481,8 @@
     },
     {
         "id": 19,
-        "name": "Super Nintendo Entertainment System"
+        "name": "Super Nintendo Entertainment System",
+        "short": "SNES"
     },
     {
         "id": 374,
@@ -558,7 +570,8 @@
     },
     {
         "id": 167,
-        "name": "PlayStation 5"
+        "name": "PlayStation 5",
+        "short": "PS5"
     },
     {
         "id": 387,
@@ -714,7 +727,8 @@
     },
     {
         "id": 7,
-        "name": "PlayStation"
+        "name": "PlayStation",
+        "short": "PS1"
     },
     {
         "id": 99,
@@ -726,7 +740,8 @@
     },
     {
         "id": 390,
-        "name": "PlayStation VR2"
+        "name": "PlayStation VR2",
+        "short": "PSVR2"
     },
     {
         "id": 405,
