@@ -122,7 +122,7 @@ const GamesPage = () => {
           id: "collections",
           header: "Collections",
           enableSorting: false,
-          filterFn: collectionFilter as any,
+          filterFn: collectionFilter() as any,
           accessorKey: "collections",
           cell: (cell) => (
             <Group spacing={4}>

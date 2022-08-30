@@ -79,7 +79,12 @@ const PathsPage = () => {
           cell: (cell) => (
             <Group spacing={4}>
               {(cell.getValue() as Game[]).map((game) => (
-                <Badge key={game.id}>{getGameLabel(game)}</Badge>
+                <Tooltip
+                  key={game.id}
+                  label={getGameLabel(game, true, true, true, false, true)}
+                >
+                  <Badge>{getGameLabel(game)}</Badge>
+                </Tooltip>
               ))}
             </Group>
           ),
@@ -88,7 +93,7 @@ const PathsPage = () => {
           id: "collections",
           header: "Collections",
           enableSorting: false,
-          filterFn: collectionFilter as any,
+          filterFn: collectionFilter() as any,
           accessorKey: "collections",
           cell: (cell) => (
             <Group spacing={4}>
