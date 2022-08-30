@@ -44,26 +44,6 @@ interface IgdbIdWithParent {
   version_parent?: number;
 }
 
-const fields = [
-  "name",
-  "slug",
-  "summary",
-  "storyline",
-  "total_rating",
-  "first_release_date",
-  "platforms",
-  "genres",
-  "themes",
-  "game_modes",
-  "multiplayer_modes.*",
-  "player_perspectives",
-  "cover.*",
-  "artworks.*",
-  "screenshots.*",
-  "videos.*",
-  "websites.*",
-];
-
 const mapGameData = (game: IgdbGameResponse): Game => ({
   id: game.id.toString(),
   name: game.name,
@@ -110,54 +90,60 @@ const mapGameData = (game: IgdbGameResponse): Game => ({
     })) || undefined,
 });
 
-export const fetchIgdbGames = async (ids: string[]) => {
+export const fetchIgdbGames = async (ids: string[], slugs: string[] = []) => {
   if (!store.authHeaders) throw new Error("Twitch credentials missing");
+
+  const fields = [
+    "name",
+    "slug",
+    "summary",
+    "storyline",
+    "total_rating",
+    "first_release_date",
+    "platforms",
+    "genres",
+    "themes",
+    "game_modes",
+    "multiplayer_modes.*",
+    "player_perspectives",
+    "cover.*",
+    "artworks.*",
+    "screenshots.*",
+    "videos.*",
+    "websites.*",
+  ];
 
   const fieldsString = fields.join(",");
 
-  const games: Game[] = [];
-  const chunks = splitEvery(100, ids);
+  const idsAndSlugs = [
+    ...ids.map((id) => ({ type: "id", value: id })),
+    ...slugs.map((slug) => ({ type: "slug", value: slug })),
+  ];
 
-  for (const ids of chunks) {
-    const idsString = ids.join(",");
+  const games: Game[] = [];
+  const chunks = splitEvery(100, idsAndSlugs);
+
+  for (const chunk of chunks) {
+    const idsString = chunk
+      .filter((id) => id.type === "id")
+      .map((id) => id.value)
+      .join(",");
+
+    const slugsString = chunk
+      .filter((id) => id.type === "slug")
+      .map((id) => `"${id.value}"`)
+      .join(",");
+
+    const idFilter = idsString.length && `id = (${idsString})`;
+    const slugFilter = slugsString.length && `slug = (${slugsString})`;
+    const filterString = [idFilter, slugFilter].filter((x) => !!x).join(" | ");
+    const bodyString = `fields ${fieldsString}; where ${filterString}; limit 500;`;
 
     const response = await fetch<IgdbGameResponse[]>(
       "https://api.igdb.com/v4/games",
       {
         method: "POST",
-        body: Body.text(
-          `fields ${fieldsString}; where id = (${idsString}); limit 500;`
-        ),
-        headers: store.authHeaders,
-      }
-    );
-
-    if (!response.ok) throw new Error("Downloading game data failed");
-
-    response.data?.forEach((game) => games.push(mapGameData(game)));
-  }
-
-  return games;
-};
-
-export const fetchIgdbGamesBySlug = async (slugs: string[]) => {
-  if (!store.authHeaders) throw new Error("Twitch credentials missing");
-
-  const fieldsString = fields.join(",");
-
-  const games: Game[] = [];
-  const chunks = splitEvery(100, slugs);
-
-  for (const slugs of chunks) {
-    const slugsString = slugs.map((slug) => `"${slug}"`).join(",");
-
-    const response = await fetch<IgdbGameResponse[]>(
-      "https://api.igdb.com/v4/games",
-      {
-        method: "POST",
-        body: Body.text(
-          `fields ${fieldsString}; where slug = (${slugsString}); limit 500;`
-        ),
+        body: Body.text(bodyString),
         headers: store.authHeaders,
       }
     );

@@ -14,19 +14,20 @@ import {
   IconDeviceFloppy,
   IconPlus,
   IconRefresh,
-  IconSearch,
   IconTrash,
 } from "@tabler/icons";
 import { nanoid } from "nanoid";
 import { useEditSettings } from "../hooks/useEditSettings";
 import { useRefreshAuthHeaders } from "../hooks/useRefreshAuthHeaders";
 import { useRefreshGames } from "../hooks/useRefreshGames";
+import { useRemoveUnusedData } from "../hooks/useRemoveUnusedData";
 import { useScanPaths } from "../hooks/useScanPaths";
 import { store } from "../store";
 
 const SettingsPage = () => {
   const { mutate: scanPaths, isLoading: isScanning } = useScanPaths();
   const { mutate: refreshGames, isLoading: isRefreshing } = useRefreshGames();
+  const { mutate: removeUnusedData } = useRemoveUnusedData();
   const { mutateAsync: refreshAuthHeaders } = useRefreshAuthHeaders();
 
   const { mutate: save } = useEditSettings({
@@ -63,7 +64,7 @@ const SettingsPage = () => {
 
   const handleRefreshGames = () => refreshGames();
 
-  const handleScanPaths = () => scanPaths();
+  const handleRemoveUnusedData = () => removeUnusedData();
 
   return (
     <form onSubmit={handleSave}>
@@ -166,19 +167,18 @@ const SettingsPage = () => {
 
           <Group>
             <Button
-              leftIcon={<IconRefresh size={18} />}
-              loading={isRefreshing}
-              onClick={handleRefreshGames}
+              leftIcon={<IconTrash size={18} />}
+              onClick={handleRemoveUnusedData}
             >
-              Refresh all game data
+              Clean database
             </Button>
 
             <Button
-              leftIcon={<IconSearch size={18} />}
-              loading={isScanning}
-              onClick={handleScanPaths}
+              leftIcon={<IconRefresh size={18} />}
+              loading={isRefreshing || isScanning}
+              onClick={handleRefreshGames}
             >
-              Rescan paths
+              Refresh games
             </Button>
 
             <Button leftIcon={<IconDeviceFloppy size={18} />} type="submit">

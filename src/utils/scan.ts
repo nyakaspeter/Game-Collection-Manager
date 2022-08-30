@@ -5,7 +5,7 @@ import { store } from "../store";
 import { saveGames } from "../store/games";
 import { savePaths } from "../store/paths";
 import { fetchIgdbGames, fetchIgdbVersionParents } from "./igdb/api";
-import { searchIgdb } from "./igdb/search";
+import { searchIgdbIds } from "./igdb/search";
 
 const getFileExtension = async (path: string) => {
   try {
@@ -81,6 +81,8 @@ export const scanPaths = async () => {
     }
   }
 
+  const date = new Date().toISOString();
+
   const newPathsResolved = await Promise.all(
     newPaths.map(async (path) => {
       let gameIds: string[] = [];
@@ -91,14 +93,14 @@ export const scanPaths = async () => {
         gameIds = sameName.gameIds;
       } else {
         try {
-          const searchResults = await searchIgdb(name!!);
+          const searchResults = await searchIgdbIds(name!!);
           if (searchResults.length) gameIds = [searchResults[0].id.toString()];
         } catch (error) {
           console.error(error);
         }
       }
 
-      return { path, gameIds, exists: true };
+      return { path, gameIds, exists: true, added: date };
     })
   );
 
@@ -164,4 +166,23 @@ export const refreshGames = async () => {
   await saveGames(store.games);
 
   return { refreshed };
+};
+
+export const removeUnusedData = async () => {
+  let removedPaths = store.paths.filter((path) => !path.exists).length;
+
+  store.paths = store.paths.filter((path) => path.exists);
+
+  let removedGames = store.games.filter(
+    (game) => !store.paths.find((path) => path.gameIds.includes(game.id))
+  ).length;
+
+  store.games = store.games.filter((game) =>
+    store.paths.find((path) => path.gameIds.includes(game.id))
+  );
+
+  await savePaths(store.paths);
+  await saveGames(store.games);
+
+  return { removedPaths, removedGames };
 };

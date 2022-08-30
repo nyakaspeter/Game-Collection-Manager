@@ -1,7 +1,7 @@
 import { fetch } from "@tauri-apps/api/http";
 import { uniq } from "rambda";
 import { Game } from "../../store/games";
-import { fetchIgdbGames, fetchIgdbGamesBySlug } from "./api";
+import { fetchIgdbGames } from "./api";
 
 export interface IgdbSearchResult {
   id: number;
@@ -20,7 +20,9 @@ interface IgdbSearchResponse {
   }>;
 }
 
-export const searchIgdb = async (query: string): Promise<Game[]> => {
+export const searchIgdbIds = async (
+  query: string
+): Promise<IgdbSearchResult[]> => {
   const sanitizedQuery = query.replace(/[^0-9a-z]/gi, " ").replace(/  +/g, " ");
   if (!sanitizedQuery) return [];
 
@@ -28,17 +30,26 @@ export const searchIgdb = async (query: string): Promise<Game[]> => {
     `https://www.igdb.com/search_autocomplete_all?q=${sanitizedQuery}`
   );
 
-  if (!response.ok) return [];
+  return (
+    response.data?.game_suggest?.map((g) => ({
+      id: g.id,
+      slug: g.url.split("/").pop() || "",
+      name: g.name,
+      displayName: g.value,
+    })) || []
+  );
+};
 
-  const igdbIds = response.data?.game_suggest.map((g) => g.id.toString()) || [];
+export const searchIgdbGames = async (query: string): Promise<Game[]> => {
+  const sanitizedQuery = query.replace(/[^0-9a-z]/gi, " ").replace(/  +/g, " ");
+  if (!sanitizedQuery) return [];
 
-  try {
-    return uniq([
-      ...(await fetchIgdbGamesBySlug([query])),
-      ...(await fetchIgdbGames(igdbIds)),
-    ]);
-  } catch (error) {
-    console.error(error);
-    return [];
-  }
+  const response = await fetch<IgdbSearchResponse>(
+    `https://www.igdb.com/search_autocomplete_all?q=${sanitizedQuery}`
+  );
+
+  const igdbIds =
+    response.data?.game_suggest?.map((g) => g.id.toString()) || [];
+
+  return await fetchIgdbGames(igdbIds, [query]);
 };

@@ -2,7 +2,7 @@ import { ActionIcon, Badge, Group, Tooltip } from "@mantine/core";
 import { openModal } from "@mantine/modals";
 import { IconPencil } from "@tabler/icons";
 import { sep } from "@tauri-apps/api/path";
-import { DataGrid, stringFilterFn } from "mantine-data-grid";
+import { DataGrid } from "mantine-data-grid";
 import { useMemo } from "react";
 import { useSnapshot } from "valtio";
 import { PathEditor } from "../components/PathEditor";
@@ -58,7 +58,7 @@ const PathsPage = () => {
       withGlobalFilter
       withColumnFilters
       withSorting
-      sx={createTableStyles(["100%", "400px", "200px", "60px"])}
+      sx={createTableStyles(["100%", "400px", "200px", "100px", "60px"])}
       columns={[
         {
           id: "path",
@@ -69,7 +69,15 @@ const PathsPage = () => {
             (b.getValue<string>(columnId).split(sep).pop() || "")
               ? -1
               : 1,
-          cell: (cell) => (cell.getValue() as string).split(sep).pop(),
+          cell: (cell) => (
+            <Tooltip
+              openDelay={500}
+              position="bottom-start"
+              label={cell.getValue() as string}
+            >
+              <span>{(cell.getValue() as string).split(sep).pop()}</span>
+            </Tooltip>
+          ),
         },
         {
           id: "games",
@@ -80,6 +88,8 @@ const PathsPage = () => {
             <Group spacing={4}>
               {(cell.getValue() as Game[]).map((game) => (
                 <Tooltip
+                  openDelay={500}
+                  position="bottom-start"
                   key={game.id}
                   label={getGameLabel(game, true, true, true, false, true)}
                 >
@@ -109,6 +119,14 @@ const PathsPage = () => {
           ),
         },
         {
+          id: "added",
+          header: "Added",
+          accessorKey: "added",
+          sortDescFirst: true,
+          cell: (cell) =>
+            new Date(cell.getValue() as string).toLocaleDateString(),
+        },
+        {
           id: "button",
           header: "",
           enableSorting: false,
@@ -128,7 +146,7 @@ const PathsPage = () => {
         },
       ]}
       initialState={{
-        sorting: [{ id: "path", desc: false }],
+        sorting: [{ id: "added", desc: true }],
       }}
     />
   );

@@ -5,6 +5,7 @@ export interface Path {
   path: string;
   exists: boolean;
   gameIds: string[];
+  added: string;
 }
 
 const key = "paths";
