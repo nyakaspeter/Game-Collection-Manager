@@ -11,7 +11,8 @@ import { Collection } from "../store/collections";
 import { Game } from "../store/games";
 import { Path } from "../store/paths";
 import { getGameLabel } from "../utils/game";
-import { createTableStyles } from "../utils/table";
+import { collectionFilter } from "../utils/table/collectionFilter";
+import { createTableStyles } from "../utils/table/styles";
 
 interface PathItem extends Path {
   collections: Collection[];
@@ -62,8 +63,12 @@ const PathsPage = () => {
         {
           id: "path",
           header: "Path",
-          filterFn: stringFilterFn,
           accessorKey: "path",
+          sortingFn: (a, b, columnId) =>
+            (a.getValue<string>(columnId).split(sep).pop() || "") <
+            (b.getValue<string>(columnId).split(sep).pop() || "")
+              ? -1
+              : 1,
           cell: (cell) => (cell.getValue() as string).split(sep).pop(),
         },
         {
@@ -83,7 +88,7 @@ const PathsPage = () => {
           id: "collections",
           header: "Collections",
           enableSorting: false,
-          filterFn: stringFilterFn,
+          filterFn: collectionFilter as any,
           accessorKey: "collections",
           cell: (cell) => (
             <Group spacing={4}>

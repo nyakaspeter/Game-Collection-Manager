@@ -7,7 +7,7 @@ import {
   Tooltip,
 } from "@mantine/core";
 import { IconArrowRight } from "@tabler/icons";
-import { DataGrid, numberFilterFn, stringFilterFn } from "mantine-data-grid";
+import { DataGrid } from "mantine-data-grid";
 import { useMemo } from "react";
 import { useSnapshot } from "valtio";
 import { store } from "../store";
@@ -20,7 +20,10 @@ import {
   getGameRating,
   getGameYear,
 } from "../utils/game";
-import { createTableStyles } from "../utils/table";
+import { collectionFilter } from "../utils/table/collectionFilter";
+import { genreFilter } from "../utils/table/genreFilter";
+import { modeFilter } from "../utils/table/modeFilter";
+import { createTableStyles } from "../utils/table/styles";
 
 interface GameItem extends Game {
   paths: Path[];
@@ -68,33 +71,31 @@ const GamesPage = () => {
       withSorting
       sx={createTableStyles([
         "100%",
-        "100px",
+        "80px",
         "220px",
         "200px",
         "200px",
-        "50px",
+        "80px",
         "60px",
       ])}
       columns={[
         {
           id: "name",
           header: "Name",
-          filterFn: stringFilterFn,
           accessorKey: "name",
         },
         {
           id: "year",
           header: "Year",
-          filterFn: numberFilterFn,
           sortingFn: "alphanumeric",
-          accessorFn: (game: GameItem) => getGameYear(game),
+          accessorFn: (game: Game) => getGameYear(game),
         },
         {
           id: "genre",
           header: "Genres",
           enableSorting: false,
-          filterFn: stringFilterFn,
-          accessorFn: (game: GameItem) => getGameGenres(game),
+          filterFn: genreFilter,
+          accessorFn: (game: Game) => getGameGenres(game),
           cell: (cell) => (
             <Group spacing={4}>
               {(cell.getValue() as string[]).slice(0, 2).map((genre) => (
@@ -107,8 +108,8 @@ const GamesPage = () => {
           id: "modes",
           header: "Modes",
           enableSorting: false,
-          filterFn: stringFilterFn,
-          accessorFn: (game: GameItem) => getGameModes(game),
+          filterFn: modeFilter,
+          accessorFn: (game: Game) => getGameModes(game),
           cell: (cell) => (
             <Group spacing={4}>
               {(cell.getValue() as string[]).map((mode) => (
@@ -121,7 +122,7 @@ const GamesPage = () => {
           id: "collections",
           header: "Collections",
           enableSorting: false,
-          filterFn: stringFilterFn,
+          filterFn: collectionFilter as any,
           accessorKey: "collections",
           cell: (cell) => (
             <Group spacing={4}>
@@ -139,9 +140,8 @@ const GamesPage = () => {
         {
           id: "rating",
           header: "Score",
-          filterFn: numberFilterFn,
           sortingFn: "alphanumeric",
-          accessorFn: (game: GameItem) => getGameRating(game),
+          accessorFn: (game: Game) => getGameRating(game),
           cell: (cell) => {
             const rating = cell.getValue() as number;
             const color =
@@ -150,7 +150,7 @@ const GamesPage = () => {
             return (
               rating && (
                 <RingProgress
-                  ml={5}
+                  ml={4}
                   size={28}
                   thickness={2}
                   sections={[{ value: rating, color }]}
@@ -168,7 +168,7 @@ const GamesPage = () => {
           id: "button",
           header: "",
           enableSorting: false,
-          accessorFn: (game: GameItem) => game,
+          accessorFn: (game: Game) => game,
           cell: () => (
             <Tooltip label="View game" position="left">
               <ActionIcon

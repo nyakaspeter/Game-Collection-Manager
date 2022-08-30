@@ -1,0 +1,31 @@
+[
+    {
+        "id": 1,
+        "name": "Single player",
+        "short": "Single"
+    },
+    {
+        "id": 2,
+        "name": "Multiplayer",
+        "short": "Multi"
+    },
+    {
+        "id": 3,
+        "name": "Co-operative",
+        "short": "Coop"
+    },
+    {
+        "id": 4,
+        "name": "Split screen",
+        "short": "Splitscreen"
+    },
+    {
+        "id": 5,
+        "name": "Massively Multiplayer Online",
+        "short": "MMO"
+    },
+    {
+        "id": 6,
+        "name": "Battle Royale"
+    }
+]

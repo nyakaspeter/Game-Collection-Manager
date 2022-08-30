@@ -1,11 +1,29 @@
 import { Game } from "../store/games";
-import {
-  game_modes,
-  genres,
-  platforms,
-  player_perspectives,
-  themes,
-} from "./constants";
+import genres from "../data/genres.json";
+import platforms from "../data/platforms.json";
+import perspectives from "../data/player_perspectives.json";
+import themes from "../data/themes.json";
+import modes from "../data/game_modes.json";
+
+export enum Website {
+  Official = 1,
+  Wikia = 2,
+  Wikipedia = 3,
+  Facebook = 4,
+  Twitter = 5,
+  Twitch = 6,
+  Instagram = 8,
+  Youtube = 9,
+  Iphone = 10,
+  Ipad = 11,
+  Android = 12,
+  Steam = 13,
+  Reddit = 14,
+  Itch = 15,
+  Epicgames = 16,
+  Gog = 17,
+  Discord = 18,
+}
 
 export const getGameLabel = (game: Game) => {
   let label = game.name;
@@ -38,7 +56,7 @@ export const getGamePlatforms = (game: Game) => {
 export const getGamePerspectives = (game: Game) => {
   const gamePerspectives: string[] = [];
   game.perspectives?.forEach((id) => {
-    const perspective = player_perspectives.find(
+    const perspective = perspectives.find(
       (perspective) => perspective.id === id
     );
     if (perspective) gamePerspectives.push(perspective.name);
@@ -58,7 +76,7 @@ export const getGameThemes = (game: Game) => {
 export const getGameModes = (game: Game) => {
   const gameModes: string[] = [];
   game.gameModes?.forEach((id) => {
-    const mode = game_modes.find((mode) => mode.id === id);
+    const mode = modes.find((mode) => mode.id === id);
     if (mode) gameModes.push(mode.short || mode.name);
   });
   return gameModes;
