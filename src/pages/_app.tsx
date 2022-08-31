@@ -35,7 +35,7 @@ const appShellStyles: Sx = {
 
 const scrollAreaStyles: Sx = { width: "100%", height: "100%" };
 
-const pageStyles: Sx = { padding: 16 };
+const pageStyles: Sx = { margin: 16 };
 
 const loadingStyles: Sx = { width: "100%", height: "100%" };
 

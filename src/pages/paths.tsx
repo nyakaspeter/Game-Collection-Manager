@@ -1,25 +1,27 @@
 import { ActionIcon, Badge, Group, Tooltip } from "@mantine/core";
 import { openModal } from "@mantine/modals";
 import { IconPencil } from "@tabler/icons";
+import { Table } from "@tanstack/react-table";
 import { sep } from "@tauri-apps/api/path";
 import { DataGrid } from "mantine-data-grid";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { useSnapshot } from "valtio";
 import { PathEditor } from "../components/PathEditor";
 import { store } from "../store";
 import { Collection } from "../store/collections";
 import { Game } from "../store/games";
-import { Path } from "../store/paths";
+import { PathListItem } from "../store/paths";
 import { getGameLabel } from "../utils/game";
 import { collectionFilter } from "../utils/table/collectionFilter";
 import { createTableStyles } from "../utils/table/styles";
 
-export interface PathItem extends Path {
-  collections: Collection[];
-  games: Game[];
-}
-
 const PathsPage = () => {
+  const table = useRef<Table<PathListItem>>(null);
+  table.current?.setOptions((options) => ({
+    ...options,
+    autoResetPageIndex: false,
+  }));
+
   const { paths, collections, games } = useSnapshot(store);
 
   const data = useMemo(() => {
@@ -33,11 +35,11 @@ const PathsPage = () => {
               collection.roots.find((root) => path.path.startsWith(root))
             ),
             games: games.filter((game) => path.gameIds.includes(game.id)),
-          } as PathItem)
+          } as PathListItem)
       );
   }, [paths, collections, games]);
 
-  const handleEdit = (path: PathItem) => {
+  const handleEdit = (path: PathListItem) => {
     const name = path.path.split(sep).pop();
 
     openModal({
@@ -50,6 +52,7 @@ const PathsPage = () => {
 
   return (
     <DataGrid
+      tableRef={table}
       data={data}
       height="calc(100vh - 32px)"
       noFlexLayout
@@ -58,6 +61,7 @@ const PathsPage = () => {
       withGlobalFilter
       withColumnFilters
       withSorting
+      withPagination
       sx={createTableStyles(["100%", "400px", "200px", "100px", "60px"])}
       columns={[
         {
@@ -130,14 +134,14 @@ const PathsPage = () => {
           id: "button",
           header: "",
           enableSorting: false,
-          accessorFn: (path: PathItem) => path,
+          accessorFn: (path: PathListItem) => path,
           cell: (cell) => (
             <Tooltip label="Edit games" position="left">
               <ActionIcon
                 className="button"
                 variant="filled"
                 sx={{ visibility: "hidden" }}
-                onClick={() => handleEdit(cell.getValue() as PathItem)}
+                onClick={() => handleEdit(cell.getValue() as PathListItem)}
               >
                 <IconPencil size={18} />
               </ActionIcon>
@@ -147,6 +151,7 @@ const PathsPage = () => {
       ]}
       initialState={{
         sorting: [{ id: "added", desc: true }],
+        pagination: { pageSize: 25 },
       }}
     />
   );

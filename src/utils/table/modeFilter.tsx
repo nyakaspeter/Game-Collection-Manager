@@ -1,14 +1,14 @@
 import { MultiSelect } from "@mantine/core";
 import { DataGridFilterFn } from "mantine-data-grid";
-import { Game } from "../../store/games";
 import modes from "../../data/game_modes.json";
+import { GameListItem } from "../../store/games";
 
 const data = modes.map((mode) => ({
   value: mode.id.toString(),
   label: mode.short || mode.name,
 }));
 
-export const modeFilter: DataGridFilterFn<Game, string[]> = (
+export const modeFilter: DataGridFilterFn<GameListItem, string[]> = (
   row,
   _columnId,
   filter: number[]

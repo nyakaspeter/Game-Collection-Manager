@@ -4,11 +4,11 @@ import { closeAllModals } from "@mantine/modals";
 import { useMemo, useState } from "react";
 import { useEditPath } from "../hooks/useEditPath";
 import { useIgdbSearch } from "../hooks/useIgdbSearch";
-import { PathItem } from "../pages/paths";
 import { Game } from "../store/games";
+import { PathListItem } from "../store/paths";
 import { getGameLabel } from "../utils/game";
 
-export const PathEditor = ({ path }: { path?: PathItem }) => {
+export const PathEditor = ({ path }: { path?: PathListItem }) => {
   const [query, setQuery] = useDebouncedState("", 500);
 
   const { data: searchResults, remove: clearSearchResults } =

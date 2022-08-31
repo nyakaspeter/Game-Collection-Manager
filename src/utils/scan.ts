@@ -169,9 +169,9 @@ export const refreshGames = async () => {
 };
 
 export const removeUnusedData = async () => {
-  let removedPaths = store.paths.filter((path) => !path.exists).length;
+  // let removedPaths = store.paths.filter((path) => !path.exists).length;
 
-  store.paths = store.paths.filter((path) => path.exists);
+  // store.paths = store.paths.filter((path) => path.exists);
 
   let removedGames = store.games.filter(
     (game) => !store.paths.find((path) => path.gameIds.includes(game.id))
@@ -181,8 +181,8 @@ export const removeUnusedData = async () => {
     store.paths.find((path) => path.gameIds.includes(game.id))
   );
 
-  await savePaths(store.paths);
+  // await savePaths(store.paths);
   await saveGames(store.games);
 
-  return { removedPaths, removedGames };
+  return { removedGames };
 };

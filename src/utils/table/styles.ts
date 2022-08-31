@@ -22,5 +22,6 @@ export const createTableStyles = (columnWidths: string[]): Sx => ({
       ),
     },
   },
+  ".mantine-DataGrid-scrollArea": { flex: 1 },
   ".mantine-ScrollArea-scrollbar": { zIndex: 2 },
 });

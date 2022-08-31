@@ -25,7 +25,7 @@ import { useScanPaths } from "../hooks/useScanPaths";
 import { store } from "../store";
 
 const SettingsPage = () => {
-  const { mutate: scanPaths, isLoading: isScanning } = useScanPaths();
+  const { mutate: scanPaths } = useScanPaths();
   const { mutate: refreshGames, isLoading: isRefreshing } = useRefreshGames();
   const { mutate: removeUnusedData } = useRemoveUnusedData();
   const { mutateAsync: refreshAuthHeaders } = useRefreshAuthHeaders();
@@ -175,7 +175,7 @@ const SettingsPage = () => {
 
             <Button
               leftIcon={<IconRefresh size={18} />}
-              loading={isRefreshing || isScanning}
+              loading={isRefreshing}
               onClick={handleRefreshGames}
             >
               Refresh games

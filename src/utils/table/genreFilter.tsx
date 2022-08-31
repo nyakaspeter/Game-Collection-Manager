@@ -1,7 +1,7 @@
 import { MultiSelect } from "@mantine/core";
 import { DataGridFilterFn } from "mantine-data-grid";
-import { Game } from "../../store/games";
 import genres from "../../data/genres.json";
+import { GameListItem } from "../../store/games";
 
 const data = genres.map((genre) => ({
   value: genre.id.toString(),
@@ -10,7 +10,7 @@ const data = genres.map((genre) => ({
 
 data.sort((a, b) => (a.label < b.label ? -1 : 1));
 
-export const genreFilter: DataGridFilterFn<Game, string[]> = (
+export const genreFilter: DataGridFilterFn<GameListItem, string[]> = (
   row,
   _columnId,
   filter: number[]

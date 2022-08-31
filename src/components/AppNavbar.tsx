@@ -1,5 +1,4 @@
 import {
-  Box,
   Center,
   createStyles,
   Navbar,

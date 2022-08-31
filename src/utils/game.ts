@@ -1,9 +1,15 @@
-import { Game } from "../store/games";
+import { Game, GameListItem } from "../store/games";
 import genres from "../data/genres.json";
 import platforms from "../data/platforms.json";
 import perspectives from "../data/player_perspectives.json";
 import themes from "../data/themes.json";
 import modes from "../data/game_modes.json";
+import placeholder1 from "../assets/placeholder1.png";
+import placeholder2 from "../assets/placeholder2.png";
+import placeholder3 from "../assets/placeholder3.png";
+import placeholder4 from "../assets/placeholder4.png";
+
+const placeholders = [placeholder1, placeholder2, placeholder3, placeholder4];
 
 export enum Website {
   Official = 1,
@@ -98,3 +104,11 @@ export const getGameModes = (game: Game) => {
 
 export const getGameRating = (game: Game) =>
   game.rating && Math.round(game.rating);
+
+export const getGameCover = (game: Game) =>
+  game.cover
+    ? `https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover}.jpg`
+    : placeholders[parseInt(game.id) % 4];
+
+export const getGamePlayable = (game: GameListItem) =>
+  !!game.collections.find((collection) => collection.readyToPlay);

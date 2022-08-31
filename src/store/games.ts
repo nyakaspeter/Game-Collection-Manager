@@ -1,5 +1,7 @@
 import { resolve, resourceDir } from "@tauri-apps/api/path";
 import { Store } from "tauri-plugin-store-api";
+import { Collection } from "./collections";
+import { Path } from "./paths";
 
 export interface Game {
   id: string;
@@ -36,6 +38,11 @@ export interface Game {
     category: number;
     url: string;
   }[];
+}
+
+export interface GameListItem extends Game {
+  paths: Path[];
+  collections: Collection[];
 }
 
 const key = "games";
