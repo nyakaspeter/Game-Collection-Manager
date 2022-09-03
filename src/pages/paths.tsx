@@ -1,4 +1,10 @@
-import { ActionIcon, Badge, Group, Tooltip } from "@mantine/core";
+import {
+  ActionIcon,
+  Badge,
+  Group,
+  Tooltip,
+  useMantineTheme,
+} from "@mantine/core";
 import { openModal } from "@mantine/modals";
 import { IconPencil } from "@tabler/icons";
 import { Table } from "@tanstack/react-table";
@@ -16,6 +22,8 @@ import { collectionFilter } from "../utils/table/collectionFilter";
 import { createTableStyles } from "../utils/table/styles";
 
 const PathsPage = () => {
+  const theme = useMantineTheme();
+
   const table = useRef<Table<PathListItem>>(null);
   table.current?.setOptions((options) => ({
     ...options,
@@ -54,7 +62,7 @@ const PathsPage = () => {
     <DataGrid
       tableRef={table}
       data={data}
-      height="calc(100vh - 32px)"
+      height={`calc(100vh - ${2 * theme.spacing.md}px)`}
       noFlexLayout
       highlightOnHover
       withFixedHeader

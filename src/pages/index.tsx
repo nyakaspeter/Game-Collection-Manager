@@ -1,39 +1,26 @@
 import {
   Box,
-  Group,
-  Input,
-  MantineTheme,
+  ScrollArea,
+  SimpleGrid,
   Stack,
-  Sx,
   TextInput,
   useMantineTheme,
 } from "@mantine/core";
-import { useDebouncedState } from "@mantine/hooks";
+import { useDebouncedState, useElementSize } from "@mantine/hooks";
 import { IconSearch } from "@tabler/icons";
-import { ChangeEvent, useMemo } from "react";
+import { ChangeEvent, forwardRef, useMemo } from "react";
+import { VirtuosoGrid } from "react-virtuoso";
 import { useSnapshot } from "valtio";
 import { GameCard } from "../components/GameCard";
 import { store } from "../store";
 import { Game, GameListItem } from "../store/games";
 import { getGameLabel } from "../utils/game";
 
-const filterStyles = (theme: MantineTheme): Sx => ({
-  position: "sticky",
-  marginTop: -16,
-  paddingTop: 16,
-  paddingBottom: 16,
-  top: 0,
-  zIndex: 1,
-  background: theme.colors.dark[7],
-});
-
-const cardsStyles: Sx = {
-  justifyContent: "space-around",
-  "::after": { content: '""', flex: "auto" },
-};
+const CARD_WIDTH = 150;
 
 const HomePage = () => {
   const theme = useMantineTheme();
+  const { ref: scrollParent, width } = useElementSize();
   const { paths, collections, games } = useSnapshot(store);
   const [query, setQuery] = useDebouncedState("", 200);
 
@@ -79,8 +66,8 @@ const HomePage = () => {
   };
 
   return (
-    <Stack spacing={0}>
-      <Box sx={filterStyles(theme)}>
+    <Stack sx={{ height: `calc(100vh - ${2 * theme.spacing.md}px)` }}>
+      <Box>
         <TextInput
           placeholder="Search..."
           rightSection={<IconSearch />}
@@ -88,11 +75,27 @@ const HomePage = () => {
           onChange={handleInputChange}
         />
       </Box>
-      <Group sx={cardsStyles}>
-        {data.map((game) => (
-          <GameCard key={game.id} game={game} />
-        ))}
-      </Group>
+      <ScrollArea viewportRef={scrollParent}>
+        <VirtuosoGrid
+          overscan={500}
+          totalCount={data.length}
+          itemContent={(index) => <GameCard game={data[index]} />}
+          customScrollParent={scrollParent.current || undefined}
+          components={{
+            List: forwardRef(({ style, children }, ref) => {
+              return (
+                <SimpleGrid
+                  ref={ref}
+                  cols={Math.trunc(width / CARD_WIDTH)}
+                  style={style}
+                >
+                  {children}
+                </SimpleGrid>
+              );
+            }),
+          }}
+        />
+      </ScrollArea>
     </Stack>
   );
 };

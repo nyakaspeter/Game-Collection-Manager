@@ -46,7 +46,7 @@ export interface GameListItem extends Game {
 }
 
 const key = "games";
-const path = await resolve(await resourceDir(), `${key}.json`);
+const path = `${key}.json`;
 const store = new Store(path);
 const defaultValue: Game[] = [];
 

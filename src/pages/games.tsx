@@ -1,4 +1,10 @@
-import { ActionIcon, Badge, Group, Tooltip } from "@mantine/core";
+import {
+  ActionIcon,
+  Badge,
+  Group,
+  Tooltip,
+  useMantineTheme,
+} from "@mantine/core";
 import { IconArrowRight } from "@tabler/icons";
 import { Table } from "@tanstack/react-table";
 import { DataGrid } from "mantine-data-grid";
@@ -20,6 +26,8 @@ import { modeFilter } from "../utils/table/modeFilter";
 import { createTableStyles } from "../utils/table/styles";
 
 const GamesPage = () => {
+  const theme = useMantineTheme();
+
   const table = useRef<Table<GameListItem>>(null);
   table.current?.setOptions((options) => ({
     ...options,
@@ -58,7 +66,7 @@ const GamesPage = () => {
     <DataGrid
       tableRef={table}
       data={data}
-      height="calc(100vh - 32px)"
+      height={`calc(100vh - ${2 * theme.spacing.md}px)`}
       noFlexLayout
       highlightOnHover
       withFixedHeader

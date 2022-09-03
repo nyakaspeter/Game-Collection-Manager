@@ -7,7 +7,7 @@ export interface Settings {
 }
 
 const key = "settings";
-const path = await resolve(await resourceDir(), `${key}.json`);
+const path = `${key}.json`;
 const store = new Store(path);
 const defaultValue: Settings = {
   twitchApiClientId: "",

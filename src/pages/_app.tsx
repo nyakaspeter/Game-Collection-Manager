@@ -28,19 +28,15 @@ const theme: MantineThemeOverride = {
 const appShellStyles: Sx = {
   main: {
     padding: 0,
-    paddingLeft: "var(--mantine-navbar-width)",
+    marginLeft: "var(--mantine-navbar-width)",
     height: "100vh",
   },
 };
 
-const scrollAreaStyles: Sx = { width: "100%", height: "100%" };
-
-const pageStyles: Sx = { margin: 16 };
-
-const loadingStyles: Sx = { width: "100%", height: "100%" };
+const fillParentStyles: Sx = { width: "100%", height: "100%" };
 
 const Loading = () => (
-  <Center sx={loadingStyles}>
+  <Center sx={fillParentStyles}>
     <Loader />
   </Center>
 );
@@ -62,8 +58,8 @@ const App = ({ children }: PropsWithChildren) => {
         <NotificationsProvider>
           <AppShell navbar={<AppNavbar />} sx={appShellStyles}>
             <Suspense fallback={<Loading />}>
-              <ScrollArea sx={scrollAreaStyles}>
-                <Box sx={pageStyles}>{children}</Box>
+              <ScrollArea sx={fillParentStyles}>
+                <Box m="md">{children}</Box>
               </ScrollArea>
             </Suspense>
           </AppShell>

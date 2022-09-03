@@ -29,7 +29,7 @@ export const GameCard = ({ game }: { game?: GameListItem }) => {
   const playable = getGamePlayable(game);
 
   return (
-    <AspectRatio ratio={3 / 4} sx={{ width: 150 }}>
+    <AspectRatio ratio={3 / 4}>
       <BackgroundImage
         src={cover}
         radius="md"

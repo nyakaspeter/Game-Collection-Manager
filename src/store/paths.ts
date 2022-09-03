@@ -16,7 +16,7 @@ export interface PathListItem extends Path {
 }
 
 const key = "paths";
-const path = await resolve(await resourceDir(), `${key}.json`);
+const path = `${key}.json`;
 const store = new Store(path);
 const defaultValue: Path[] = [];
 
