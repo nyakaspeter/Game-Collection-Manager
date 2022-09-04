@@ -5,9 +5,11 @@ import {
   Group,
   MultiSelect,
   Paper,
+  ScrollArea,
   Stack,
   TextInput,
   Tooltip,
+  useMantineTheme,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import {
@@ -25,7 +27,8 @@ import { useScanPaths } from "../hooks/useScanPaths";
 import { store } from "../store";
 
 const SettingsPage = () => {
-  const { mutate: scanPaths } = useScanPaths();
+  const theme = useMantineTheme();
+  const { mutate: scanPaths, isLoading: isScanning } = useScanPaths();
   const { mutate: refreshGames, isLoading: isRefreshing } = useRefreshGames();
   const { mutate: removeUnusedData } = useRemoveUnusedData();
   const { mutateAsync: refreshAuthHeaders } = useRefreshAuthHeaders();
@@ -68,94 +71,107 @@ const SettingsPage = () => {
 
   return (
     <form onSubmit={handleSave}>
-      <Stack>
-        <Paper withBorder p="xs">
-          <TextInput
-            label="Twitch API Client ID"
-            {...form.getInputProps("settings.twitchApiClientId")}
-          />
-
-          <TextInput
-            label="Twitch API Client Secret"
-            {...form.getInputProps("settings.twitchApiClientSecret")}
-          />
-        </Paper>
-
-        {form.values.collections?.map((collection, index) => (
-          <Paper key={collection.id} withBorder p="xs">
-            <Group>
+      <Stack
+        justify="space-between"
+        sx={{ height: `calc(100vh - ${2 * theme.spacing.md}px)` }}
+      >
+        <ScrollArea>
+          <Stack>
+            <Paper withBorder p="xs">
               <TextInput
-                label="Collection name"
-                required
-                sx={{ flex: 1 }}
-                {...form.getInputProps(`collections.${index}.name`)}
+                label="Twitch API Client ID"
+                {...form.getInputProps("settings.twitchApiClientId")}
               />
 
-              <Group mt={24}>
-                <Checkbox
-                  label="Ready to play"
-                  {...form.getInputProps(`collections.${index}.readyToPlay`, {
-                    type: "checkbox",
-                  })}
+              <TextInput
+                label="Twitch API Client Secret"
+                {...form.getInputProps("settings.twitchApiClientSecret")}
+              />
+            </Paper>
+
+            {form.values.collections?.map((collection, index) => (
+              <Paper key={collection.id} withBorder p="xs">
+                <Group>
+                  <TextInput
+                    label="Collection name"
+                    required
+                    sx={{ flex: 1 }}
+                    {...form.getInputProps(`collections.${index}.name`)}
+                  />
+
+                  <Group mt={24}>
+                    <Checkbox
+                      label="Ready to play"
+                      {...form.getInputProps(
+                        `collections.${index}.readyToPlay`,
+                        {
+                          type: "checkbox",
+                        }
+                      )}
+                    />
+
+                    <Checkbox
+                      label="Scan directories"
+                      {...form.getInputProps(
+                        `collections.${index}.scanDirectories`,
+                        {
+                          type: "checkbox",
+                        }
+                      )}
+                    />
+
+                    <Checkbox
+                      label="Scan files"
+                      {...form.getInputProps(`collections.${index}.scanFiles`, {
+                        type: "checkbox",
+                      })}
+                    />
+
+                    <Tooltip label="Remove collection">
+                      <ActionIcon
+                        color="red"
+                        onClick={() => handleRemoveCollection(index)}
+                      >
+                        <IconTrash size={18} />
+                      </ActionIcon>
+                    </Tooltip>
+                  </Group>
+                </Group>
+
+                <MultiSelect
+                  label="Scan roots"
+                  getCreateLabel={(query) => `+ ${query}`}
+                  searchable
+                  creatable
+                  clearable
+                  data={collection.roots}
+                  defaultValue={collection.roots}
+                  onChange={(value) =>
+                    form.setFieldValue(`collections.${index}.roots`, value)
+                  }
                 />
 
-                <Checkbox
-                  label="Scan directories"
-                  {...form.getInputProps(
-                    `collections.${index}.scanDirectories`,
-                    {
-                      type: "checkbox",
+                {collection.scanFiles && (
+                  <MultiSelect
+                    label="File types"
+                    getCreateLabel={(query) => `+ ${query}`}
+                    searchable
+                    creatable
+                    clearable
+                    data={collection.fileTypes}
+                    defaultValue={collection.fileTypes}
+                    onChange={(value) =>
+                      form.setFieldValue(
+                        `collections.${index}.fileTypes`,
+                        value
+                      )
                     }
-                  )}
-                />
-
-                <Checkbox
-                  label="Scan files"
-                  {...form.getInputProps(`collections.${index}.scanFiles`, {
-                    type: "checkbox",
-                  })}
-                />
-
-                <Tooltip label="Remove collection">
-                  <ActionIcon
-                    color="red"
-                    onClick={() => handleRemoveCollection(index)}
-                  >
-                    <IconTrash size={18} />
-                  </ActionIcon>
-                </Tooltip>
-              </Group>
-            </Group>
-
-            <MultiSelect
-              label="Scan roots"
-              getCreateLabel={(query) => `+ ${query}`}
-              searchable
-              creatable
-              clearable
-              data={collection.roots}
-              defaultValue={collection.roots}
-              onChange={(value) =>
-                form.setFieldValue(`collections.${index}.roots`, value)
-              }
-            />
-
-            {collection.scanFiles && (
-              <MultiSelect
-                label="File types"
-                getCreateLabel={(query) => `+ ${query}`}
-                searchable
-                creatable
-                clearable
-                data={collection.fileTypes}
-                defaultValue={collection.fileTypes}
-                onChange={(value) =>
-                  form.setFieldValue(`collections.${index}.fileTypes`, value)
-                }
-              />
-            )}
-          </Paper>
-        ))}
+                  />
+                )}
+              </Paper>
+            ))}
+          </Stack>
+        </ScrollArea>
 
         <Group position="apart">
           <Button
@@ -175,7 +191,7 @@ const SettingsPage = () => {
 
             <Button
               leftIcon={<IconRefresh size={18} />}
-              loading={isRefreshing}
+              loading={isRefreshing || isScanning}
               onClick={handleRefreshGames}
             >
               Refresh games

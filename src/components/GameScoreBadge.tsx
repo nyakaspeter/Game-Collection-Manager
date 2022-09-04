@@ -1,8 +1,6 @@
 import { RingProgress, Text } from "@mantine/core";
 
-export const GameScore = ({ score }: { score?: number }) => {
-  if (!score) return null;
-
+export const GameScoreBadge = ({ score }: { score: number }) => {
   const color = score >= 80 ? "green" : score >= 60 ? "yellow" : "red";
 
   return (

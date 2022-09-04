@@ -10,7 +10,7 @@ import { IconPencil } from "@tabler/icons";
 import { Table } from "@tanstack/react-table";
 import { sep } from "@tauri-apps/api/path";
 import { DataGrid } from "mantine-data-grid";
-import { useMemo, useRef } from "react";
+import { useRef } from "react";
 import { useSnapshot } from "valtio";
 import { PathEditor } from "../components/PathEditor";
 import { store } from "../store";
@@ -30,22 +30,7 @@ const PathsPage = () => {
     autoResetPageIndex: false,
   }));
 
-  const { paths, collections, games } = useSnapshot(store);
-
-  const data = useMemo(() => {
-    return paths
-      .filter((path) => path.exists)
-      .map(
-        (path) =>
-          ({
-            ...path,
-            collections: collections.filter((collection) =>
-              collection.roots.find((root) => path.path.startsWith(root))
-            ),
-            games: games.filter((game) => path.gameIds.includes(game.id)),
-          } as PathListItem)
-      );
-  }, [paths, collections, games]);
+  const { pathList } = useSnapshot(store);
 
   const handleEdit = (path: PathListItem) => {
     const name = path.path.split(sep).pop();
@@ -61,7 +46,7 @@ const PathsPage = () => {
   return (
     <DataGrid
       tableRef={table}
-      data={data}
+      data={pathList as PathListItem[]}
       height={`calc(100vh - ${2 * theme.spacing.md}px)`}
       noFlexLayout
       highlightOnHover

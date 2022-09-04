@@ -2,7 +2,6 @@ import { MutationOptions, useMutation } from "@tanstack/react-query";
 import { store } from "../store";
 import { Game, saveGames } from "../store/games";
 import { Path, savePaths } from "../store/paths";
-import { fetchIgdbGames } from "../utils/igdb/api";
 import { toast } from "../utils/toast";
 
 export const useEditPath = (

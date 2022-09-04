@@ -8,9 +8,9 @@ import {
 import { IconArrowRight } from "@tabler/icons";
 import { Table } from "@tanstack/react-table";
 import { DataGrid } from "mantine-data-grid";
-import { useMemo, useRef } from "react";
+import { useRef } from "react";
 import { useSnapshot } from "valtio";
-import { GameScore } from "../components/GameScore";
+import { GameScoreBadge } from "../components/GameScoreBadge";
 import { store } from "../store";
 import { Collection } from "../store/collections";
 import { GameListItem } from "../store/games";
@@ -34,38 +34,12 @@ const GamesPage = () => {
     autoResetPageIndex: false,
   }));
 
-  const { paths, collections, games } = useSnapshot(store);
-
-  const data = useMemo(() => {
-    const existingGameIds = paths
-      .filter((p) => p.exists)
-      .flatMap((p) => p.gameIds);
-
-    const existingGames = games.filter((g) => existingGameIds.includes(g.id));
-
-    return existingGames.map((game) => {
-      const gamePaths = paths.filter(
-        (path) => path.exists && path.gameIds.includes(game.id)
-      );
-
-      const gameCollections = collections.filter((collection) =>
-        collection.roots.find((root) =>
-          gamePaths.find((path) => path.path.startsWith(root))
-        )
-      );
-
-      return {
-        ...game,
-        paths: gamePaths,
-        collections: gameCollections,
-      } as GameListItem;
-    });
-  }, [paths, collections, games]);
+  const { gameList } = useSnapshot(store);
 
   return (
     <DataGrid
       tableRef={table}
-      data={data}
+      data={gameList as GameListItem[]}
       height={`calc(100vh - ${2 * theme.spacing.md}px)`}
       noFlexLayout
       highlightOnHover
@@ -147,7 +121,10 @@ const GamesPage = () => {
           header: "Score",
           sortingFn: "alphanumeric",
           accessorFn: (game) => getGameRating(game),
-          cell: (cell) => <GameScore score={cell.getValue() as number} />,
+          cell: (cell) =>
+            cell.getValue() && (
+              <GameScoreBadge score={cell.getValue() as number} />
+            ),
         },
         {
           id: "button",

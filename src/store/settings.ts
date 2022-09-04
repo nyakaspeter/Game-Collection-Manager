@@ -1,4 +1,3 @@
-import { resolve, resourceDir } from "@tauri-apps/api/path";
 import { Store } from "tauri-plugin-store-api";
 
 export interface Settings {

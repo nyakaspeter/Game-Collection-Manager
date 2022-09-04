@@ -14,7 +14,7 @@ export const PathEditor = ({ path }: { path?: PathListItem }) => {
   const { data: searchResults, remove: clearSearchResults } =
     useIgdbSearch(query);
 
-  const { mutate: save } = useEditPath(path, {
+  const { mutate: save, isLoading: isSaving } = useEditPath(path, {
     onSuccess: () => handleClose(),
   });
 
@@ -78,7 +78,9 @@ export const PathEditor = ({ path }: { path?: PathListItem }) => {
       />
       <Group position="right">
         <Button onClick={handleClose}>Cancel</Button>
-        <Button onClick={handleSave}>Save</Button>
+        <Button onClick={handleSave} loading={isSaving}>
+          Save
+        </Button>
       </Group>
     </Stack>
   );

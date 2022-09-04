@@ -13,7 +13,7 @@ import { VirtuosoGrid } from "react-virtuoso";
 import { useSnapshot } from "valtio";
 import { GameCard } from "../components/GameCard";
 import { store } from "../store";
-import { Game, GameListItem } from "../store/games";
+import { GameListItem } from "../store/games";
 import { getGameLabel } from "../utils/game";
 
 const CARD_WIDTH = 150;
@@ -21,45 +21,23 @@ const CARD_WIDTH = 150;
 const HomePage = () => {
   const theme = useMantineTheme();
   const { ref: scrollParent, width } = useElementSize();
-  const { paths, collections, games } = useSnapshot(store);
+  const { gameList } = useSnapshot(store);
   const [query, setQuery] = useDebouncedState("", 200);
 
-  const data = useMemo(() => {
-    const existingGameIds = paths
-      .filter((p) => p.exists)
-      .flatMap((p) => p.gameIds);
-
-    let existingGames = games.filter((g) => existingGameIds.includes(g.id));
+  const filteredGameList = useMemo(() => {
+    let list = gameList as GameListItem[];
 
     if (query)
-      existingGames = existingGames.filter((g) =>
-        getGameLabel(g as Game)
-          .toLowerCase()
-          .includes(query.toLowerCase())
+      list = list.filter((item) =>
+        getGameLabel(item).toLowerCase().includes(query.toLowerCase())
       );
 
-    existingGames.sort((a, b) =>
+    list.sort((a, b) =>
       (a.releaseDate || "") > (b.releaseDate || "") ? -1 : 1
     );
 
-    return existingGames.map((game) => {
-      const gamePaths = paths.filter(
-        (path) => path.exists && path.gameIds.includes(game.id)
-      );
-
-      const gameCollections = collections.filter((collection) =>
-        collection.roots.find((root) =>
-          gamePaths.find((path) => path.path.startsWith(root))
-        )
-      );
-
-      return {
-        ...game,
-        paths: gamePaths,
-        collections: gameCollections,
-      } as GameListItem;
-    });
-  }, [paths, collections, games, query]);
+    return list;
+  }, [gameList, query]);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setQuery(event.currentTarget.value);
@@ -78,8 +56,8 @@ const HomePage = () => {
       <ScrollArea viewportRef={scrollParent}>
         <VirtuosoGrid
           overscan={500}
-          totalCount={data.length}
-          itemContent={(index) => <GameCard game={data[index]} />}
+          totalCount={filteredGameList.length}
+          itemContent={(index) => <GameCard game={filteredGameList[index]} />}
           customScrollParent={scrollParent.current || undefined}
           components={{
             List: forwardRef(({ style, children }, ref) => {

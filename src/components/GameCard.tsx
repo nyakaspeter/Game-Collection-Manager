@@ -14,8 +14,8 @@ import {
   getGamePlayable,
   getGameRating,
 } from "../utils/game";
-import { GamePlayable } from "./GamePlayable";
-import { GameScore } from "./GameScore";
+import { GamePlayableBadge } from "./GamePlayableBadge";
+import { GameScoreBadge } from "./GameScoreBadge";
 
 export const GameCard = ({ game }: { game?: GameListItem }) => {
   const theme = useMantineTheme();
@@ -61,8 +61,8 @@ export const GameCard = ({ game }: { game?: GameListItem }) => {
             </Text>
             {(playable || score) && (
               <Group position="center" spacing="xs">
-                <GamePlayable playable={playable} />
-                <GameScore score={score} />
+                {playable && <GamePlayableBadge />}
+                {score && <GameScoreBadge score={score} />}
               </Group>
             )}
           </Stack>

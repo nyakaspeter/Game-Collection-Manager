@@ -1,4 +1,3 @@
-import { resolve, resourceDir } from "@tauri-apps/api/path";
 import { nanoid } from "nanoid";
 import { Store } from "tauri-plugin-store-api";
 

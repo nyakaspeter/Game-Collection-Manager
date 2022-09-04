@@ -1,4 +1,3 @@
-import { resolve, resourceDir } from "@tauri-apps/api/path";
 import { Store } from "tauri-plugin-store-api";
 import { Collection } from "./collections";
 import { Game } from "./games";
