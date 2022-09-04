@@ -14,6 +14,7 @@ import {
 import { useForm } from "@mantine/form";
 import {
   IconDeviceFloppy,
+  IconFileSearch,
   IconPlus,
   IconRefresh,
   IconTrash,
@@ -30,19 +31,13 @@ const SettingsPage = () => {
   const theme = useMantineTheme();
   const { mutate: scanPaths, isLoading: isScanning } = useScanPaths();
   const { mutate: refreshGames, isLoading: isRefreshing } = useRefreshGames();
-  const { mutate: removeUnusedData } = useRemoveUnusedData();
-  const { mutateAsync: refreshAuthHeaders } = useRefreshAuthHeaders();
+  const { mutate: cleanDatabase, isLoading: isCleaning } =
+    useRemoveUnusedData();
+  const { mutate: refreshAuthHeaders } = useRefreshAuthHeaders();
 
   const { mutate: save } = useEditSettings({
     onSuccess: () => {
-      setTimeout(async () => {
-        try {
-          await refreshAuthHeaders();
-          scanPaths();
-        } catch (error) {
-          console.error(error);
-        }
-      }, 1000);
+      refreshAuthHeaders();
     },
   });
 
@@ -63,11 +58,10 @@ const SettingsPage = () => {
   const handleRemoveCollection = (index: number) =>
     form.removeListItem("collections", index);
 
-  const handleSave = form.onSubmit((values) => save(values));
-
+  const handleRemoveUnusedData = () => cleanDatabase();
   const handleRefreshGames = () => refreshGames();
-
-  const handleRemoveUnusedData = () => removeUnusedData();
+  const handleScanPaths = () => scanPaths();
+  const handleSave = form.onSubmit((values) => save(values));
 
   return (
     <form onSubmit={handleSave}>
@@ -184,6 +178,7 @@ const SettingsPage = () => {
           <Group>
             <Button
               leftIcon={<IconTrash size={18} />}
+              loading={isCleaning}
               onClick={handleRemoveUnusedData}
             >
               Clean database
@@ -191,10 +186,18 @@ const SettingsPage = () => {
 
             <Button
               leftIcon={<IconRefresh size={18} />}
-              loading={isRefreshing || isScanning}
+              loading={isRefreshing}
               onClick={handleRefreshGames}
             >
               Refresh games
+            </Button>
+
+            <Button
+              leftIcon={<IconFileSearch size={18} />}
+              loading={isScanning}
+              onClick={handleScanPaths}
+            >
+              Scan paths
             </Button>
 
             <Button leftIcon={<IconDeviceFloppy size={18} />} type="submit">

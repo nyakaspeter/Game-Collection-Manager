@@ -169,20 +169,13 @@ export const refreshGames = async () => {
 };
 
 export const removeUnusedData = async () => {
-  // let removedPaths = store.paths.filter((path) => !path.exists).length;
+  const pathGameIds = store.paths.flatMap((path) => path.gameIds);
 
-  // store.paths = store.paths.filter((path) => path.exists);
+  const oldGameCount = store.games.length;
+  store.games = store.games.filter((game) => pathGameIds.includes(game.id));
+  const newGameCount = store.games.length;
 
-  let removedGames = store.games.filter(
-    (game) => !store.paths.find((path) => path.gameIds.includes(game.id))
-  ).length;
-
-  store.games = store.games.filter((game) =>
-    store.paths.find((path) => path.gameIds.includes(game.id))
-  );
-
-  // await savePaths(store.paths);
   await saveGames(store.games);
 
-  return { removedGames };
+  return { removedGames: oldGameCount - newGameCount };
 };

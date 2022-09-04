@@ -1,5 +1,4 @@
 import {
-  Center,
   createStyles,
   Navbar,
   Stack,
@@ -10,12 +9,10 @@ import {
   IconCategory,
   IconDeviceGamepad2,
   IconHome,
-  IconRefresh,
   IconSettings,
   TablerIcon,
 } from "@tabler/icons";
 import { Link } from "@tanstack/react-location";
-import { MouseEventHandler } from "react";
 import { useScanPaths } from "../hooks/useScanPaths";
 
 const useStyles = createStyles((theme) => ({
@@ -74,47 +71,6 @@ const NavbarLink = ({ icon: Icon, label, to }: NavbarLinkProps) => {
   );
 };
 
-interface NavbarButtonProps {
-  icon: TablerIcon;
-  label: string;
-  onClick?: MouseEventHandler<HTMLButtonElement>;
-  rotate?: boolean;
-}
-
-const NavbarButton = ({
-  icon: Icon,
-  label,
-  onClick,
-  rotate,
-}: NavbarButtonProps) => {
-  const { classes } = useStyles();
-  return (
-    <Tooltip label={label} position="right">
-      <UnstyledButton className={classes.link} onClick={onClick}>
-        <Center
-          sx={
-            rotate
-              ? {
-                  animation: "rotation 1.5s infinite linear;",
-                  "@keyframes rotation": {
-                    from: {
-                      transform: "rotate(0deg);",
-                    },
-                    to: {
-                      transform: "rotate(359deg);",
-                    },
-                  },
-                }
-              : undefined
-          }
-        >
-          <Icon stroke={1.5} />
-        </Center>
-      </UnstyledButton>
-    </Tooltip>
-  );
-};
-
 export const AppNavbar = () => {
   const { mutate: scanPaths, isLoading: isScanning } = useScanPaths();
   const handleScanPaths = () => scanPaths();
@@ -140,12 +96,6 @@ export const AppNavbar = () => {
       </Navbar.Section>
       <Navbar.Section>
         <Stack justify="center" spacing={4}>
-          <NavbarButton
-            icon={IconRefresh}
-            label="Rescan paths"
-            rotate={isScanning}
-            onClick={handleScanPaths}
-          />
           <NavbarLink icon={IconSettings} label="Settings" to="/settings" />
         </Stack>
       </Navbar.Section>
