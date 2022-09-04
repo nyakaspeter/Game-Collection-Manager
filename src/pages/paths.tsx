@@ -6,7 +6,7 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import { openModal } from "@mantine/modals";
-import { IconPencil } from "@tabler/icons";
+import { IconArrowRight } from "@tabler/icons";
 import { Table } from "@tanstack/react-table";
 import { sep } from "@tauri-apps/api/path";
 import { DataGrid } from "mantine-data-grid";
@@ -90,7 +90,12 @@ const PathsPage = () => {
                   key={game.id}
                   label={getGameLabel(game, true, true, true, false, true)}
                 >
-                  <Badge>{getGameLabel(game)}</Badge>
+                  <Badge
+                    sx={{ cursor: "pointer" }}
+                    onClick={() => handleEdit(cell.row.original)}
+                  >
+                    {getGameLabel(game)}
+                  </Badge>
                 </Tooltip>
               ))}
             </Group>
@@ -127,16 +132,14 @@ const PathsPage = () => {
           id: "button",
           header: "",
           enableSorting: false,
-          accessorFn: (path: PathListItem) => path,
-          cell: (cell) => (
-            <Tooltip label="Edit games" position="left">
+          cell: () => (
+            <Tooltip label="View in file explorer" position="left">
               <ActionIcon
                 className="button"
                 variant="filled"
                 sx={{ visibility: "hidden" }}
-                onClick={() => handleEdit(cell.getValue() as PathListItem)}
               >
-                <IconPencil size={18} />
+                <IconArrowRight size={18} />
               </ActionIcon>
             </Tooltip>
           ),

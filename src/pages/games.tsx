@@ -130,7 +130,6 @@ const GamesPage = () => {
           id: "button",
           header: "",
           enableSorting: false,
-          accessorFn: (game) => game,
           cell: () => (
             <Tooltip label="View game" position="left">
               <ActionIcon
