@@ -5,7 +5,6 @@ import {
   Group,
   MultiSelect,
   Paper,
-  ScrollArea,
   Stack,
   TextInput,
   Tooltip,

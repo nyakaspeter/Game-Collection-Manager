@@ -18,6 +18,7 @@ import { Collection } from "../store/collections";
 import { Game } from "../store/games";
 import { PathListItem } from "../store/paths";
 import { getGameLabel } from "../utils/game";
+import { openPathInExplorer } from "../utils/path";
 import { collectionFilter } from "../utils/table/collectionFilter";
 import { createTableStyles } from "../utils/table/styles";
 
@@ -43,6 +44,9 @@ const PathsPage = () => {
     });
   };
 
+  const handleViewInExplorer = async (path: PathListItem) =>
+    openPathInExplorer(path);
+
   return (
     <DataGrid
       tableRef={table}
@@ -62,8 +66,9 @@ const PathsPage = () => {
           header: "Path",
           accessorKey: "path",
           sortingFn: (a, b, columnId) =>
-            (a.getValue<string>(columnId).split(sep).pop() || "") <
-            (b.getValue<string>(columnId).split(sep).pop() || "")
+            (a.getValue<string>(columnId).split(sep).pop()?.toLowerCase() ||
+              "") <
+            (b.getValue<string>(columnId).split(sep).pop()?.toLowerCase() || "")
               ? -1
               : 1,
           cell: (cell) => (
@@ -132,12 +137,13 @@ const PathsPage = () => {
           id: "button",
           header: "",
           enableSorting: false,
-          cell: () => (
+          cell: (cell) => (
             <Tooltip label="View in file explorer" position="left">
               <ActionIcon
                 className="button"
                 variant="filled"
                 sx={{ visibility: "hidden" }}
+                onClick={() => handleViewInExplorer(cell.row.original)}
               >
                 <IconArrowRight size={18} />
               </ActionIcon>

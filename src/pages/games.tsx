@@ -20,6 +20,7 @@ import {
   getGameRating,
   getGameYear,
 } from "../utils/game";
+import { openPathInExplorer } from "../utils/path";
 import { collectionFilter } from "../utils/table/collectionFilter";
 import { genreFilter } from "../utils/table/genreFilter";
 import { modeFilter } from "../utils/table/modeFilter";
@@ -50,7 +51,7 @@ const GamesPage = () => {
       withPagination
       sx={createTableStyles([
         "100%",
-        "80px",
+        "100px",
         "220px",
         "200px",
         "200px",
@@ -65,9 +66,21 @@ const GamesPage = () => {
         },
         {
           id: "year",
-          header: "Year",
+          header: "Release",
           sortingFn: "alphanumeric",
-          accessorFn: (game) => getGameYear(game),
+          accessorKey: "releaseDate",
+          cell: (cell) =>
+            cell.row.original.releaseDate && (
+              <Tooltip
+                openDelay={500}
+                position="bottom-start"
+                label={new Date(
+                  cell.row.original.releaseDate
+                ).toLocaleDateString()}
+              >
+                <span>{getGameYear(cell.row.original)}</span>
+              </Tooltip>
+            ),
         },
         {
           id: "genre",
@@ -105,14 +118,28 @@ const GamesPage = () => {
           accessorKey: "collections",
           cell: (cell) => (
             <Group spacing={4}>
-              {(cell.getValue() as Collection[]).map((collection) => (
-                <Badge
-                  key={collection.id}
-                  color={collection.readyToPlay ? "green" : undefined}
-                >
-                  {collection.name}
-                </Badge>
-              ))}
+              {(cell.getValue() as Collection[]).map((collection) => {
+                const path = cell.row.original.paths.find((path) =>
+                  collection.roots.find((root) => path.path.startsWith(root))
+                );
+
+                return (
+                  <Tooltip
+                    key={collection.id}
+                    openDelay={500}
+                    position="bottom-start"
+                    label={path?.path}
+                  >
+                    <Badge
+                      color={collection.readyToPlay ? "green" : undefined}
+                      sx={{ cursor: "pointer" }}
+                      onClick={path && (() => openPathInExplorer(path))}
+                    >
+                      {collection.name}
+                    </Badge>
+                  </Tooltip>
+                );
+              })}
             </Group>
           ),
         },
