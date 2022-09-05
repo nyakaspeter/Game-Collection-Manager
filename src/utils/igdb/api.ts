@@ -7,6 +7,7 @@ interface IgdbGameResponse {
   id: number;
   name: string;
   slug: string;
+  category?: number;
   summary?: string;
   storyline?: string;
   total_rating?: number;
@@ -48,6 +49,7 @@ const mapGameData = (game: IgdbGameResponse): Game => ({
   id: game.id.toString(),
   name: game.name,
   slug: game.slug,
+  category: game.category,
   summary: game.summary,
   storyline: game.storyline,
   rating: game.total_rating,
@@ -96,6 +98,7 @@ export const fetchIgdbGames = async (ids: string[], slugs: string[] = []) => {
   const fields = [
     "name",
     "slug",
+    "category",
     "summary",
     "storyline",
     "total_rating",

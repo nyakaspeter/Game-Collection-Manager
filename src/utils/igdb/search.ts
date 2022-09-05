@@ -1,5 +1,4 @@
 import { fetch } from "@tauri-apps/api/http";
-import { uniq } from "rambda";
 import { Game } from "../../store/games";
 import { fetchIgdbGames } from "./api";
 
@@ -23,7 +22,13 @@ interface IgdbSearchResponse {
 export const searchIgdbIds = async (
   query: string
 ): Promise<IgdbSearchResult[]> => {
-  const sanitizedQuery = query.replace(/[^0-9a-z]/gi, " ").replace(/  +/g, " ");
+  const sanitizedQuery = query
+    .replaceAll(new RegExp("\\(.*?\\)", "g"), "")
+    .replaceAll(new RegExp("\\[.*?]", "g"), "")
+    .replace(/[^0-9a-z]/gi, " ")
+    .replace(/  +/g, " ")
+    .trim();
+
   if (!sanitizedQuery) return [];
 
   const response = await fetch<IgdbSearchResponse>(
@@ -51,5 +56,8 @@ export const searchIgdbGames = async (query: string): Promise<Game[]> => {
   const igdbIds =
     response.data?.game_suggest?.map((g) => g.id.toString()) || [];
 
-  return await fetchIgdbGames(igdbIds, [query]);
+  const igdbGames = await fetchIgdbGames(igdbIds, [query]);
+  igdbGames.sort((a, b) => (a.category || 0) - (b.category || 0));
+
+  return igdbGames;
 };

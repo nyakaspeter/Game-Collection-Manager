@@ -62,6 +62,7 @@ const GamesPage = () => {
         {
           id: "name",
           header: "Name",
+          sortingFn: "text",
           accessorKey: "name",
         },
         {
