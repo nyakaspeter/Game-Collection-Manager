@@ -168,7 +168,7 @@ export const refreshGames = async () => {
   return { refreshed };
 };
 
-export const removeUnusedData = async () => {
+export const cleanGameData = async () => {
   const pathGameIds = store.paths.flatMap((path) => path.gameIds);
 
   const oldGameCount = store.games.length;
@@ -178,4 +178,14 @@ export const removeUnusedData = async () => {
   await saveGames(store.games);
 
   return { removedGames: oldGameCount - newGameCount };
+};
+
+export const cleanPathData = async () => {
+  const oldPathCount = store.paths.length;
+  store.paths = store.paths.filter((path) => path.exists);
+  const newPathCount = store.paths.length;
+
+  await savePaths(store.paths);
+
+  return { removedPaths: oldPathCount - newPathCount };
 };

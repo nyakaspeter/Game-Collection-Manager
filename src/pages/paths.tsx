@@ -6,7 +6,7 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import { openModal } from "@mantine/modals";
-import { IconArrowRight } from "@tabler/icons";
+import { IconPencil } from "@tabler/icons";
 import { Table } from "@tanstack/react-table";
 import { sep } from "@tauri-apps/api/path";
 import { DataGrid } from "mantine-data-grid";
@@ -14,7 +14,6 @@ import { useRef } from "react";
 import { useSnapshot } from "valtio";
 import { PathEditor } from "../components/PathEditor";
 import { store } from "../store";
-import { Collection } from "../store/collections";
 import { Game } from "../store/games";
 import { PathListItem } from "../store/paths";
 import { getGameLabel } from "../utils/game";
@@ -43,9 +42,6 @@ const PathsPage = () => {
       children: <PathEditor path={path} />,
     });
   };
-
-  const handleViewInExplorer = async (path: PathListItem) =>
-    openPathInExplorer(path);
 
   return (
     <DataGrid
@@ -95,12 +91,7 @@ const PathsPage = () => {
                   key={game.id}
                   label={getGameLabel(game, true, true, true, false, true)}
                 >
-                  <Badge
-                    sx={{ cursor: "pointer" }}
-                    onClick={() => handleEdit(cell.row.original)}
-                  >
-                    {getGameLabel(game)}
-                  </Badge>
+                  <Badge sx={{ cursor: "pointer" }}>{getGameLabel(game)}</Badge>
                 </Tooltip>
               ))}
             </Group>
@@ -114,13 +105,21 @@ const PathsPage = () => {
           accessorKey: "collections",
           cell: (cell) => (
             <Group spacing={4}>
-              {(cell.getValue() as Collection[]).map((collection) => (
-                <Badge
+              {cell.row.original.collections.map((collection) => (
+                <Tooltip
+                  openDelay={500}
+                  position="bottom-start"
                   key={collection.id}
-                  color={collection.readyToPlay ? "green" : undefined}
+                  label={cell.row.original.path}
                 >
-                  {collection.name}
-                </Badge>
+                  <Badge
+                    color={collection.readyToPlay ? "green" : undefined}
+                    sx={{ cursor: "pointer" }}
+                    onClick={() => openPathInExplorer(cell.row.original)}
+                  >
+                    {collection.name}
+                  </Badge>
+                </Tooltip>
               ))}
             </Group>
           ),
@@ -138,14 +137,14 @@ const PathsPage = () => {
           header: "",
           enableSorting: false,
           cell: (cell) => (
-            <Tooltip label="View in file explorer" position="left">
+            <Tooltip label="Edit games" position="left">
               <ActionIcon
                 className="button"
                 variant="filled"
                 sx={{ visibility: "hidden" }}
-                onClick={() => handleViewInExplorer(cell.row.original)}
+                onClick={() => handleEdit(cell.row.original)}
               >
-                <IconArrowRight size={18} />
+                <IconPencil size={18} />
               </ActionIcon>
             </Tooltip>
           ),

@@ -64,6 +64,15 @@ const GamesPage = () => {
           header: "Name",
           sortingFn: "text",
           accessorKey: "name",
+          cell: (cell) => (
+            <Tooltip
+              openDelay={500}
+              position="bottom-start"
+              label={cell.row.original.name}
+            >
+              <span>{cell.row.original.name}</span>
+            </Tooltip>
+          ),
         },
         {
           id: "year",
@@ -119,24 +128,25 @@ const GamesPage = () => {
           accessorKey: "collections",
           cell: (cell) => (
             <Group spacing={4}>
-              {(cell.getValue() as Collection[]).map((collection) => {
-                const path = cell.row.original.paths.find((path) =>
-                  collection.roots.find((root) => path.path.startsWith(root))
+              {cell.row.original.paths.map((path) => {
+                const collection = cell.row.original.collections.find(
+                  (collection) =>
+                    collection.roots.find((root) => path.path.startsWith(root))
                 );
 
                 return (
                   <Tooltip
-                    key={collection.id}
+                    key={path.path}
                     openDelay={500}
                     position="bottom-start"
-                    label={path?.path}
+                    label={path.path}
                   >
                     <Badge
-                      color={collection.readyToPlay ? "green" : undefined}
+                      color={collection!!.readyToPlay ? "green" : undefined}
                       sx={{ cursor: "pointer" }}
-                      onClick={path && (() => openPathInExplorer(path))}
+                      onClick={() => openPathInExplorer(path)}
                     >
-                      {collection.name}
+                      {collection!!.name}
                     </Badge>
                   </Tooltip>
                 );

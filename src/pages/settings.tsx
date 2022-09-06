@@ -8,7 +8,6 @@ import {
   Stack,
   TextInput,
   Tooltip,
-  useMantineTheme,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import {
@@ -17,21 +16,24 @@ import {
   IconPlus,
   IconRefresh,
   IconTrash,
+  IconTrashX,
 } from "@tabler/icons";
 import { nanoid } from "nanoid";
 import { useEditSettings } from "../hooks/useEditSettings";
 import { useRefreshAuthHeaders } from "../hooks/useRefreshAuthHeaders";
 import { useRefreshGames } from "../hooks/useRefreshGames";
-import { useRemoveUnusedData } from "../hooks/useRemoveUnusedData";
+import { useCleanGameData } from "../hooks/useCleanGameData";
+import { useCleanPathData } from "../hooks/useCleanPathData";
 import { useScanPaths } from "../hooks/useScanPaths";
 import { store } from "../store";
 
 const SettingsPage = () => {
-  const theme = useMantineTheme();
   const { mutate: scanPaths, isLoading: isScanning } = useScanPaths();
   const { mutate: refreshGames, isLoading: isRefreshing } = useRefreshGames();
-  const { mutate: cleanDatabase, isLoading: isCleaning } =
-    useRemoveUnusedData();
+  const { mutate: cleanGameData, isLoading: isCleaningGames } =
+    useCleanGameData();
+  const { mutate: cleanPathData, isLoading: isCleaningPaths } =
+    useCleanPathData();
   const { mutate: refreshAuthHeaders } = useRefreshAuthHeaders();
 
   const { mutate: save } = useEditSettings({
@@ -57,7 +59,8 @@ const SettingsPage = () => {
   const handleRemoveCollection = (index: number) =>
     form.removeListItem("collections", index);
 
-  const handleRemoveUnusedData = () => cleanDatabase();
+  const handleCleanGameData = () => cleanGameData();
+  const handleCleanPathData = () => cleanPathData();
   const handleRefreshGames = () => refreshGames();
   const handleScanPaths = () => scanPaths();
   const handleSave = form.onSubmit((values) => save(values));
@@ -163,11 +166,19 @@ const SettingsPage = () => {
 
           <Group>
             <Button
-              leftIcon={<IconTrash size={18} />}
-              loading={isCleaning}
-              onClick={handleRemoveUnusedData}
+              leftIcon={<IconTrashX size={18} />}
+              loading={isCleaningPaths}
+              onClick={handleCleanPathData}
             >
-              Clean database
+              Clean paths
+            </Button>
+
+            <Button
+              leftIcon={<IconTrash size={18} />}
+              loading={isCleaningGames}
+              onClick={handleCleanGameData}
+            >
+              Clean games
             </Button>
 
             <Button
