@@ -1,7 +1,10 @@
+import { openModal } from "@mantine/modals";
+import { createElement } from "react";
 import placeholder1 from "../assets/placeholder1.png";
 import placeholder2 from "../assets/placeholder2.png";
 import placeholder3 from "../assets/placeholder3.png";
 import placeholder4 from "../assets/placeholder4.png";
+import { GameDetails } from "../components/GameDetails";
 import modes from "../data/game_modes.json";
 import genres from "../data/genres.json";
 import platforms from "../data/platforms.json";
@@ -30,6 +33,14 @@ export enum Website {
   Gog = 17,
   Discord = 18,
 }
+
+export const showGameDetails = (game: GameListItem) => {
+  openModal({
+    centered: true,
+    size: "80%",
+    children: createElement(GameDetails, { game }),
+  });
+};
 
 export const getGameLabel = (
   game: Game,

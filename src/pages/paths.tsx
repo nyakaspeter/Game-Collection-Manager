@@ -5,19 +5,17 @@ import {
   Tooltip,
   useMantineTheme,
 } from "@mantine/core";
-import { openModal } from "@mantine/modals";
 import { IconPencil } from "@tabler/icons";
 import { Table } from "@tanstack/react-table";
 import { sep } from "@tauri-apps/api/path";
 import { DataGrid } from "mantine-data-grid";
 import { useRef } from "react";
 import { useSnapshot } from "valtio";
-import { PathEditor } from "../components/PathEditor";
 import { store } from "../store";
 import { Game } from "../store/games";
 import { PathListItem } from "../store/paths";
-import { getGameLabel } from "../utils/game";
-import { openPathInExplorer } from "../utils/path";
+import { getGameLabel, showGameDetails } from "../utils/game";
+import { openPathInExplorer, showPathEditor } from "../utils/path";
 import { collectionFilter } from "../utils/table/collectionFilter";
 import { createTableStyles } from "../utils/table/styles";
 
@@ -32,16 +30,7 @@ const PathsPage = () => {
 
   const { pathList } = useSnapshot(store);
 
-  const handleEdit = (path: PathListItem) => {
-    const name = path.path.split(sep).pop();
-
-    openModal({
-      title: name,
-      centered: true,
-      size: "lg",
-      children: <PathEditor path={path} />,
-    });
-  };
+  const handleEditPath = (path: PathListItem) => showPathEditor(path);
 
   return (
     <DataGrid
@@ -84,16 +73,29 @@ const PathsPage = () => {
           accessorKey: "games",
           cell: (cell) => (
             <Group spacing={4}>
-              {(cell.getValue() as Game[]).map((game) => (
-                <Tooltip
-                  openDelay={500}
-                  position="bottom-start"
-                  key={game.id}
-                  label={getGameLabel(game, true, true, true, false, true)}
-                >
-                  <Badge sx={{ cursor: "pointer" }}>{getGameLabel(game)}</Badge>
-                </Tooltip>
-              ))}
+              {(cell.getValue() as Game[]).map((game) => {
+                const gameListItem = store.gameList.find(
+                  (g) => g.id === game.id
+                );
+
+                return (
+                  <Tooltip
+                    openDelay={500}
+                    position="bottom-start"
+                    key={game.id}
+                    label={getGameLabel(game, true, true, true, false, true)}
+                  >
+                    <Badge
+                      sx={{ cursor: "pointer" }}
+                      onClick={
+                        gameListItem && (() => showGameDetails(gameListItem))
+                      }
+                    >
+                      {getGameLabel(game)}
+                    </Badge>
+                  </Tooltip>
+                );
+              })}
             </Group>
           ),
         },
@@ -142,7 +144,7 @@ const PathsPage = () => {
                 className="button"
                 variant="filled"
                 sx={{ visibility: "hidden" }}
-                onClick={() => handleEdit(cell.row.original)}
+                onClick={() => handleEditPath(cell.row.original)}
               >
                 <IconPencil size={18} />
               </ActionIcon>

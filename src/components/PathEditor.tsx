@@ -8,7 +8,7 @@ import { Game } from "../store/games";
 import { PathListItem } from "../store/paths";
 import { getGameLabel } from "../utils/game";
 
-export const PathEditor = ({ path }: { path?: PathListItem }) => {
+export const PathEditor = ({ path }: { path: PathListItem }) => {
   const [query, setQuery] = useDebouncedState("", 500);
 
   const { data: searchResults, remove: clearSearchResults } =
@@ -19,7 +19,7 @@ export const PathEditor = ({ path }: { path?: PathListItem }) => {
   });
 
   const [selectItems, setSelectItems] = useState(
-    path?.games.map((game) => ({
+    path.games.map((game) => ({
       game,
       value: game.id,
       label: getGameLabel(game, true, true, true, false, true),

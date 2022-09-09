@@ -12,13 +12,13 @@ import { useRef } from "react";
 import { useSnapshot } from "valtio";
 import { GameScoreBadge } from "../components/GameScoreBadge";
 import { store } from "../store";
-import { Collection } from "../store/collections";
 import { GameListItem } from "../store/games";
 import {
   getGameGenres,
   getGameModes,
   getGameRating,
   getGameYear,
+  showGameDetails,
 } from "../utils/game";
 import { openPathInExplorer } from "../utils/path";
 import { collectionFilter } from "../utils/table/collectionFilter";
@@ -36,6 +36,8 @@ const GamesPage = () => {
   }));
 
   const { gameList } = useSnapshot(store);
+
+  const handleViewGame = (game: GameListItem) => showGameDetails(game);
 
   return (
     <DataGrid
@@ -168,12 +170,13 @@ const GamesPage = () => {
           id: "button",
           header: "",
           enableSorting: false,
-          cell: () => (
+          cell: (cell) => (
             <Tooltip label="View game" position="left">
               <ActionIcon
                 className="button"
                 variant="filled"
                 sx={{ visibility: "hidden" }}
+                onClick={() => handleViewGame(cell.row.original)}
               >
                 <IconArrowRight size={18} />
               </ActionIcon>

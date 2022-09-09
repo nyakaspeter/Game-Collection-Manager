@@ -1,6 +1,21 @@
+import { openModal } from "@mantine/modals";
 import { invoke } from "@tauri-apps/api";
 import { readDir } from "@tauri-apps/api/fs";
-import { Path } from "../store/paths";
+import { sep } from "@tauri-apps/api/path";
+import { createElement } from "react";
+import { PathEditor } from "../components/PathEditor";
+import { Path, PathListItem } from "../store/paths";
+
+export const showPathEditor = (path: PathListItem) => {
+  const name = path.path.split(sep).pop();
+
+  openModal({
+    title: name,
+    centered: true,
+    size: "lg",
+    children: createElement(PathEditor, { path }),
+  });
+};
 
 export const openPathInExplorer = async (path: Path) => {
   let args = [path.path];
