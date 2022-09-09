@@ -158,7 +158,10 @@ export const refreshGames = async () => {
   igdbGames.forEach((refreshedGame) => {
     const index = store.games.findIndex((game) => game.id === refreshedGame.id);
     if (index) {
-      store.games[index] = refreshedGame;
+      store.games[index] = {
+        ...refreshedGame,
+        played: store.games[index].played,
+      };
       refreshed++;
     }
   });

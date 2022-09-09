@@ -6,6 +6,7 @@ export interface Game {
   id: string;
   name: string;
   slug: string;
+  played?: boolean;
   category?: number;
   summary?: string;
   storyline?: string;

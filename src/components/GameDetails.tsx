@@ -11,7 +11,9 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import { IconPlayerPlay } from "@tabler/icons";
-import { GameListItem } from "../store/games";
+import { useSnapshot } from "valtio";
+import { store } from "../store";
+import { Game, GameListItem, saveGames } from "../store/games";
 import {
   getGameCover,
   getGameGenres,
@@ -23,7 +25,11 @@ import {
 import { openPathInExplorer } from "../utils/path";
 import { GameScoreBadge } from "./GameScoreBadge";
 
-export const GameDetails = ({ game }: { game: GameListItem }) => {
+export const GameDetails = ({ gameId }: { gameId: string }) => {
+  const game = useSnapshot(store).gameList.find(
+    (g) => g.id === gameId
+  ) as GameListItem;
+
   const theme = useMantineTheme();
   const darkMode = theme.colorScheme === "dark";
 
@@ -39,6 +45,12 @@ export const GameDetails = ({ game }: { game: GameListItem }) => {
   const backdrop = game?.screenshots?.length
     ? `https://images.igdb.com/igdb/image/upload/t_720p/${game?.screenshots[0]}.jpg`
     : "";
+
+  const handleTogglePlayed = async () => {
+    const edited = store.games.find((g) => g.id === game.id) as Game;
+    edited.played = !edited.played;
+    await saveGames(store.games);
+  };
 
   return (
     <Stack
@@ -77,8 +89,12 @@ export const GameDetails = ({ game }: { game: GameListItem }) => {
               }}
             />
           </AspectRatio>
-          <Button radius="md" leftIcon={<IconPlayerPlay size={18} />}>
-            Mark as played
+          <Button
+            radius="md"
+            leftIcon={<IconPlayerPlay size={18} />}
+            onClick={handleTogglePlayed}
+          >
+            {game.played ? "Mark as unplayed" : "Mark as played"}
           </Button>
         </Stack>
 
@@ -94,7 +110,7 @@ export const GameDetails = ({ game }: { game: GameListItem }) => {
             </Group>
             <Group spacing={4}>
               {releaseDate && <Text>Released on {releaseDate}</Text>}
-              {/* <Badge color="green">Played</Badge> */}
+              {game.played && <Badge color="green">Played</Badge>}
               {playable && <Badge color="green">Ready to play</Badge>}
             </Group>
           </Stack>

@@ -34,11 +34,11 @@ export enum Website {
   Discord = 18,
 }
 
-export const showGameDetails = (game: GameListItem) => {
+export const showGameDetails = (game: Game) => {
   openModal({
     centered: true,
     size: "80%",
-    children: createElement(GameDetails, { game }),
+    children: createElement(GameDetails, { gameId: game.id }),
   });
 };
 

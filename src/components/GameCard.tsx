@@ -1,6 +1,7 @@
 import {
   AspectRatio,
   BackgroundImage,
+  Box,
   Center,
   Group,
   Stack,
@@ -18,9 +19,16 @@ import {
 import { GamePlayableBadge } from "./GamePlayableBadge";
 import { GameScoreBadge } from "./GameScoreBadge";
 
-export const GameCard = ({ game }: { game: GameListItem }) => {
+export const GameCard = ({
+  game,
+  fade,
+}: {
+  game: GameListItem;
+  fade?: boolean;
+}) => {
   const theme = useMantineTheme();
   const darkMode = theme.colorScheme === "dark";
+  const fadeBackdropColor = "#000000DD";
 
   const label = getGameLabel(game);
   const cover = getGameCover(game);
@@ -40,16 +48,27 @@ export const GameCard = ({ game }: { game: GameListItem }) => {
           borderStyle: "solid",
         }}
       >
+        {fade && (
+          <Box
+            sx={{
+              position: "absolute",
+              backgroundColor: fadeBackdropColor,
+              width: "100%",
+              height: "100%",
+            }}
+          />
+        )}
         <Center
           p="sm"
           sx={{
-            backgroundColor: "#000000DD",
-            cursor: "pointer",
+            position: "absolute",
+            backgroundColor: fadeBackdropColor,
             width: "100%",
             height: "100%",
             opacity: 0,
             ":hover": { opacity: 1 },
             transition: "opacity 0.2s",
+            cursor: "pointer",
           }}
           onClick={handleViewGame}
         >

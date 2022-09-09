@@ -2,13 +2,19 @@ import { Button, Group, MultiSelect, Stack } from "@mantine/core";
 import { useDebouncedState } from "@mantine/hooks";
 import { closeAllModals } from "@mantine/modals";
 import { useMemo, useState } from "react";
+import { useSnapshot } from "valtio";
 import { useEditPath } from "../hooks/useEditPath";
 import { useIgdbSearch } from "../hooks/useIgdbSearch";
+import { store } from "../store";
 import { Game } from "../store/games";
 import { PathListItem } from "../store/paths";
 import { getGameLabel } from "../utils/game";
 
-export const PathEditor = ({ path }: { path: PathListItem }) => {
+export const PathEditor = ({ pathId }: { pathId: string }) => {
+  const path = useSnapshot(store).pathList.find(
+    (p) => p.path === pathId
+  ) as PathListItem;
+
   const [query, setQuery] = useDebouncedState("", 500);
 
   const { data: searchResults, remove: clearSearchResults } =
