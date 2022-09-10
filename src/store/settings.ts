@@ -23,8 +23,6 @@ export enum GameStatus {
 }
 
 export interface Settings {
-  twitchApiClientId: string;
-  twitchApiClientSecret: string;
   gameList: {
     view: GameListView;
     sort: GameListSort;
@@ -47,8 +45,6 @@ const key = "settings";
 const path = `${key}.json`;
 const store = new Store(path);
 const defaultValue: Settings = {
-  twitchApiClientId: "",
-  twitchApiClientSecret: "",
   gameList: {
     view: GameListView.Grid,
     sort: GameListSort.Added,

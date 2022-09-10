@@ -19,7 +19,7 @@ export const useRefreshAuthHeaders = (
 
       toast.error(
         "Twitch auth failed",
-        "Please check your credentials in settings"
+        "The Twitch API key is probably incorrect"
       );
 
       if (options?.onError) options.onError(error, variables, context);

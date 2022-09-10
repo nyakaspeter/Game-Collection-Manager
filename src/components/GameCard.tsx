@@ -6,7 +6,6 @@ import {
   Group,
   Stack,
   Text,
-  useMantineTheme,
 } from "@mantine/core";
 import { GameListItem } from "../store/games";
 import {
@@ -26,8 +25,6 @@ export const GameCard = ({
   game: GameListItem;
   fade?: boolean;
 }) => {
-  const theme = useMantineTheme();
-  const darkMode = theme.colorScheme === "dark";
   const fadeBackdropColor = "#000000DD";
 
   const label = getGameLabel(game);
@@ -42,11 +39,11 @@ export const GameCard = ({
       <BackgroundImage
         src={cover}
         radius="md"
-        sx={{
-          borderWidth: 0.5,
-          borderColor: theme.colors.gray[darkMode ? 7 : 2],
+        sx={(theme) => ({
+          borderWidth: 1,
+          borderColor: theme.colors.gray[8],
           borderStyle: "solid",
-        }}
+        })}
       >
         {fade && (
           <Box
@@ -73,7 +70,7 @@ export const GameCard = ({
           onClick={handleViewGame}
         >
           <Stack>
-            <Text color={theme.white} size="xs" align="center">
+            <Text color="#fff" size="xs" align="center">
               {label}
             </Text>
             {(playable || score) && (

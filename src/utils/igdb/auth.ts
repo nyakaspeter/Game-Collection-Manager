@@ -1,5 +1,4 @@
 import { fetch } from "@tauri-apps/api/http";
-import { store } from "../../store";
 
 export interface IgdbAuthHeaders {
   "Client-ID": string;
@@ -13,7 +12,8 @@ interface TwitchAuthResponse {
 }
 
 export const fetchIgdbAuthHeaders = async (): Promise<IgdbAuthHeaders> => {
-  const { twitchApiClientId, twitchApiClientSecret } = store.settings;
+  const twitchApiClientId = import.meta.env.VITE_TWITCH_API_CLIENT_ID;
+  const twitchApiClientSecret = import.meta.env.VITE_TWITCH_API_CLIENT_SECRET;
 
   if (!twitchApiClientId || !twitchApiClientSecret)
     throw new Error("Twitch credentials missing");

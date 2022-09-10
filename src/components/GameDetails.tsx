@@ -31,7 +31,6 @@ export const GameDetails = ({ gameId }: { gameId: string }) => {
   ) as GameListItem;
 
   const theme = useMantineTheme();
-  const darkMode = theme.colorScheme === "dark";
 
   const cover = getGameCover(game);
   const score = getGameRating(game);
@@ -83,8 +82,8 @@ export const GameDetails = ({ gameId }: { gameId: string }) => {
               src={cover}
               radius="md"
               sx={{
-                borderWidth: 0.5,
-                borderColor: theme.colors.gray[darkMode ? 7 : 2],
+                borderWidth: 1,
+                borderColor: theme.colors.gray[8],
                 borderStyle: "solid",
               }}
             />
