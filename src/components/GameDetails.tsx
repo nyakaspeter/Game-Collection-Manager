@@ -19,7 +19,7 @@ import {
   getGameGenres,
   getGameModes,
   getGamePlatforms,
-  getGamePlayable,
+  getGameReady,
   getGameRating,
 } from "../utils/game";
 import { openPathInExplorer } from "../utils/path";
@@ -36,7 +36,7 @@ export const GameDetails = ({ gameId }: { gameId: string }) => {
   const cover = getGameCover(game);
   const score = getGameRating(game);
   const platforms = getGamePlatforms(game);
-  const playable = getGamePlayable(game);
+  const playable = getGameReady(game);
   const modes = getGameModes(game);
   const genres = getGameGenres(game);
   const releaseDate = game.releaseDate

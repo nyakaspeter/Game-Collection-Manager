@@ -121,7 +121,7 @@ export const getGameCover = (game: Game) =>
     ? `https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover}.jpg`
     : placeholders[parseInt(game.id) % 4];
 
-export const getGamePlayable = (game: GameListItem) => {
+export const getGameReady = (game: GameListItem) => {
   for (const collection of game.collections) {
     if (collection.readyToPlay) return true;
   }

@@ -8,8 +8,6 @@ const data = genres.map((genre) => ({
   label: genre.short || genre.name,
 }));
 
-data.sort((a, b) => (a.label < b.label ? -1 : 1));
-
 export const genreFilter: DataGridFilterFn<GameListItem, string[]> = (
   row,
   _columnId,

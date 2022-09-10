@@ -12,7 +12,7 @@ import { GameListItem } from "../store/games";
 import {
   getGameCover,
   getGameLabel,
-  getGamePlayable,
+  getGameReady,
   getGameRating,
   showGameDetails,
 } from "../utils/game";
@@ -33,7 +33,7 @@ export const GameCard = ({
   const label = getGameLabel(game);
   const cover = getGameCover(game);
   const score = getGameRating(game);
-  const playable = getGamePlayable(game);
+  const playable = getGameReady(game);
 
   const handleViewGame = () => showGameDetails(game);
 

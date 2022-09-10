@@ -1,9 +1,10 @@
+import { subscribe } from "valtio";
 import { proxyWithComputed } from "valtio/utils";
 import { IgdbAuthHeaders } from "../utils/igdb/auth";
 import { Collection, loadCollections } from "./collections";
 import { Game, GameListItem, loadGames } from "./games";
 import { loadPaths, Path, PathListItem } from "./paths";
-import { loadSettings } from "./settings";
+import { loadSettings, saveSettings } from "./settings";
 
 export const store = proxyWithComputed(
   {
@@ -66,3 +67,5 @@ export const store = proxyWithComputed(
     },
   }
 );
+
+subscribe(store.settings, () => saveSettings(store.settings));

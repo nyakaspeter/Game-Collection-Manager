@@ -1,27 +1,63 @@
 [
     {
+        "id": 25,
+        "name": "Hack and slash/Beat 'em up",
+        "short": "Action"
+    },
+    {
+        "id": 31,
+        "name": "Adventure"
+    },
+    {
+        "id": 33,
+        "name": "Arcade"
+    },
+    {
+        "id": 35,
+        "name": "Card & board game",
+        "short": "Board game"
+    },
+    {
         "id": 4,
         "name": "Fighting"
     },
     {
-        "id": 5,
-        "name": "Shooter"
+        "id": 32,
+        "name": "Indie"
+    },
+    {
+        "id": 36,
+        "name": "MOBA"
     },
     {
         "id": 7,
         "name": "Music"
     },
     {
+        "id": 30,
+        "name": "Pinball"
+    },
+    {
         "id": 8,
         "name": "Platform"
+    },
+    {
+        "id": 2,
+        "name": "Point & click"
     },
     {
         "id": 9,
         "name": "Puzzle"
     },
     {
-        "id": 10,
-        "name": "Racing"
+        "id": 26,
+        "name": "Quiz/Trivia",
+        "short": "Quiz"
+    },
+    {
+        "id": 12,
+        "name": "Role-playing",
+        "short": "RPG"
     },
     {
         "id": 11,
@@ -29,9 +65,12 @@
         "short": "RTS"
     },
     {
-        "id": 12,
-        "name": "Role-playing",
-        "short": "RPG"
+        "id": 10,
+        "name": "Racing"
+    },
+    {
+        "id": 5,
+        "name": "Shooter"
     },
     {
         "id": 13,
@@ -46,54 +85,15 @@
         "name": "Strategy"
     },
     {
-        "id": 16,
-        "name": "Turn-based"
-    },
-    {
         "id": 24,
         "name": "Tactical"
     },
     {
-        "id": 26,
-        "name": "Quiz/Trivia",
-        "short": "Quiz"
-    },
-    {
-        "id": 25,
-        "name": "Hack and slash/Beat 'em up",
-        "short": "Action"
-    },
-    {
-        "id": 30,
-        "name": "Pinball"
-    },
-    {
-        "id": 31,
-        "name": "Adventure"
-    },
-    {
-        "id": 33,
-        "name": "Arcade"
+        "id": 16,
+        "name": "Turn-based"
     },
     {
         "id": 34,
         "name": "Visual novel"
-    },
-    {
-        "id": 32,
-        "name": "Indie"
-    },
-    {
-        "id": 35,
-        "name": "Card & board game",
-        "short": "Board game"
-    },
-    {
-        "id": 36,
-        "name": "MOBA"
-    },
-    {
-        "id": 2,
-        "name": "Point & click"
     }
 ]
