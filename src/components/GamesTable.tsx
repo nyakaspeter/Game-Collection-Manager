@@ -1,70 +1,68 @@
-import {
-  ActionIcon,
-  Badge,
-  Group,
-  Tooltip,
-  useMantineTheme,
-} from "@mantine/core";
+import { ActionIcon, Badge, Group, Tooltip } from "@mantine/core";
 import { IconArrowRight } from "@tabler/icons";
 import { Table } from "@tanstack/react-table";
 import { DataGrid } from "mantine-data-grid";
 import { useRef } from "react";
-import { useSnapshot } from "valtio";
 import { GameScoreBadge } from "../components/GameScoreBadge";
-import { store } from "../store";
 import { GameListItem } from "../store/games";
 import {
   getGameGenres,
   getGameModes,
   getGameRating,
+  getGameReady,
   getGameYear,
   showGameDetails,
 } from "../utils/game";
 import { openPathInExplorer } from "../utils/path";
-import { collectionFilter } from "../utils/table/collectionFilter";
-import { genreFilter } from "../utils/table/genreFilter";
-import { modeFilter } from "../utils/table/modeFilter";
-import { createTableStyles } from "../utils/table/styles";
+import { createTableStyles } from "../utils/table";
 
-const GamesPage = () => {
-  const theme = useMantineTheme();
-
+export const GamesTable = ({
+  games,
+  fadeNotReady,
+  fadePlayed,
+}: {
+  games: GameListItem[];
+  fadeNotReady?: boolean;
+  fadePlayed?: boolean;
+}) => {
   const table = useRef<Table<GameListItem>>(null);
   table.current?.setOptions((options) => ({
     ...options,
     autoResetPageIndex: false,
   }));
 
-  const { gameList } = useSnapshot(store);
-
   const handleViewGame = (game: GameListItem) => showGameDetails(game);
 
   return (
     <DataGrid
       tableRef={table}
-      data={gameList as GameListItem[]}
-      height={`calc(100vh - ${2 * theme.spacing.md}px)`}
+      data={games}
       noFlexLayout
       highlightOnHover
       withFixedHeader
-      withGlobalFilter
-      withColumnFilters
-      withSorting
       withPagination
       sx={createTableStyles([
         "100%",
-        "100px",
-        "220px",
-        "200px",
-        "200px",
         "80px",
+        "200px",
+        "200px",
+        "200px",
+        "60px",
         "60px",
       ])}
+      onRow={(row) =>
+        (fadeNotReady && !getGameReady(row.original)) ||
+        (fadePlayed && row.original.played)
+          ? { style: { opacity: 0.3 } }
+          : {}
+      }
+      initialState={{
+        pagination: { pageSize: 25 },
+      }}
       columns={[
         {
           id: "name",
           header: "Name",
-          sortingFn: "text",
           accessorKey: "name",
           cell: (cell) => (
             <Tooltip
@@ -79,7 +77,6 @@ const GamesPage = () => {
         {
           id: "year",
           header: "Release",
-          sortingFn: "alphanumeric",
           accessorKey: "releaseDate",
           cell: (cell) =>
             cell.row.original.releaseDate && (
@@ -97,8 +94,6 @@ const GamesPage = () => {
         {
           id: "genre",
           header: "Genres",
-          enableSorting: false,
-          filterFn: genreFilter,
           accessorFn: (game) => getGameGenres(game),
           cell: (cell) => (
             <Group spacing={4}>
@@ -111,8 +106,6 @@ const GamesPage = () => {
         {
           id: "modes",
           header: "Modes",
-          enableSorting: false,
-          filterFn: modeFilter,
           accessorFn: (game) => getGameModes(game),
           cell: (cell) => (
             <Group spacing={4}>
@@ -125,8 +118,6 @@ const GamesPage = () => {
         {
           id: "collections",
           header: "Collections",
-          enableSorting: false,
-          filterFn: collectionFilter() as any,
           accessorKey: "collections",
           cell: (cell) => (
             <Group spacing={4}>
@@ -159,7 +150,6 @@ const GamesPage = () => {
         {
           id: "rating",
           header: "Score",
-          sortingFn: "alphanumeric",
           accessorFn: (game) => getGameRating(game),
           cell: (cell) =>
             cell.getValue() && (
@@ -169,7 +159,6 @@ const GamesPage = () => {
         {
           id: "button",
           header: "",
-          enableSorting: false,
           cell: (cell) => (
             <Tooltip label="View game" position="left">
               <ActionIcon
@@ -184,12 +173,6 @@ const GamesPage = () => {
           ),
         },
       ]}
-      initialState={{
-        sorting: [{ id: "name", desc: false }],
-        pagination: { pageSize: 25 },
-      }}
     />
   );
 };
-
-export default GamesPage;

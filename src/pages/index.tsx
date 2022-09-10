@@ -1,41 +1,41 @@
 import {
   ActionIcon,
-  Box,
+  Group,
   Popover,
-  ScrollArea,
-  SimpleGrid,
   Stack,
   TextInput,
+  Tooltip,
   useMantineTheme,
 } from "@mantine/core";
-import { useDebouncedState, useElementSize } from "@mantine/hooks";
-import { IconSearch } from "@tabler/icons";
-import { ChangeEvent, forwardRef, useMemo } from "react";
-import { VirtuosoGrid } from "react-virtuoso";
+import { useDebouncedState } from "@mantine/hooks";
+import { IconFilter, IconLayoutGrid, IconListDetails } from "@tabler/icons";
+import { ChangeEvent, useMemo } from "react";
 import { useSnapshot } from "valtio";
-import { GameCard } from "../components/GameCard";
 import { GameFilters } from "../components/GameFilters";
+import { GamesGrid } from "../components/GamesGrid";
+import { GamesTable } from "../components/GamesTable";
 import { store } from "../store";
 import { GameListItem } from "../store/games";
-import { GameListSort, GameStatus } from "../store/settings";
-import { getGameLabel, getGameReady } from "../utils/game";
+import { GameListSort, GameListView, GameStatus } from "../store/settings";
+import { getGameLabel } from "../utils/game";
 
-const CARD_WIDTH = 150;
-
-const HomePage = () => {
+const GamesPage = () => {
   const theme = useMantineTheme();
-  const { ref: scrollParent, width } = useElementSize();
+
   const { gameList } = useSnapshot(store);
+
   const {
-    collectionFilter,
+    view,
+    sort,
     descending,
-    fadeNotReady,
-    fadePlayed,
     genreFilter,
     modeFilter,
-    sort,
+    collectionFilter,
     statusFilter,
+    fadeNotReady,
+    fadePlayed,
   } = useSnapshot(store.settings.gameList);
+
   const [query, setQuery] = useDebouncedState("", 200);
 
   const filteredGameList = useMemo(() => {
@@ -90,70 +90,76 @@ const HomePage = () => {
   }, [
     gameList,
     query,
+    sort,
+    descending,
     genreFilter,
     modeFilter,
     collectionFilter,
     statusFilter,
-    sort,
-    descending,
   ]);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setQuery(event.currentTarget.value);
   };
 
+  const handleChangeView = () => {
+    const views = Object.values(GameListView);
+    const currentIndex = views.findIndex((v) => v === view);
+    const nextIndex = (currentIndex + 1) % views.length;
+    store.settings.gameList.view = views[nextIndex];
+  };
+
   return (
     <Stack sx={{ height: `calc(100vh - ${2 * theme.spacing.md}px)` }}>
-      <Box>
-        <TextInput
-          placeholder="Search..."
-          rightSection={
+      <TextInput
+        placeholder="Search..."
+        rightSection={
+          <Group noWrap spacing="xs" mr={40}>
+            <Tooltip label="Switch view" position="left">
+              <ActionIcon onClick={handleChangeView}>
+                {view === GameListView.Grid && (
+                  <IconListDetails opacity={0.8} />
+                )}
+                {view === GameListView.Table && (
+                  <IconLayoutGrid opacity={0.8} />
+                )}
+              </ActionIcon>
+            </Tooltip>
             <Popover width={300} position="bottom-end" withArrow>
               <Popover.Target>
-                <ActionIcon>
-                  <IconSearch opacity={0.8} />
-                </ActionIcon>
+                <Tooltip label="Filter and sort" position="left">
+                  <ActionIcon>
+                    <IconFilter opacity={0.8} />
+                  </ActionIcon>
+                </Tooltip>
               </Popover.Target>
               <Popover.Dropdown>
                 <GameFilters />
               </Popover.Dropdown>
             </Popover>
-          }
-          defaultValue={query}
-          onChange={handleInputChange}
+          </Group>
+        }
+        defaultValue={query}
+        onChange={handleInputChange}
+      />
+
+      {view === GameListView.Grid && (
+        <GamesGrid
+          games={filteredGameList}
+          fadePlayed={fadePlayed}
+          fadeNotReady={fadeNotReady}
         />
-      </Box>
-      <ScrollArea viewportRef={scrollParent}>
-        <VirtuosoGrid
-          overscan={500}
-          totalCount={filteredGameList.length}
-          itemContent={(index) => (
-            <GameCard
-              game={filteredGameList[index]}
-              fade={
-                (fadeNotReady && !getGameReady(filteredGameList[index])) ||
-                (fadePlayed && filteredGameList[index].played)
-              }
-            />
-          )}
-          customScrollParent={scrollParent.current || undefined}
-          components={{
-            List: forwardRef(({ style, children }, ref) => {
-              return (
-                <SimpleGrid
-                  ref={ref}
-                  cols={Math.trunc(width / CARD_WIDTH)}
-                  style={style}
-                >
-                  {children}
-                </SimpleGrid>
-              );
-            }),
-          }}
+      )}
+
+      {view === GameListView.Table && (
+        <GamesTable
+          games={filteredGameList}
+          fadePlayed={fadePlayed}
+          fadeNotReady={fadeNotReady}
         />
-      </ScrollArea>
+      )}
     </Stack>
   );
 };
 
-export default HomePage;
+export default GamesPage;

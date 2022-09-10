@@ -19,8 +19,8 @@ import {
   getGameGenres,
   getGameModes,
   getGamePlatforms,
-  getGameReady,
   getGameRating,
+  getGameReady,
 } from "../utils/game";
 import { openPathInExplorer } from "../utils/path";
 import { GameScoreBadge } from "./GameScoreBadge";

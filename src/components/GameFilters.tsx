@@ -111,15 +111,6 @@ export const GameFilters = () => {
           }
         />
       </Group>
-
-      {/* <Group position="apart">
-        <Button>
-          <IconX />
-        </Button>
-        <Button variant="outline">
-          <IconCheck />
-        </Button>
-      </Group> */}
     </Stack>
   );
 };

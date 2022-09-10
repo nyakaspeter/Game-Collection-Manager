@@ -12,8 +12,8 @@ import { GameListItem } from "../store/games";
 import {
   getGameCover,
   getGameLabel,
-  getGameReady,
   getGameRating,
+  getGameReady,
   showGameDetails,
 } from "../utils/game";
 import { GamePlayableBadge } from "./GamePlayableBadge";

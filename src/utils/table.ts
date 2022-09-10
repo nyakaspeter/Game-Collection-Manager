@@ -1,6 +1,7 @@
 import { Sx } from "@mantine/core";
 
 export const createTableStyles = (columnWidths: string[]): Sx => ({
+  flex: 1,
   table: {
     tableLayout: "fixed",
     width: "100% !important",

@@ -8,12 +8,10 @@ import {
 import {
   IconCategory,
   IconDeviceGamepad2,
-  IconHome,
   IconSettings,
   TablerIcon,
 } from "@tabler/icons";
 import { Link } from "@tanstack/react-location";
-import { useScanPaths } from "../hooks/useScanPaths";
 
 const useStyles = createStyles((theme) => ({
   link: {
@@ -71,34 +69,28 @@ const NavbarLink = ({ icon: Icon, label, to }: NavbarLinkProps) => {
   );
 };
 
-export const AppNavbar = () => {
-  const { mutate: scanPaths, isLoading: isScanning } = useScanPaths();
-  const handleScanPaths = () => scanPaths();
-
-  return (
-    <Navbar
-      width={{ base: 80 }}
-      p="md"
-      sx={(theme) => ({
-        alignItems: "center",
-        backgroundColor: theme.fn.variant({
-          variant: "filled",
-          color: theme.primaryColor,
-        }).background,
-      })}
-    >
-      <Navbar.Section grow>
-        <Stack justify="center" spacing={4}>
-          <NavbarLink icon={IconHome} label="Home" to="/" />
-          <NavbarLink icon={IconDeviceGamepad2} label="Games" to="/games" />
-          <NavbarLink icon={IconCategory} label="Paths" to="/paths" />
-        </Stack>
-      </Navbar.Section>
-      <Navbar.Section>
-        <Stack justify="center" spacing={4}>
-          <NavbarLink icon={IconSettings} label="Settings" to="/settings" />
-        </Stack>
-      </Navbar.Section>
-    </Navbar>
-  );
-};
+export const AppNavbar = () => (
+  <Navbar
+    width={{ base: 80 }}
+    p="md"
+    sx={(theme) => ({
+      alignItems: "center",
+      backgroundColor: theme.fn.variant({
+        variant: "filled",
+        color: theme.primaryColor,
+      }).background,
+    })}
+  >
+    <Navbar.Section grow>
+      <Stack justify="center" spacing={4}>
+        <NavbarLink icon={IconDeviceGamepad2} label="Games" to="/" />
+        <NavbarLink icon={IconCategory} label="Paths" to="/paths" />
+      </Stack>
+    </Navbar.Section>
+    <Navbar.Section>
+      <Stack justify="center" spacing={4}>
+        <NavbarLink icon={IconSettings} label="Settings" to="/settings" />
+      </Stack>
+    </Navbar.Section>
+  </Navbar>
+);

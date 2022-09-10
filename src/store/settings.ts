@@ -1,5 +1,10 @@
 import { Store } from "tauri-plugin-store-api";
 
+export enum GameListView {
+  Table = "Table",
+  Grid = "Grid",
+}
+
 export enum GameListSort {
   Name = "Name",
   Release = "Release",
@@ -21,6 +26,7 @@ export interface Settings {
   twitchApiClientId: string;
   twitchApiClientSecret: string;
   gameList: {
+    view: GameListView;
     sort: GameListSort;
     descending: boolean;
     genreFilter: string[];
@@ -44,6 +50,7 @@ const defaultValue: Settings = {
   twitchApiClientId: "",
   twitchApiClientSecret: "",
   gameList: {
+    view: GameListView.Grid,
     sort: GameListSort.Added,
     descending: true,
     genreFilter: [],

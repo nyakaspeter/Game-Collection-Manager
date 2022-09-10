@@ -1,162 +1,95 @@
 import {
   ActionIcon,
-  Badge,
   Group,
+  Popover,
+  Stack,
+  TextInput,
   Tooltip,
   useMantineTheme,
 } from "@mantine/core";
-import { IconPencil } from "@tabler/icons";
-import { Table } from "@tanstack/react-table";
+import { useDebouncedState } from "@mantine/hooks";
+import { IconFilter } from "@tabler/icons";
 import { sep } from "@tauri-apps/api/path";
-import { DataGrid } from "mantine-data-grid";
-import { useRef } from "react";
+import { ChangeEvent, useMemo } from "react";
 import { useSnapshot } from "valtio";
+import { PathFilters } from "../components/PathFilters";
+import { PathsTable } from "../components/PathsTable";
 import { store } from "../store";
-import { Game } from "../store/games";
 import { PathListItem } from "../store/paths";
-import { getGameLabel, showGameDetails } from "../utils/game";
-import { openPathInExplorer, showPathEditor } from "../utils/path";
-import { collectionFilter } from "../utils/table/collectionFilter";
-import { createTableStyles } from "../utils/table/styles";
+import { PathListSort } from "../store/settings";
 
 const PathsPage = () => {
   const theme = useMantineTheme();
 
-  const table = useRef<Table<PathListItem>>(null);
-  table.current?.setOptions((options) => ({
-    ...options,
-    autoResetPageIndex: false,
-  }));
-
   const { pathList } = useSnapshot(store);
 
-  const handleEditPath = (path: PathListItem) => showPathEditor(path);
+  const { sort, collectionFilter, descending } = useSnapshot(
+    store.settings.pathList
+  );
+
+  const [query, setQuery] = useDebouncedState("", 200);
+
+  const filteredPathList = useMemo(() => {
+    let list = pathList as PathListItem[];
+
+    list = list = list.filter(
+      (item) =>
+        (!query || item.path.toLowerCase().includes(query.toLowerCase())) &&
+        (!collectionFilter.length ||
+          collectionFilter.find((collectionId) =>
+            item.collections.find((c) => c.id === collectionId)
+          ))
+    );
+
+    list.sort((a, b) => {
+      let comparison = 0;
+
+      if (sort === PathListSort.Name) {
+        comparison =
+          (a.path.split(sep).pop()?.toLowerCase() || "") <
+          (b.path.split(sep).pop()?.toLowerCase() || "")
+            ? -1
+            : 1;
+      } else if (sort === PathListSort.Added) {
+        comparison = a.added < b.added ? -1 : 1;
+      }
+
+      return descending ? -comparison : comparison;
+    });
+
+    return list;
+  }, [pathList, query, collectionFilter, sort, descending]);
+
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.currentTarget.value);
+  };
 
   return (
-    <DataGrid
-      tableRef={table}
-      data={pathList as PathListItem[]}
-      height={`calc(100vh - ${2 * theme.spacing.md}px)`}
-      noFlexLayout
-      highlightOnHover
-      withFixedHeader
-      withGlobalFilter
-      withColumnFilters
-      withSorting
-      withPagination
-      sx={createTableStyles(["100%", "400px", "200px", "100px", "60px"])}
-      columns={[
-        {
-          id: "path",
-          header: "Path",
-          accessorKey: "path",
-          sortingFn: (a, b, columnId) =>
-            (a.getValue<string>(columnId).split(sep).pop()?.toLowerCase() ||
-              "") <
-            (b.getValue<string>(columnId).split(sep).pop()?.toLowerCase() || "")
-              ? -1
-              : 1,
-          cell: (cell) => (
-            <Tooltip
-              openDelay={500}
-              position="bottom-start"
-              label={cell.getValue() as string}
-            >
-              <span>{(cell.getValue() as string).split(sep).pop()}</span>
-            </Tooltip>
-          ),
-        },
-        {
-          id: "games",
-          header: "Games",
-          enableSorting: false,
-          accessorKey: "games",
-          cell: (cell) => (
-            <Group spacing={4}>
-              {(cell.getValue() as Game[]).map((game) => {
-                const gameListItem = store.gameList.find(
-                  (g) => g.id === game.id
-                );
-
-                return (
-                  <Tooltip
-                    openDelay={500}
-                    position="bottom-start"
-                    key={game.id}
-                    label={getGameLabel(game, true, true, true, false, true)}
-                  >
-                    <Badge
-                      sx={{ cursor: "pointer" }}
-                      onClick={
-                        gameListItem && (() => showGameDetails(gameListItem))
-                      }
-                    >
-                      {getGameLabel(game)}
-                    </Badge>
-                  </Tooltip>
-                );
-              })}
-            </Group>
-          ),
-        },
-        {
-          id: "collections",
-          header: "Collections",
-          enableSorting: false,
-          filterFn: collectionFilter() as any,
-          accessorKey: "collections",
-          cell: (cell) => (
-            <Group spacing={4}>
-              {cell.row.original.collections.map((collection) => (
-                <Tooltip
-                  openDelay={500}
-                  position="bottom-start"
-                  key={collection.id}
-                  label={cell.row.original.path}
-                >
-                  <Badge
-                    color={collection.readyToPlay ? "green" : undefined}
-                    sx={{ cursor: "pointer" }}
-                    onClick={() => openPathInExplorer(cell.row.original)}
-                  >
-                    {collection.name}
-                  </Badge>
+    <Stack sx={{ height: `calc(100vh - ${2 * theme.spacing.md}px)` }}>
+      <TextInput
+        placeholder="Search..."
+        rightSection={
+          <Group noWrap spacing="xs" mr={2}>
+            <Popover width={300} position="bottom-end" withArrow>
+              <Popover.Target>
+                <Tooltip label="Filter and sort" position="left">
+                  <ActionIcon>
+                    <IconFilter opacity={0.8} />
+                  </ActionIcon>
                 </Tooltip>
-              ))}
-            </Group>
-          ),
-        },
-        {
-          id: "added",
-          header: "Added",
-          accessorKey: "added",
-          sortDescFirst: true,
-          cell: (cell) =>
-            new Date(cell.getValue() as string).toLocaleDateString(),
-        },
-        {
-          id: "button",
-          header: "",
-          enableSorting: false,
-          cell: (cell) => (
-            <Tooltip label="Edit games" position="left">
-              <ActionIcon
-                className="button"
-                variant="filled"
-                sx={{ visibility: "hidden" }}
-                onClick={() => handleEditPath(cell.row.original)}
-              >
-                <IconPencil size={18} />
-              </ActionIcon>
-            </Tooltip>
-          ),
-        },
-      ]}
-      initialState={{
-        sorting: [{ id: "added", desc: true }],
-        pagination: { pageSize: 25 },
-      }}
-    />
+              </Popover.Target>
+              <Popover.Dropdown>
+                <PathFilters />
+              </Popover.Dropdown>
+            </Popover>
+          </Group>
+        }
+        defaultValue={query}
+        onChange={handleInputChange}
+      />
+
+      <PathsTable paths={filteredPathList} />
+    </Stack>
   );
 };
 
