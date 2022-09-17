@@ -1,3 +1,4 @@
+import { resolve, resourceDir } from "@tauri-apps/api/path";
 import { nanoid } from "nanoid";
 import { Store } from "tauri-plugin-store-api";
 
@@ -12,7 +13,11 @@ export interface Collection {
 }
 
 const key = "collections";
-const path = `${key}.json`;
+const file = `${key}.json`;
+const path = import.meta.env.DEV
+  ? file
+  : await resolve(await resourceDir(), file);
+
 const store = new Store(path);
 const defaultValue: Collection[] = [
   {

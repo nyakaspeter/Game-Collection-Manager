@@ -1,3 +1,4 @@
+import { resolve, resourceDir } from "@tauri-apps/api/path";
 import { Store } from "tauri-plugin-store-api";
 
 export enum GameListView {
@@ -42,7 +43,11 @@ export interface Settings {
 }
 
 const key = "settings";
-const path = `${key}.json`;
+const file = `${key}.json`;
+const path = import.meta.env.DEV
+  ? file
+  : await resolve(await resourceDir(), file);
+
 const store = new Store(path);
 const defaultValue: Settings = {
   gameList: {

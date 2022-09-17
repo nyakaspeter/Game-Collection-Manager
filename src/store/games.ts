@@ -1,3 +1,4 @@
+import { resolve, resourceDir } from "@tauri-apps/api/path";
 import { Store } from "tauri-plugin-store-api";
 import { Collection } from "./collections";
 import { Path } from "./paths";
@@ -29,7 +30,11 @@ export interface GameListItem extends Game {
 }
 
 const key = "games";
-const path = `${key}.json`;
+const file = `${key}.json`;
+const path = import.meta.env.DEV
+  ? file
+  : await resolve(await resourceDir(), file);
+
 const store = new Store(path);
 const defaultValue: Game[] = [];
 
