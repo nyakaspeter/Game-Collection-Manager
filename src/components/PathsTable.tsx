@@ -65,7 +65,7 @@ export const PathsTable = ({ paths }: { paths: PathListItem[] }) => {
                     openDelay={500}
                     position="bottom-start"
                     key={game.id}
-                    label={getGameLabel(game, true, true, true, false, true)}
+                    label={getGameLabel(game, true, true, true, true)}
                   >
                     <Badge
                       sx={{ cursor: "pointer" }}

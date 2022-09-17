@@ -9,35 +9,17 @@ export interface Game {
   played?: boolean;
   category?: number;
   summary?: string;
-  storyline?: string;
   rating?: number;
   releaseDate?: string;
   platforms?: number[];
   genres?: number[];
-  themes?: number[];
-  perspectives?: number[];
   gameModes?: number[];
-  multiplayer?: {
-    lan?: boolean;
-    coopCampaign?: boolean;
-    offlineCoop?: boolean;
-    onlineCoop?: boolean;
-    splitscreen?: boolean;
-    offlineMultiMaxPlayers?: number;
-    onlineMultiMaxPlayers?: number;
-    offlineCoopMaxPlayers?: number;
-    onlineCoopMaxPlayers?: number;
-  };
   cover?: string;
   artworks?: string[];
   screenshots?: string[];
   videos?: {
     name: string;
     id: string;
-  }[];
-  websites?: {
-    category: number;
-    url: string;
   }[];
 }
 

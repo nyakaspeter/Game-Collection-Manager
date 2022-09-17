@@ -8,36 +8,14 @@ import { GameDetails } from "../components/GameDetails";
 import modes from "../data/game_modes.json";
 import genres from "../data/genres.json";
 import platforms from "../data/platforms.json";
-import perspectives from "../data/player_perspectives.json";
-import themes from "../data/themes.json";
 import { Game, GameListItem } from "../store/games";
 
 const placeholders = [placeholder1, placeholder2, placeholder3, placeholder4];
 
-export enum Website {
-  Official = 1,
-  Wikia = 2,
-  Wikipedia = 3,
-  Facebook = 4,
-  Twitter = 5,
-  Twitch = 6,
-  Instagram = 8,
-  Youtube = 9,
-  Iphone = 10,
-  Ipad = 11,
-  Android = 12,
-  Steam = 13,
-  Reddit = 14,
-  Itch = 15,
-  Epicgames = 16,
-  Gog = 17,
-  Discord = 18,
-}
-
 export const showGameDetails = (game: Game) => {
   openModal({
     centered: true,
-    size: "80%",
+    size: "min(80%, 1200px)",
     children: createElement(GameDetails, { gameId: game.id }),
   });
 };
@@ -47,7 +25,6 @@ export const getGameLabel = (
   year: boolean = true,
   platforms: boolean = false,
   genres: boolean = false,
-  themes: boolean = false,
   score: boolean = false
 ) => {
   let label = game.name;
@@ -56,7 +33,6 @@ export const getGameLabel = (
   if (platforms && game.platforms)
     label += ` (${getGamePlatforms(game).join(", ")})`;
   if (genres && game.genres) label += ` (${getGameGenres(game).join(", ")})`;
-  if (themes && game.themes) label += ` (${getGameThemes(game).join(", ")})`;
   if (score && game.rating) label += ` (${Math.round(game.rating)}%)`;
 
   return label;
@@ -81,27 +57,6 @@ export const getGamePlatforms = (game: Game) => {
     if (platform) gamePlatforms.push(platform.short || platform.name);
   });
   return gamePlatforms;
-};
-
-export const getGamePerspectives = (game: Game) => {
-  const gamePerspectives: string[] = [];
-  game.perspectives?.forEach((id) => {
-    const perspective = perspectives.find(
-      (perspective) => perspective.id === id
-    );
-    if (perspective)
-      gamePerspectives.push(perspective.short || perspective.name);
-  });
-  return gamePerspectives;
-};
-
-export const getGameThemes = (game: Game) => {
-  const gameThemes: string[] = [];
-  game.genres?.forEach((id) => {
-    const theme = themes.find((theme) => theme.id === id);
-    if (theme) gameThemes.push(theme.short || theme.name);
-  });
-  return gameThemes;
 };
 
 export const getGameModes = (game: Game) => {

@@ -28,7 +28,7 @@ export const PathEditor = ({ pathId }: { pathId: string }) => {
     path.games.map((game) => ({
       game,
       value: game.id,
-      label: getGameLabel(game, true, true, true, false, true),
+      label: getGameLabel(game, true, true, true, true),
     })) || []
   );
 
@@ -37,7 +37,7 @@ export const PathEditor = ({ pathId }: { pathId: string }) => {
       searchResults?.map((game) => ({
         game,
         value: game.id,
-        label: getGameLabel(game, true, true, true, false, true),
+        label: getGameLabel(game, true, true, true, true),
       })) || [],
     [searchResults]
   );

@@ -4,13 +4,14 @@ import {
   Badge,
   Box,
   Button,
+  Center,
   Group,
   Stack,
   Text,
   Title,
   useMantineTheme,
 } from "@mantine/core";
-import { IconPlayerPlay } from "@tabler/icons";
+import { IconExternalLink, IconPlayerPlay } from "@tabler/icons";
 import { useSnapshot } from "valtio";
 import { store } from "../store";
 import { Game, GameListItem, saveGames } from "../store/games";
@@ -121,7 +122,7 @@ export const GameDetails = ({ gameId }: { gameId: string }) => {
               <Stack spacing={4} sx={{ maxWidth: "100%" }}>
                 <Text size="sm">Platforms</Text>
                 <Group spacing={4} noWrap={false}>
-                  {getGamePlatforms(game).map((platform) => (
+                  {platforms.map((platform) => (
                     <Badge key={platform}>{platform}</Badge>
                   ))}
                 </Group>
@@ -131,7 +132,7 @@ export const GameDetails = ({ gameId }: { gameId: string }) => {
               <Stack spacing={4} sx={{ maxWidth: "100%" }}>
                 <Text size="sm">Genres</Text>
                 <Group spacing={4} noWrap={false}>
-                  {getGameGenres(game).map((genre) => (
+                  {genres.map((genre) => (
                     <Badge key={genre}>{genre}</Badge>
                   ))}
                 </Group>
@@ -141,12 +142,43 @@ export const GameDetails = ({ gameId }: { gameId: string }) => {
               <Stack spacing={4} sx={{ maxWidth: "100%" }}>
                 <Text size="sm">Modes</Text>
                 <Group spacing={4} noWrap={false}>
-                  {getGameModes(game).map((mode) => (
+                  {modes.map((mode) => (
                     <Badge key={mode}>{mode}</Badge>
                   ))}
                 </Group>
               </Stack>
             )}
+            <Stack spacing={4} sx={{ maxWidth: "100%" }}>
+              <Text size="sm">Links</Text>
+              <Group spacing={4} noWrap={false}>
+                <Badge
+                  component="a"
+                  href={`https://www.igdb.com/games/${game.slug}`}
+                  target="_blank"
+                  sx={{ cursor: "pointer" }}
+                  rightSection={
+                    <Center>
+                      <IconExternalLink size={12} />
+                    </Center>
+                  }
+                >
+                  IGDB
+                </Badge>
+                <Badge
+                  component="a"
+                  href={`https://www.backloggd.com/games/${game.slug}`}
+                  target="_blank"
+                  sx={{ cursor: "pointer" }}
+                  rightSection={
+                    <Center>
+                      <IconExternalLink size={12} />
+                    </Center>
+                  }
+                >
+                  Backloggd
+                </Badge>
+              </Group>
+            </Stack>
             <Stack spacing={4} sx={{ maxWidth: "100%" }}>
               <Text size="sm">Collections</Text>
               <Group spacing={4} noWrap={false}>

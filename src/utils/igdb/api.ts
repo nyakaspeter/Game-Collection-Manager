@@ -9,35 +9,15 @@ interface IgdbGameResponse {
   slug: string;
   category?: number;
   summary?: string;
-  storyline?: string;
   total_rating?: number;
   first_release_date?: number;
   platforms?: number[];
   genres?: number[];
-  themes?: number[];
-  player_perspectives?: number[];
   game_modes?: number[];
-  multiplayer_modes?: {
-    campaigncoop?: boolean;
-    dropin?: boolean;
-    lancoop?: boolean;
-    offlinecoop?: boolean;
-    offlinecoopmax?: number;
-    offlinemax?: number;
-    onlinecoop?: boolean;
-    onlinecoopmax?: number;
-    onlinemax?: number;
-    splitscreen?: boolean;
-    splitscreenonline?: boolean;
-  }[];
   cover?: { image_id: string };
   artworks?: { image_id: string }[];
   screenshots?: { image_id: string }[];
   videos?: { name: string; video_id: string }[];
-  websites?: {
-    category: number;
-    url: string;
-  }[];
 }
 
 interface IgdbIdWithParent {
@@ -51,31 +31,13 @@ const mapGameData = (game: IgdbGameResponse): Game => ({
   slug: game.slug,
   category: game.category,
   summary: game.summary,
-  storyline: game.storyline,
   rating: game.total_rating,
   releaseDate: game.first_release_date
     ? new Date(game.first_release_date * 1000).toISOString()
     : undefined,
   platforms: game.platforms,
   genres: game.genres,
-  themes: game.themes,
   gameModes: game.game_modes,
-  multiplayer:
-    (!!game.multiplayer_modes?.length && {
-      coopCampaign: game.multiplayer_modes[0].campaigncoop,
-      lan: game.multiplayer_modes[0].lancoop,
-      offlineCoop: game.multiplayer_modes[0].offlinecoop,
-      onlineCoop: game.multiplayer_modes[0].onlinecoop,
-      onlineCoopMaxPlayers: game.multiplayer_modes[0].onlinecoopmax,
-      offlineCoopMaxPlayers: game.multiplayer_modes[0].offlinecoopmax,
-      onlineMultiMaxPlayers: game.multiplayer_modes[0].onlinemax,
-      offlineMultiMaxPlayers: game.multiplayer_modes[0].offlinemax,
-      splitscreen:
-        game.multiplayer_modes[0].splitscreen ||
-        game.multiplayer_modes[0].splitscreenonline,
-    }) ||
-    undefined,
-  perspectives: game.player_perspectives,
   cover: game.cover?.image_id || undefined,
   artworks: game.artworks?.map((artwork) => artwork.image_id) || undefined,
   screenshots:
@@ -84,11 +46,6 @@ const mapGameData = (game: IgdbGameResponse): Game => ({
     game.videos?.map((video) => ({
       name: video.name,
       id: video.video_id,
-    })) || undefined,
-  websites:
-    game.websites?.map((website) => ({
-      category: website.category,
-      url: website.url,
     })) || undefined,
 });
 
@@ -100,20 +57,15 @@ export const fetchIgdbGames = async (ids: string[], slugs: string[] = []) => {
     "slug",
     "category",
     "summary",
-    "storyline",
     "total_rating",
     "first_release_date",
     "platforms",
     "genres",
-    "themes",
     "game_modes",
-    "multiplayer_modes.*",
-    "player_perspectives",
     "cover.*",
     "artworks.*",
     "screenshots.*",
     "videos.*",
-    "websites.*",
   ];
 
   const fieldsString = fields.join(",");
