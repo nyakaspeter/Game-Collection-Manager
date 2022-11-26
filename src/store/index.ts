@@ -58,7 +58,9 @@ export const store = proxyWithComputed(
           (path) =>
             ({
               ...path,
-              games: path.gameIds.map((id) => gamesMap.get(id)),
+              games: path.gameIds
+                .map((id) => gamesMap.get(id))
+                .filter((game) => !!game),
               collections: snap.collections.filter((collection) =>
                 collection.roots.find((root) => path.path.startsWith(root))
               ),
