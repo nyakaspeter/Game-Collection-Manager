@@ -1,6 +1,6 @@
-import { resolve, resourceDir } from "@tauri-apps/api/path";
 import { nanoid } from "nanoid";
 import { Store } from "tauri-plugin-store-api";
+import { getStorePath } from "../utils/portable";
 
 export interface Collection {
   id: string;
@@ -13,20 +13,17 @@ export interface Collection {
 }
 
 const key = "collections";
-const file = `${key}.json`;
-const path = import.meta.env.DEV
-  ? file
-  : await resolve(await resourceDir(), file);
+const path = await getStorePath(`${key}.json`);
 
 const store = new Store(path);
 const defaultValue: Collection[] = [
   {
     id: nanoid(),
     name: "My Games",
-    roots: ["D:\\Games"],
+    roots: [],
     readyToPlay: true,
     scanDirectories: true,
-    scanFiles: false,
+    scanFiles: true,
     fileTypes: ["iso", "cso"],
   },
 ];
