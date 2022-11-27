@@ -1,5 +1,5 @@
 import { ActionIcon, Badge, Group, Tooltip } from "@mantine/core";
-import { IconPencil } from "@tabler/icons";
+import { TbPencil } from "react-icons/tb";
 import { Table } from "@tanstack/react-table";
 import { sep } from "@tauri-apps/api/path";
 import { DataGrid } from "mantine-data-grid";
@@ -124,7 +124,7 @@ export const PathsTable = ({ paths }: { paths: PathListItem[] }) => {
                 sx={{ visibility: "hidden" }}
                 onClick={() => handleEditPath(cell.row.original)}
               >
-                <IconPencil size={18} />
+                <TbPencil size={18} />
               </ActionIcon>
             </Tooltip>
           ),

@@ -14,13 +14,13 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import {
-  IconDeviceFloppy,
-  IconFileSearch,
-  IconPlus,
-  IconRefresh,
-  IconTrash,
-  IconTrashX,
-} from "@tabler/icons";
+  MdSave,
+  MdSearch,
+  MdAdd,
+  MdRefresh,
+  MdDelete,
+  MdDeleteForever,
+} from "react-icons/md";
 import { nanoid } from "nanoid";
 import { useCleanGameData } from "../hooks/useCleanGameData";
 import { useCleanPathData } from "../hooks/useCleanPathData";
@@ -121,7 +121,7 @@ const SettingsPage = () => {
                         color="red"
                         onClick={() => handleRemoveCollection(index)}
                       >
-                        <IconTrash size={18} />
+                        <MdDelete size={18} />
                       </ActionIcon>
                     </Tooltip>
                   </Group>
@@ -164,7 +164,7 @@ const SettingsPage = () => {
 
         <Group position="apart">
           <Button
-            leftIcon={<IconPlus size={18} />}
+            leftIcon={<MdAdd size={18} />}
             sx={buttonStyles}
             onClick={handleAddCollection}
           >
@@ -173,7 +173,7 @@ const SettingsPage = () => {
 
           <Group>
             <Button
-              leftIcon={<IconTrashX size={18} />}
+              leftIcon={<MdDeleteForever size={18} />}
               sx={buttonStyles}
               loading={isCleaningPaths}
               onClick={handleCleanPathData}
@@ -181,7 +181,7 @@ const SettingsPage = () => {
               Clean paths
             </Button>
             <Button
-              leftIcon={<IconTrash size={18} />}
+              leftIcon={<MdDelete size={18} />}
               sx={buttonStyles}
               loading={isCleaningGames}
               onClick={handleCleanGameData}
@@ -189,7 +189,7 @@ const SettingsPage = () => {
               Clean games
             </Button>
             <Button
-              leftIcon={<IconRefresh size={18} />}
+              leftIcon={<MdRefresh size={18} />}
               sx={buttonStyles}
               loading={isRefreshing}
               onClick={handleRefreshGames}
@@ -197,7 +197,7 @@ const SettingsPage = () => {
               Refresh games
             </Button>
             <Button
-              leftIcon={<IconFileSearch size={18} />}
+              leftIcon={<MdSearch size={18} />}
               sx={buttonStyles}
               loading={isScanning}
               onClick={handleScanPaths}
@@ -205,7 +205,7 @@ const SettingsPage = () => {
               Scan paths
             </Button>
             <Button
-              leftIcon={<IconDeviceFloppy size={18} />}
+              leftIcon={<MdSave size={18} />}
               sx={buttonStyles}
               type="submit"
             >

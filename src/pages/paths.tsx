@@ -8,7 +8,7 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import { useDebouncedState } from "@mantine/hooks";
-import { IconFilter } from "@tabler/icons";
+import { MdFilterList } from "react-icons/md";
 import { sep } from "@tauri-apps/api/path";
 import { ChangeEvent, useMemo } from "react";
 import { useSnapshot } from "valtio";
@@ -74,7 +74,7 @@ const PathsPage = () => {
               <Popover.Target>
                 <Tooltip label="Filter and sort" position="left">
                   <ActionIcon>
-                    <IconFilter opacity={0.8} />
+                    <MdFilterList opacity={0.8} />
                   </ActionIcon>
                 </Tooltip>
               </Popover.Target>

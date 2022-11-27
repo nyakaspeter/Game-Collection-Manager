@@ -1,5 +1,5 @@
 import { ThemeIcon } from "@mantine/core";
-import { IconCheck } from "@tabler/icons";
+import { TbCheck } from "react-icons/tb";
 
 export const GamePlayableBadge = () => (
   <ThemeIcon
@@ -9,6 +9,6 @@ export const GamePlayableBadge = () => (
     size={24}
     sx={{ borderWidth: 2, borderStyle: "inset" }}
   >
-    <IconCheck size={16} />
+    <TbCheck size={16} />
   </ThemeIcon>
 );

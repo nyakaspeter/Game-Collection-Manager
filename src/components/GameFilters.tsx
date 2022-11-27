@@ -6,7 +6,7 @@ import {
   Select,
   Stack,
 } from "@mantine/core";
-import { IconSortAscending, IconSortDescending } from "@tabler/icons";
+import { TbSortAscending, TbSortDescending } from "react-icons/tb";
 import { useSnapshot } from "valtio";
 import modes from "../data/game_modes.json";
 import genres from "../data/genres.json";
@@ -33,7 +33,7 @@ export const GameFilters = () => {
             sx={{ opacity: 0.8 }}
             onClick={() => (store.settings.gameList.descending = !descending)}
           >
-            {descending ? <IconSortDescending /> : <IconSortAscending />}
+            {descending ? <TbSortDescending /> : <TbSortAscending />}
           </ActionIcon>
         }
         label="Sort by"

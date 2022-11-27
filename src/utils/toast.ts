@@ -1,5 +1,5 @@
 import { showNotification } from "@mantine/notifications";
-import { IconCheck, IconX } from "@tabler/icons";
+import { TbCheck, TbX } from "react-icons/tb";
 import { createElement } from "react";
 
 export const toast = {
@@ -7,7 +7,7 @@ export const toast = {
     showNotification({
       title,
       message,
-      icon: createElement(IconCheck, { size: 18 }),
+      icon: createElement(TbCheck, { size: 18 }),
       color: "green",
     });
   },
@@ -15,7 +15,7 @@ export const toast = {
     showNotification({
       title,
       message,
-      icon: createElement(IconX, { size: 18 }),
+      icon: createElement(TbX, { size: 18 }),
       color: "red",
     });
   },

@@ -8,7 +8,8 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import { useDebouncedState } from "@mantine/hooks";
-import { IconFilter, IconLayoutGrid, IconListDetails } from "@tabler/icons";
+import { MdFilterList } from "react-icons/md";
+import { BsGrid, BsList } from "react-icons/bs";
 import { ChangeEvent, useMemo } from "react";
 import { useSnapshot } from "valtio";
 import { GameFilters } from "../components/GameFilters";
@@ -117,19 +118,15 @@ const GamesPage = () => {
           <Group noWrap spacing="xs" mr={40}>
             <Tooltip label="Switch view" position="left">
               <ActionIcon onClick={handleChangeView}>
-                {view === GameListView.Grid && (
-                  <IconListDetails opacity={0.8} />
-                )}
-                {view === GameListView.Table && (
-                  <IconLayoutGrid opacity={0.8} />
-                )}
+                {view === GameListView.Grid && <BsList opacity={0.8} />}
+                {view === GameListView.Table && <BsGrid opacity={0.8} />}
               </ActionIcon>
             </Tooltip>
             <Popover width={300} position="bottom-end" withArrow>
               <Popover.Target>
                 <Tooltip label="Filter and sort" position="left">
                   <ActionIcon>
-                    <IconFilter opacity={0.8} />
+                    <MdFilterList opacity={0.8} />
                   </ActionIcon>
                 </Tooltip>
               </Popover.Target>

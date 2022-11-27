@@ -5,13 +5,10 @@ import {
   Tooltip,
   UnstyledButton,
 } from "@mantine/core";
-import {
-  IconCategory,
-  IconDeviceGamepad2,
-  IconSettings,
-  TablerIcon,
-} from "@tabler/icons";
+import { MdGames, MdArchive, MdSettings } from "react-icons/md";
+import { IoMdDisc } from "react-icons/io";
 import { Link } from "@tanstack/react-location";
+import { IconType } from "react-icons";
 
 const useStyles = createStyles((theme) => ({
   link: {
@@ -47,7 +44,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 interface NavbarLinkProps {
-  icon: TablerIcon;
+  icon: IconType;
   label: string;
   to?: string;
 }
@@ -61,7 +58,7 @@ const NavbarLink = ({ icon: Icon, label, to }: NavbarLinkProps) => {
           <UnstyledButton
             className={cx(classes.link, { [classes.active]: isActive })}
           >
-            <Icon stroke={1.5} />
+            <Icon size={24} />
           </UnstyledButton>
         </Tooltip>
       )}
@@ -83,13 +80,14 @@ export const AppNavbar = () => (
   >
     <Navbar.Section grow>
       <Stack justify="center" spacing={4}>
-        <NavbarLink icon={IconDeviceGamepad2} label="Games" to="/" />
-        <NavbarLink icon={IconCategory} label="Paths" to="/paths" />
+        <NavbarLink icon={MdGames} label="Collection" to="/" />
+        <NavbarLink icon={IoMdDisc} label="Installers" to="/paths" />
+        <NavbarLink icon={MdArchive} label="Local" to="/local" />
       </Stack>
     </Navbar.Section>
     <Navbar.Section>
       <Stack justify="center" spacing={4}>
-        <NavbarLink icon={IconSettings} label="Settings" to="/settings" />
+        <NavbarLink icon={MdSettings} label="Settings" to="/settings" />
       </Stack>
     </Navbar.Section>
   </Navbar>

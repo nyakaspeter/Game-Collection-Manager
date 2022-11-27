@@ -1,5 +1,5 @@
 import { ActionIcon, Badge, Group, Tooltip } from "@mantine/core";
-import { IconArrowRight } from "@tabler/icons";
+import { TbArrowRight } from "react-icons/tb";
 import { Table } from "@tanstack/react-table";
 import { DataGrid } from "mantine-data-grid";
 import { useRef } from "react";
@@ -167,7 +167,7 @@ export const GamesTable = ({
                 sx={{ visibility: "hidden" }}
                 onClick={() => handleViewGame(cell.row.original)}
               >
-                <IconArrowRight size={18} />
+                <TbArrowRight size={18} />
               </ActionIcon>
             </Tooltip>
           ),

@@ -11,7 +11,7 @@ import {
   Title,
   useMantineTheme,
 } from "@mantine/core";
-import { IconExternalLink, IconPlayerPlay } from "@tabler/icons";
+import { TbExternalLink, TbPlayerPlay } from "react-icons/tb";
 import { useSnapshot } from "valtio";
 import { store } from "../store";
 import { Game, GameListItem, saveGames } from "../store/games";
@@ -91,7 +91,7 @@ export const GameDetails = ({ gameId }: { gameId: string }) => {
           </AspectRatio>
           <Button
             radius="md"
-            leftIcon={<IconPlayerPlay size={18} />}
+            leftIcon={<TbPlayerPlay size={18} />}
             onClick={handleTogglePlayed}
           >
             {game.played ? "Mark as unplayed" : "Mark as played"}
@@ -158,7 +158,7 @@ export const GameDetails = ({ gameId }: { gameId: string }) => {
                   sx={{ cursor: "pointer" }}
                   rightSection={
                     <Center>
-                      <IconExternalLink size={12} />
+                      <TbExternalLink size={12} />
                     </Center>
                   }
                 >
@@ -171,7 +171,7 @@ export const GameDetails = ({ gameId }: { gameId: string }) => {
                   sx={{ cursor: "pointer" }}
                   rightSection={
                     <Center>
-                      <IconExternalLink size={12} />
+                      <TbExternalLink size={12} />
                     </Center>
                   }
                 >

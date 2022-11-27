@@ -1,5 +1,5 @@
 import { ActionIcon, MultiSelect, Select, Stack } from "@mantine/core";
-import { IconSortAscending, IconSortDescending } from "@tabler/icons";
+import { TbSortAscending, TbSortDescending } from "react-icons/tb";
 import { useSnapshot } from "valtio";
 import { store } from "../store";
 import { PathListSort } from "../store/settings";
@@ -17,7 +17,7 @@ export const PathFilters = () => {
             sx={{ opacity: 0.8 }}
             onClick={() => (store.settings.pathList.descending = !descending)}
           >
-            {descending ? <IconSortDescending /> : <IconSortAscending />}
+            {descending ? <TbSortDescending /> : <TbSortAscending />}
           </ActionIcon>
         }
         label="Sort by"
