@@ -7,7 +7,7 @@
     "distDir": "../dist"
   },
   "package": {
-    "productName": "game-collection-manager",
+    "productName": "gcm",
     "version": "0.1.0"
   },
   "tauri": {
